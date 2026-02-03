@@ -1,0 +1,134 @@
+ {
+  "countries": [
+    {
+      "id": "italia",
+      "name": "Italia",
+      "plate": "italia_plate.png",
+      "flag": "italia_flag.png"
+    },
+    {
+      "id": "mexico",
+      "name": "México",
+      "plate": "mexico_plate.png",
+      "flag": "mexico_flag.png"
+    },
+    {
+      "id": "japon",
+      "name": "Japón",
+      "plate": "japon_plate.png",
+      "flag": "japon_flag.png"
+    },
+     {
+
+      "id": "india",
+      "name": "India",
+      "plate": "india_plate.png",
+      "flag": "india_flag.png"
+    },
+     {
+      "id": "tailandia",
+      "name": "Tailandia",
+      "plate": "tailandia_plate.png",
+      "flag": "tailandia_flag.png"
+    },
+     {
+      "id": "spain",
+      "name": "España",
+      "plate": "spain_plate.png",
+      "flag": "spain_flag.png"
+    },
+     {
+      "id": "grecia",
+      "name": "Grecia",
+      "plate": "grecia_plate.png",
+      "flag": "grecia_flag.png"
+    }
+    ,
+     {
+      "id": "francia",
+      "name": "Francia",
+      "plate": "francia_plate.png",
+      "flag": "francia_flag.png"
+    }
+    ,
+     {
+      "id": "suiza",
+      "name": "Suiza",
+      "plate": "suiza_plate.png",
+      "flag": "suiza_flag.png"
+    }
+     ,
+     {
+      "id": "armenia",
+      "name": "Armenia",
+      "plate": "armenia_plate.png",
+      "flag": "armenia_flag.png"
+    }
+     ,
+     {
+      "id": "brasil",
+      "name": "Brasil",
+      "plate": "brasil_plate.png",
+      "flag": "brasil_flag.png"
+    }
+     ,
+     {
+      "id": "turquia",
+      "name": "Turquía",
+      "plate": "turquia_plate.png",
+      "flag": "turquia_flag.png"
+    }
+     ,
+     {
+      "id": "argentina",
+      "name": "Argentina",
+      "plate": "argentina_plate.png",
+      "flag": "argentina_flag.png"
+    }
+     ,
+     {
+      "id": "corea_sur",
+      "name": "Corea del sur",
+      "plate": "corea_sur_plate.png",
+      "flag": "corea_sur_flag.png"
+    }
+     ,
+     {
+      "id": "indonesia",
+      "name": "Indonesia",
+      "plate": "indonesia_plate.png",
+      "flag": "indonesia_flag.png"
+    }
+     ,
+     {
+      "id": "estados_unidos",
+      "name": "Estados Unidos",
+      "plate": "estados_unidos_plate.png",
+      "flag": "estados_unidos_flag.png"
+    } ,
+     {
+      "id": "alemania",
+      "name": "Alemania",
+      "plate": "alemania_plate.png",
+      "flag": "alemania_flag.png"
+    } ,
+     {
+      "id": "peru",
+      "name": "Perú",
+      "plate": "peru_plate.png",
+      "flag": "peru_flag.png"
+    } ,
+     {
+      "id": "marruecos",
+      "name": "Marruecos",
+      "plate": "marruecos_plate.png",
+      "flag": "marruecos_flag.png"
+    } ,
+     {
+      "id": "china",
+      "name": "China",
+      "plate": "china_plate.png",
+      "flag": "china_flag.png"
+    }
+  ]
+}
