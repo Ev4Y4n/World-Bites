@@ -91,6 +91,12 @@ class MyCustomFormState extends State<MyCustomForm> {
                         : null;
                   },
                 ),
+                ElevatedButton(
+                      style: TextButton.styleFrom(foregroundColor: Colors.blue),
+                      onPressed: () {},
+                      child: const Text('REGISTRAR'),
+                    ),
+
 
                 const SizedBox(height: 30),
                 Row(
