@@ -1,8 +1,1 @@
-{
-  "firestore": {
-    "database": "(default)",
-    "location": "eur3",
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  }
-}
+{"flutter":{"platforms":{"android":{"default":{"projectId":"world-bites-f5a54","appId":"1:965190733003:android:e1e8cf25ead357b3a85f4e","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"world-bites-f5a54","configurations":{"android":"1:965190733003:android:e1e8cf25ead357b3a85f4e","ios":"1:965190733003:ios:15a407320a302db9a85f4e","macos":"1:965190733003:ios:15a407320a302db9a85f4e","web":"1:965190733003:web:3214c0a2dabd9845a85f4e","windows":"1:965190733003:web:0106fcc16486d244a85f4e"}}}}}}
