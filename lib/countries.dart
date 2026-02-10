@@ -1,6 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'categories.dart';
+
+
+class Pais {
+  final String id;
+  final String nombre;
+
+  Pais({required this.id, required this.nombre});
+}
 
 class PantallaPaises extends StatefulWidget {
   const PantallaPaises({super.key});
@@ -10,42 +19,57 @@ class PantallaPaises extends StatefulWidget {
 }
 
 class _PantallaPaisesState extends State<PantallaPaises> {
-  List<String> nombres = [];
+  List<Pais> paises = [];
 
-  Future<void> cargarJson() async {
+  Future<void> cargarPaises() async {
     final String response =
         await rootBundle.loadString('assets/json/paises.json');
 
     final Map<String, dynamic> data = json.decode(response);
-
     final List<dynamic> countries = data['countries'];
 
     setState(() {
-      nombres = countries.map((c) => c['name'] as String).toList();
+      paises = countries
+          .map((c) => Pais(
+                id: c['id'],
+                nombre: c['name'],
+              ))
+          .toList();
     });
+  }
+
+  void irACategorias(Pais pais) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PantallaCategorias(
+          paisId: pais.id,
+          paisNombre: pais.nombre,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Países')),
-      body: nombres.isEmpty
+      body: paises.isEmpty
           ? Center(
               child: ElevatedButton(
-                onPressed: cargarJson,
+                onPressed: cargarPaises,
                 child: const Text('Cargar países'),
               ),
             )
           : ListView.builder(
-              itemCount: nombres.length,
+              itemCount: paises.length,
               itemBuilder: (context, index) {
+                final pais = paises[index];
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      debugPrint(nombres[index]);
-                    },
-                    child: Text(nombres[index]),
+                    onPressed: () => irACategorias(pais),
+                    child: Text(pais.nombre),
                   ),
                 );
               },
