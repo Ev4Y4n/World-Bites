@@ -10,7 +10,11 @@ class Country{
   final String plate;
   final String flag;
 
-  Country(this.id, this.name, this.plate, this.flag);
+  Country(
+    this.id, 
+    this.name, 
+    this.plate, 
+    this.flag);
 
   Country.fromJson(Map<String, dynamic> json)
     :id = json['id'] as String,

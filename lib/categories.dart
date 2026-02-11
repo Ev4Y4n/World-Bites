@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_application_1/entities/category_entity.dart';
+import 'package:flutter_application_1/recipe.dart';
 
 class PantallaCategorias extends StatefulWidget {
   final String paisId;
@@ -67,39 +68,52 @@ class _PantallaCategoriasState extends State<PantallaCategorias> {
       body: cargando
           ? const Center(child: CircularProgressIndicator())
           : error != null
-              ? Center(child: Text('Error: $error'))
-              : ListView.builder(
-                  itemCount: categorias.length,
-                  itemBuilder: (context, index) {
-                    final categoria = categorias[index];
-                    return Card(
-                      margin: const EdgeInsets.all(10),
-                      child: ListTile(
-                        leading: Image.network(
-                          categoria.icono,
-                          width: 40,
-                          height: 40,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.fastfood),
-                        ),
-                        title: Text(
-                          categoria.nombre,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          debugPrint(
-                            'Categoría: ${categoria.id} (${categoria.recetas.length} recetas)',
-                          );
-                          // Aquí navegarías a PantallaRecetas
-                        },
+          ? Center(child: Text('Error: $error'))
+          : ListView.builder(
+              itemCount: categorias.length,
+              itemBuilder: (context, index) {
+                final categoria = categorias[index];
+
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  child: ExpansionTile(
+                    leading: Image.network(
+                      categoria.icono,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.fastfood),
+                    ),
+                    title: Text(
+                      categoria.nombre,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    children: categoria.recetas.map<Widget>((receta) {
+                      return ListTile(
+                        leading: const Icon(Icons.restaurant_menu),
+                        title: Text(receta['name']),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          debugPrint('Receta seleccionada: ${receta['id']}');
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PantallaRecetas(
+                                id: receta['id'],
+                                name: receta['name'],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

@@ -10,4 +10,5 @@ class Categoria {
     required this.icono,
     required this.recetas,
   });
+  
 }
