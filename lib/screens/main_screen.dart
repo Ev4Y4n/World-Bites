@@ -12,6 +12,11 @@ class _MainScreen extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromARGB(255, 156, 179, 222),
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
       body: Container(
         margin: EdgeInsets.only(top: 40.0, left: 20.0),
         child: Column(
@@ -58,6 +63,106 @@ class _MainScreen extends State<MainScreen> {
                 ),
               ),
             ),
+            SizedBox(height: 20.0),
+            Container(
+              height: 180,
+              width: MediaQuery.of(context).size.width,
+              child: Expanded(
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      child: Column(
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              "assets/images/receta1.jpg",
+                              height: 120,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            "Soup Recipes",
+                            style: AppWidget.lightfeildtextstyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      child: Column(
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              "assets/images/receta1.jpg",
+                              height: 120,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            "Main Course",
+                            style: AppWidget.lightfeildtextstyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      child: Column(
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              "assets/images/receta1.jpg",
+                              height: 120,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            "Chinese",
+                            style: AppWidget.lightfeildtextstyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              "assets/images/receta1.jpg",
+                              height: 120,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            "Italian",
+                            style: AppWidget.lightfeildtextstyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
             Expanded(
               child: ListView(
                 scrollDirection: Axis.horizontal,
@@ -65,86 +170,42 @@ class _MainScreen extends State<MainScreen> {
                   Container(
                     margin: EdgeInsets.only(right: 20.0),
                     child: Column(
-                      //crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
                             "assets/images/receta1.jpg",
-                            height: 120,
-                            width: 120,
+                            height: 250,
+                            width: 200,
                             fit: BoxFit.cover,
                           ),
                         ),
                         SizedBox(height: 10.0),
                         Text(
-                          "Soup Recipes",
-                          style: AppWidget.lightfeildtextstyle()
+                          "RECETA 1",
+                          style: AppWidget.lightfeildtextstyle(),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(right: 20.0),
                     child: Column(
-                      //crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
                             "assets/images/receta1.jpg",
-                            height: 120,
-                            width: 120,
+                            height: 250,
+                            width: 200,
                             fit: BoxFit.cover,
                           ),
                         ),
                         SizedBox(height: 10.0),
                         Text(
-                          "Main Course",
-                          style: AppWidget.lightfeildtextstyle()
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: Column(
-                      //crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "assets/images/receta1.jpg",
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "Chinese",
-                          style: AppWidget.lightfeildtextstyle()
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "assets/images/receta1.jpg",
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "Italian",
-                          style: AppWidget.lightfeildtextstyle()
+                          "RECETA 2",
+                          style: AppWidget.lightfeildtextstyle(),
                         ),
                       ],
                     ),

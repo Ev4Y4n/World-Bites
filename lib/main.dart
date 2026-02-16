@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/add_recipe.dart';
+import 'package:flutter_application_1/screens/recipe.dart';
 import 'screens/main_screen.dart';
 
 void main() {
@@ -34,7 +36,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainScreen()
+      home: AddRecipe()
     );
   }
 }
