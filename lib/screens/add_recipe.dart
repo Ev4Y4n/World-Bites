@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddRecipe extends StatefulWidget {
   const AddRecipe({super.key});
@@ -9,6 +12,19 @@ class AddRecipe extends StatefulWidget {
 }
 
 class _AddRecipeState extends State<AddRecipe> {
+  File? selectedImage;
+  TextEditingController namecontroller = new TextEditingController();
+  TextEditingController detailcontroller = new TextEditingController();
+
+  //CREACIÓN FUNCIÓN QUE ACCEDE A LA GALERÍA DEL MOVIL PARA SELECCIONAR UNA FOTO
+  final ImagePicker _picker = ImagePicker();
+
+  Future getImage() async {
+    var image = await _picker.pickImage(source: ImageSource.gallery);
+    selectedImage = File(image!.path);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,18 +43,44 @@ class _AddRecipeState extends State<AddRecipe> {
               ],
             ),
             SizedBox(height: 20.0),
-            Center(
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(),
-                ),
-                child: Icon(Icons.camera_alt_outlined),
-              ),
-            ),
+            selectedImage != null
+                ? GestureDetector(
+                    onTap: () {
+                      getImage();
+                    },
+                    child: Center(
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(),
+                        ),
+                        child: Icon(Icons.camera_alt_outlined),
+                      ),
+                    ),
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      getImage();
+                    },
+                    child: Center(
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                          child: Image.file(selectedImage!, fit: BoxFit.cover),
+                        ),
+                      ),
+                    ),
+                  ),
             SizedBox(height: 20.0),
             Text("Nombre Receta", style: AppWidget.boldfieldtextstyle()),
             SizedBox(height: 10.0),
@@ -76,12 +118,20 @@ class _AddRecipeState extends State<AddRecipe> {
                 ),
               ),
             ),
-            SizedBox(height: 30.0,),
+            SizedBox(height: 30.0),
             Container(
-              padding: EdgeInsets.only(top:10.0, bottom: 10.0),
-              decoration:BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(20)),
+              padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(20),
+              ),
               width: MediaQuery.of(context).size.width,
-              child: Center(child: Text("GUARDAR", style: TextStyle(color: Colors.white, fontSize: 20.0))),
+              child: Center(
+                child: Text(
+                  "GUARDAR",
+                  style: TextStyle(color: Colors.white, fontSize: 20.0),
+                ),
+              ),
             ),
           ],
         ),
