@@ -26,6 +26,43 @@ class _MainScreen extends State<MainScreen> {
     super.initState();
   }
 
+  bool search = false;
+
+  var queryResulrSet = [];
+  var tempSearchStore = [];
+
+  initiateSearch(value) {
+    if (value.length == 0) {
+      setState(() {
+        queryResulrSet = [];
+        tempSearchStore = [];
+      });
+    }
+    setState(() {
+      search = true;
+    });
+    var capitalizedValue = value.isNotEmpty
+        ? value[0].toUpperCase() + value.substring(1)
+        : value;
+
+    if (queryResulrSet.isEmpty && value.length == 1) {
+      DatabaseMethods().Search(value).then((QuerySnapshot docs) {
+        for (int i = 0; i < docs.docs.length; ++i) {
+          queryResulrSet.add(docs.docs[i].data());
+        }
+      });
+    } else {
+      tempSearchStore = [];
+      queryResulrSet.forEach((element) {
+        if (element["SearchedName"].startsWith(capitalizedValue)) {
+          setState(() {
+            tempSearchStore.add(element);
+          });
+        }
+      });
+    }
+  }
+
   Widget allRecipe() {
     return StreamBuilder(
       stream: recipeStream,
@@ -127,6 +164,9 @@ class _MainScreen extends State<MainScreen> {
               ),
               width: MediaQuery.of(context).size.width,
               child: TextField(
+                onChanged: (value) {
+                  initiateSearch(value.toUpperCase());
+                },
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   suffixIcon: Icon(Icons.search_outlined),
@@ -135,148 +175,205 @@ class _MainScreen extends State<MainScreen> {
               ),
             ),
             SizedBox(height: 20.0),
-            Container(
-              height: 180,
-              width: MediaQuery.of(context).size.width,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Category(category: "Soup Recipes"),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20.0),
-                      child: Column(
-                        //crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              "assets/images/receta1.jpg",
-                              height: 120,
-                              width: 120,
-                              fit: BoxFit.cover,
+            search
+                ? ListView(
+                    padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                    primary: false,
+                    shrinkWrap: true,
+                    children: tempSearchStore.map((element) {
+                      return buildResultCard(element);
+                    }).toList(),
+                  )
+                : Container(
+                    height: 180,
+                    width: MediaQuery.of(context).size.width,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Category(category: "Soup Recipes"),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20.0),
+                            child: Column(
+                              //crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    "assets/images/receta1.jpg",
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 10.0),
+                                Text(
+                                  "Soup Recipes",
+                                  style: AppWidget.lightfeildtextstyle(),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 10.0),
-                          Text(
-                            "Soup Recipes",
-                            style: AppWidget.lightfeildtextstyle(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Category(category: "Main Course"),
                         ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20.0),
-                      child: Column(
-                        //crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              "assets/images/receta1.jpg",
-                              height: 120,
-                              width: 120,
-                              fit: BoxFit.cover,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Category(category: "Main Course"),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20.0),
+                            child: Column(
+                              //crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    "assets/images/receta1.jpg",
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 10.0),
+                                Text(
+                                  "Main Course",
+                                  style: AppWidget.lightfeildtextstyle(),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 10.0),
-                          Text(
-                            "Main Course",
-                            style: AppWidget.lightfeildtextstyle(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Category(category: "Chinese"),
                         ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20.0),
-                      child: Column(
-                        //crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              "assets/images/receta1.jpg",
-                              height: 120,
-                              width: 120,
-                              fit: BoxFit.cover,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Category(category: "Chinese"),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20.0),
+                            child: Column(
+                              //crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    "assets/images/receta1.jpg",
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 10.0),
+                                Text(
+                                  "Chinese",
+                                  style: AppWidget.lightfeildtextstyle(),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 10.0),
-                          Text(
-                            "Chinese",
-                            style: AppWidget.lightfeildtextstyle(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Category(category: "Italian"),
                         ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20.0),
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                              "assets/images/receta1.jpg",
-                              height: 120,
-                              width: 120,
-                              fit: BoxFit.cover,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Category(category: "Italian"),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20.0),
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    "assets/images/receta1.jpg",
+                                    height: 120,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 10.0),
+                                Text(
+                                  "Italian",
+                                  style: AppWidget.lightfeildtextstyle(),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 10.0),
-                          Text(
-                            "Italian",
-                            style: AppWidget.lightfeildtextstyle(),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
+
             SizedBox(height: 20.0),
-            Expanded(child: allRecipe()),
+            search ? Container() : Expanded(child: allRecipe()),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildResultCard(data) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Recipe(
+              foodname: data['Name'],
+              image: data['Image'],
+              recipe: data['Detail'],
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8),
+        child: Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Image.network(
+                    data['Image'],
+                    height: 70,
+                    width: 70,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(width: 20.0),
+                Text(data['Name'], style: AppWidget.boldfieldtextstyle()),
+              ],
+            ),
+          ),
         ),
       ),
     );

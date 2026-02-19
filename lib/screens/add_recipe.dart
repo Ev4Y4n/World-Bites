@@ -56,6 +56,8 @@ class _AddRecipeState extends State<AddRecipe> {
         "Detail": detailcontroller.text,
         "Image": downloadurl,
         "Category": value,
+        "Key": namecontroller.text.substring(0,1).toUpperCase(),
+        "SearchedName": namecontroller.text.toUpperCase()
       };
       DatabaseMethods().Addrecipe(addrecipe).then((value) {
         Fluttertoast.showToast(
