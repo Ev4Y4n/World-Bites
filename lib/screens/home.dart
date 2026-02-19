@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/category.dart';
+import 'package:flutter_application_1/screens/recipe.dart';
+import 'package:flutter_application_1/services/database.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 
 class MainScreen extends StatefulWidget {
@@ -9,6 +13,73 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreen extends State<MainScreen> {
+  Stream? recipeStream;
+
+  getontheload() async {
+    recipeStream = await DatabaseMethods().getAllRecipes();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getontheload();
+    super.initState();
+  }
+
+  Widget allRecipe() {
+    return StreamBuilder(
+      stream: recipeStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: snapshot.data.docs.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Recipe(
+                            foodname: ds["Name"],
+                            image: ds["Image"],
+                            recipe: ds["Detail"],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              ds["Image"],
+                              height: 250,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            ds["Name"],
+                            style: AppWidget.lightfeildtextstyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              )
+            : Container();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,11 +138,20 @@ class _MainScreen extends State<MainScreen> {
             Container(
               height: 180,
               width: MediaQuery.of(context).size.width,
-              child: Expanded(
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    Container(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Category(category: "Soup Recipes"),
+                        ),
+                      );
+                    },
+                    child: Container(
                       margin: EdgeInsets.only(right: 20.0),
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +173,18 @@ class _MainScreen extends State<MainScreen> {
                         ],
                       ),
                     ),
-                    Container(
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Category(category: "Main Course"),
+                        ),
+                      );
+                    },
+                    child: Container(
                       margin: EdgeInsets.only(right: 20.0),
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +206,17 @@ class _MainScreen extends State<MainScreen> {
                         ],
                       ),
                     ),
-                    Container(
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Category(category: "Chinese"),
+                        ),
+                      );
+                    },
+                    child: Container(
                       margin: EdgeInsets.only(right: 20.0),
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +238,18 @@ class _MainScreen extends State<MainScreen> {
                         ],
                       ),
                     ),
-                    Container(
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Category(category: "Italian"),
+                        ),
+                      );
+                    },
+                    child: Container(
                       margin: EdgeInsets.only(right: 20.0),
                       child: Column(
                         children: [
@@ -158,61 +270,12 @@ class _MainScreen extends State<MainScreen> {
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Expanded(
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "assets/images/receta1.jpg",
-                            height: 250,
-                            width: 200,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "RECETA 1",
-                          style: AppWidget.lightfeildtextstyle(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "assets/images/receta1.jpg",
-                            height: 250,
-                            width: 200,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "RECETA 2",
-                          style: AppWidget.lightfeildtextstyle(),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),
             ),
+            SizedBox(height: 20.0),
+            Expanded(child: allRecipe()),
           ],
         ),
       ),

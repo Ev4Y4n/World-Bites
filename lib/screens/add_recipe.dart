@@ -16,6 +16,13 @@ class AddRecipe extends StatefulWidget {
 }
 
 class _AddRecipeState extends State<AddRecipe> {
+  String? value;
+  final List<String> recipe = [
+    'Soup Recipes',
+    'Main Course',
+    'Chinese',
+    'Italian',
+  ];
   File? selectedImage;
   TextEditingController namecontroller = new TextEditingController();
   TextEditingController detailcontroller = new TextEditingController();
@@ -35,7 +42,6 @@ class _AddRecipeState extends State<AddRecipe> {
     if (selectedImage != null &&
         namecontroller.text != "" &&
         detailcontroller.text != "") {
-
       String addId = randomAlphaNumeric(10);
       Reference firebaseStorageRef = FirebaseStorage.instance
           .ref()
@@ -49,6 +55,7 @@ class _AddRecipeState extends State<AddRecipe> {
         "Name": namecontroller.text,
         "Detail": detailcontroller.text,
         "Image": downloadurl,
+        "Category": value,
       };
       DatabaseMethods().Addrecipe(addrecipe).then((value) {
         Fluttertoast.showToast(
@@ -66,12 +73,12 @@ class _AddRecipeState extends State<AddRecipe> {
           selectedImage = null;
         });
       });
-    }else{
+    } else {
       Fluttertoast.showToast(
-      msg: "Faltan campos por rellenar",
-      backgroundColor: Colors.orange,
-      textColor: Colors.white,
-    );
+        msg: "Faltan campos por rellenar",
+        backgroundColor: Colors.orange,
+        textColor: Colors.white,
+      );
     }
   }
 
@@ -108,7 +115,7 @@ class _AddRecipeState extends State<AddRecipe> {
                           height: 200,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(10),
                             border: Border.all(),
                           ),
                           child: Image.file(selectedImage!, fit: BoxFit.cover),
@@ -144,7 +151,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
                   controller: namecontroller,
@@ -155,6 +162,42 @@ class _AddRecipeState extends State<AddRecipe> {
                 ),
               ),
               SizedBox(height: 20.0),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all()
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    items: recipe
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                        onChanged: ((value)=> setState(() {
+                          this.value= value;
+                        })),
+                        dropdownColor: Colors.white,
+                        hint: Text("Select Category"),
+                        iconSize: 36,
+                        icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                        value: value,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0,),
               Text(
                 "Instrucciones Receta",
                 style: AppWidget.boldfieldtextstyle(),
@@ -166,7 +209,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
                   controller: detailcontroller,

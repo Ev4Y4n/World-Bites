@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 
 class Recipe extends StatefulWidget {
-  const Recipe({super.key});
+  String image, foodname, recipe;
+  Recipe({required this.foodname, required this.image, required this.recipe});
 
   @override
   State<Recipe> createState() => _RecipeState();
@@ -15,8 +16,8 @@ class _RecipeState extends State<Recipe> {
       body: Container(
         child: Stack(
           children: [
-            Image.asset(
-              "assets/images/receta1.jpg",
+            Image.network(
+              widget.image!,
               width: MediaQuery.of(context).size.width,
               height: 400,
               fit: BoxFit.cover,
@@ -38,17 +39,19 @@ class _RecipeState extends State<Recipe> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Receta 1",
+                    widget.foodname,
                     style: TextStyle(
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Divider(),
-                  SizedBox(height: 10.0,),
-                  Text("Instrucciones", style: AppWidget.lightfeildtextstyle(),),
-                  SizedBox(height: 10.0,),
-                  Text("1. Divide la carne en dos bolas y aplástalas directamente en la sartén caliente.\n2. Añade sal y pimienta y cocina 2–3 minutos por lado.\n3. Coloca el cheddar encima y deja que se funda.\n4. Tuesta ligeramente los panes.\n5. Monta la hamburguesa con salsa, lechuga, carne, tomate, cebolla y pepinillos.\n6. Sirve caliente y disfruta."),
+                  SizedBox(height: 10.0),
+                  Text("Instrucciones", style: AppWidget.lightfeildtextstyle()),
+                  SizedBox(height: 10.0),
+                  Text(
+                      widget.recipe,
+                  ),
                 ],
               ),
             ),
