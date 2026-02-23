@@ -50,7 +50,7 @@ class _AddRecipeState extends State<AddRecipe> {
 
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
       var downloadurl = await (await task).ref.getDownloadURL();
-
+      //TODOS ESTOS CAMPOS TIENEN QUE ESTAR EN LA BASE DE DATOS PARA QUE FUNCIONE
       Map<String, dynamic> addrecipe = {
         "Name": namecontroller.text,
         "Detail": detailcontroller.text,
