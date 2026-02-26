@@ -19,7 +19,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
   void deleteAccount() async {
     try {
-      await authService.value.deleteAccount(email: controllerEmail.text, password: controllerPassword.text)
+      await authService.value.deleteAccount(email: controllerEmail.text, password: controllerPassword.text);
       setState(() {
         errorMessage = "";
         emailSent = true;
