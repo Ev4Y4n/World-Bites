@@ -3,7 +3,7 @@ import 'package:flutter_application_1/widget/support_widget.dart';
 
 class Recipe extends StatefulWidget {
   String image, foodname, recipe;
-  Recipe({required this.foodname, required this.image, required this.recipe});
+  Recipe({super.key, required this.foodname, required this.image, required this.recipe});
 
   @override
   State<Recipe> createState() => _RecipeState();
@@ -17,7 +17,7 @@ class _RecipeState extends State<Recipe> {
         child: Stack(
           children: [
             Image.network(
-              widget.image!,
+              widget.image,
               width: MediaQuery.of(context).size.width,
               height: 400,
               fit: BoxFit.cover,

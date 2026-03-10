@@ -6,7 +6,7 @@ import 'package:flutter_application_1/widget/support_widget.dart';
 
 class Category extends StatefulWidget {
   String category;
-  Category({required this.category});
+  Category({super.key, required this.category});
 
   @override
   State<Category> createState() => _Category();
@@ -15,7 +15,7 @@ class Category extends StatefulWidget {
 class _Category extends State<Category> {
   Stream? categoryStream;
 
-  getontheload() async {
+  Future<void> getontheload() async {
     categoryStream = await DatabaseMethods().getRecipeCategory(widget.category);
     setState(() {});
   }
