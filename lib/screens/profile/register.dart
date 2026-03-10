@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_application_1/screens/home.dart';
 import 'package:flutter_application_1/screens/profile/login.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Register extends StatelessWidget {
   const Register({super.key});
@@ -10,8 +10,54 @@ class Register extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('World Bites'), centerTitle: true),
-      body: const MyCustomForm(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 110,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 35),
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'World\n',
+                  style: GoogleFonts.arbutusSlab(fontSize: 35, color: Colors.white) ,
+                ),
+                TextSpan(
+                  text: 'Bites',
+                  style: GoogleFonts.barlow(fontSize: 30, color: Colors.white),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              top: false,
+              child: Image.asset(
+                'assets/images/fondo_titulo.png',
+                width: double.infinity,
+                height: 250,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(top: 180),
+            child: const MyCustomForm(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -39,8 +85,8 @@ class MyCustomFormState extends State<MyCustomForm> {
       print('Usuario registrado');
       loginScreen();
       setState(() {
-          errorMessage = '';
-        });
+        errorMessage = '';
+      });
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message ?? 'Ha habido un error';
@@ -48,10 +94,10 @@ class MyCustomFormState extends State<MyCustomForm> {
     }
   }
 
-  void loginScreen(){
+  void loginScreen() {
     Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const LogIn()));
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => const LogIn()));
   }
 
   @override
@@ -64,16 +110,25 @@ class MyCustomFormState extends State<MyCustomForm> {
             key: _formKey,
             child: Column(
               children: [
-                const Text(
-                  'Descubre culturas, sabores y recetas únicas.',
+                Text(
+                  '"Descubre culturas, sabores y recetas únicas."',
                   textAlign: TextAlign.center,
+                  style: GoogleFonts.barlow(fontSize: 20),
                 ),
 
                 const SizedBox(height: 20),
 
-                const Text(
-                  'Registrar',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    'Registrar',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF92B0AC),
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
                 ),
 
                 const SizedBox(height: 30),
@@ -119,6 +174,10 @@ class MyCustomFormState extends State<MyCustomForm> {
                 const SizedBox(height: 10),
 
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF92B0AC),
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       register();
@@ -134,10 +193,17 @@ class MyCustomFormState extends State<MyCustomForm> {
                   children: [
                     const Text('¿Ya tienes cuenta?'),
                     TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Color(0xFF92B0AC),
+                        textStyle: GoogleFonts.barlow(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       onPressed: () {
                         loginScreen();
                       },
-                      child: const Text('Inicia Sesión'),
+                      child: const Text('INICIAR SESIÓN'),
                     ),
                   ],
                 ),

@@ -4,6 +4,7 @@ import 'package:flutter_application_1/screens/home.dart';
 import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void login() => runApp(const LogIn());
 
@@ -16,7 +17,28 @@ class LogIn extends StatelessWidget {
     return MaterialApp(
       title: appTitle,
       home: Scaffold(
-        appBar: AppBar(title: const Text(appTitle), centerTitle: true),
+        appBar: AppBar(
+          toolbarHeight: 80,
+          title: Padding(
+            padding: const EdgeInsets.only(top: 35),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'World\n',
+                    style: GoogleFonts.arbutusSlab(fontSize: 35),
+                  ),
+                  TextSpan(
+                    text: 'Bites',
+                    style: GoogleFonts.barlow(fontSize: 30),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          centerTitle: true,
+        ),
         body: const MyCustomForm(),
       ),
     );
@@ -48,16 +70,16 @@ class MyCustomFormState extends State<MyCustomForm> {
       ).push(MaterialPageRoute<void>(builder: (context) => const MainScreen()));
     }
 
-    void registerScreen(){
+    void registerScreen() {
       Navigator.of(
         context,
       ).push(MaterialPageRoute<void>(builder: (context) => const Register()));
     }
 
-    void resetPassword(){
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const ResetPassword()));
+    void resetPassword() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (context) => const ResetPassword()),
+      );
     }
 
     void login() async {
@@ -134,10 +156,13 @@ class MyCustomFormState extends State<MyCustomForm> {
                 const SizedBox(height: 10),
 
                 Text(errorMessage, style: const TextStyle(color: Colors.red)),
-                
+
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  style: TextButton.styleFrom(foregroundColor: Colors.blue),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF92B0AC),
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: () {
                     login();
                   },

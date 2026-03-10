@@ -1,10 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/firebase_options.dart';
-import 'package:flutter_application_1/screens/profile/login.dart';
-import 'package:flutter_application_1/screens/profile/profile.dart';
-import 'package:flutter_application_1/screens/profile/register.dart';
-import 'package:flutter_application_1/screens/profile/reset_password.dart';
+import 'package:flutter_application_1/screens/intro_animation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Profile(),
+      home: const IntroAnimation(),
     );
   }
 }
