@@ -24,8 +24,8 @@ class _AddRecipeState extends State<AddRecipe> {
     'Italian',
   ];
   File? selectedImage;
-  TextEditingController namecontroller = new TextEditingController();
-  TextEditingController detailcontroller = new TextEditingController();
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController detailcontroller = TextEditingController();
 
   //CREACIÓN FUNCIÓN QUE ACCEDE A LA GALERÍA DEL MOVIL PARA SELECCIONAR UNA FOTO
   final ImagePicker _picker = ImagePicker();
@@ -38,7 +38,7 @@ class _AddRecipeState extends State<AddRecipe> {
     }
   }
 
-  uploadItem() async {
+  Future<void> uploadItem() async {
     if (selectedImage != null &&
         namecontroller.text != "" &&
         detailcontroller.text != "") {

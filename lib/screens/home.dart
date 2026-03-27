@@ -15,7 +15,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreen extends State<MainScreen> {
   Stream? recipeStream;
 
-  getontheload() async {
+  Future<void> getontheload() async {
     recipeStream = await DatabaseMethods().getAllRecipes();
     setState(() {});
   }
@@ -31,7 +31,7 @@ class _MainScreen extends State<MainScreen> {
   var queryResulrSet = [];
   var tempSearchStore = [];
 
-  initiateSearch(value) {
+  void initiateSearch(value) {
     if (value.length == 0) {
       setState(() {
         queryResulrSet = [];
@@ -53,13 +53,13 @@ class _MainScreen extends State<MainScreen> {
       });
     } else {
       tempSearchStore = [];
-      queryResulrSet.forEach((element) {
+      for (var element in queryResulrSet) {
         if (element["SearchedName"].startsWith(capitalizedValue)) {
           setState(() {
             tempSearchStore.add(element);
           });
         }
-      });
+      }
     }
   }
 
@@ -184,7 +184,7 @@ class _MainScreen extends State<MainScreen> {
                       return buildResultCard(element);
                     }).toList(),
                   )
-                : Container(
+                : SizedBox(
                     height: 180,
                     width: MediaQuery.of(context).size.width,
                     child: ListView(
