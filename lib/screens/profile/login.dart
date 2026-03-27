@@ -186,7 +186,12 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('¿Has olvidado tu contraseña?'),
+                     const Text('¿Has olvidado tu contraseña?')
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     TextButton(
                       style: TextButton.styleFrom(foregroundColor: Colors.blue),
                       onPressed: () {

@@ -60,7 +60,7 @@ class _CountriesPageState extends State<CountriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 156, 179, 222),
+      backgroundColor: const Color(0xFF92B0AC),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

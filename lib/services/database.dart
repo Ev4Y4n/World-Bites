@@ -7,7 +7,7 @@ class DatabaseMethods{
   }
 
   Future<Stream<QuerySnapshot>> getAllRecipes()async{
-    return FirebaseFirestore.instance.collection("Recipe").snapshots();
+    return FirebaseFirestore.instance.collection("categories_italy").snapshots();
   }
 
   Future<Stream<QuerySnapshot>> getRecipeCategory(String category)async{
