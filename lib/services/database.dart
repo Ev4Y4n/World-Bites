@@ -1,20 +1,32 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DatabaseMethods{
-  Future Addrecipe(Map<String, dynamic> addrecipe)async{
+class DatabaseMethods {
+  //Agrega una nueva receta a la colección "Recipe" en Firebase
+  Future addRecipe(Map<String, dynamic> addrecipe) async {
     return await FirebaseFirestore.instance.collection("Recipe").add(addrecipe);
   }
 
-  Future<Stream<QuerySnapshot>> getAllRecipes()async{
-    return FirebaseFirestore.instance.collection("categories_italy").snapshots();
+  //Obtiene un stream de datos en tiempo real de todas las recetas
+  Stream<QuerySnapshot> getAllRecipes() {
+    return FirebaseFirestore.instance
+        .collection("categories_italy")
+        .snapshots();
   }
 
-  Future<Stream<QuerySnapshot>> getRecipeCategory(String category)async{
-    return FirebaseFirestore.instance.collection("Recipe").where("Category", isEqualTo: category).snapshots();
+  //Obtiene un stream de datos en tiempo real de las recetas filtradas por categoría
+  Stream<QuerySnapshot> getRecipeCategory(String category) {
+    return FirebaseFirestore.instance
+        .collection("categories_italy")
+        .doc(category)
+        .collection("recipes")
+        .snapshots();
   }
 
-  Future<QuerySnapshot> Search(String name)async{
-    return await FirebaseFirestore.instance.collection("Recipe").where("Key", isEqualTo: name.substring(0,1).toUpperCase()).get();
+  //Obtiene un stream de datos en tiempo real de las recetas filtradas por nombre (búsqueda)
+  Future<QuerySnapshot> search(String name) async {
+    return await FirebaseFirestore.instance
+        .collection("Recipe")
+        .where("Key", isEqualTo: name.substring(0, 1).toUpperCase())
+        .get();
   }
 }
