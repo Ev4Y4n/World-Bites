@@ -197,86 +197,108 @@ class _MainScreen extends State<MainScreen> {
   }
 
   Widget allRecipe() {
-    // mostrar recetas de la categoría seleccionada en una lista horizonta
     if (selectedSubCategory == null) return Container();
 
     return StreamBuilder(
-      stream: FirebaseFirestore
-          .instance // acceder a la colección de recetas de la categoría seleccionada para mostrar las recetas correspondientes a esa categoría, escuchando cambios en tiempo real para actualizar la lista automáticamente
+      stream: FirebaseFirestore.instance
           .collection('categories_italy')
           .doc(selectedSubCategory)
           .collection('recipes')
           .snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
-        // manejar estados de carga y datos vacíos
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
+        }
 
         var recipesDocs = snapshot.data.docs;
 
-        if (recipesDocs.isEmpty) return Center(child: Text("No hay recetas"));
+        if (recipesDocs.isEmpty) {
+          return Center(child: Text("No hay recetas"));
+        }
 
-        return SizedBox(
-          // mostrar lista horizontal de recetas con imagen y nombre, y manejar navegación a la pantalla de detalles de la receta al hacer tap en una receta específica
-          height: 250,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: recipesDocs.length,
-            itemBuilder: (context, index) {
-              var recipe = recipesDocs[index].data() as Map<String, dynamic>;
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Recipe(
-                        foodname: recipe['name'],
-                        image: recipe['image'],
-                        ingredients: recipe['ingredients'],
-                        steps: recipe['steps'],
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(right: 20),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // 2 columnas
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.75, // ajusta tamaño de cada card
+          ),
+          itemCount: recipesDocs.length,
+          itemBuilder: (context, index) {
+            var recipe = recipesDocs[index].data() as Map<String, dynamic>;
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Recipe(
+                      foodname: recipe['name'],
+                      image: recipe['image'],
+                      ingredients: recipe['ingredients'],
+                      steps: recipe['steps'],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 5,
+                      color: Colors.black12,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        recipe['image'] ?? 'https://via.placeholder.com/150',
+                        height: 110,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  );
-                },
-                child: Container(
-                  // mostrar cada receta en una tarjeta con imagen y nombre, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
-                  margin: EdgeInsets.only(right: 20),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              recipe['image'] ?? 'https://via.placeholder.com/150',
-                              height: 100,
-                              width: 150,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            recipe['name'],
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          width: 100,
+                          child: Text(
+                            recipe['name'] ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 10,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        Icon(Icons.favorite, color: Colors.pink, size: 24.0),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
-  
+
   Widget buildResultCard(data) {
     // mostrar cada resultado de búsqueda en una tarjeta con imagen y nombre de la receta, y manejar navegación a la pantalla de detalles de la receta al hacer tap en un resultado específico
     return GestureDetector(
