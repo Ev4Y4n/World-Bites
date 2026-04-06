@@ -3,15 +3,23 @@ import 'package:flutter_application_1/widget/support_widget.dart';
 
 class Recipe extends StatefulWidget {
   //Recibe los datos de la receta desde la pantalla de categoría
-  final String image, foodname;
-  final List<dynamic> ingredients, steps;
+  final String image, foodname, difficulty;
+  final List<dynamic> ingredients, steps, tags;
+  final int kcal, prepTime, servings;
+  final bool isFavorite;
 
   Recipe({
     super.key,
     required this.foodname,
+    required this.difficulty,
+    required this.isFavorite,
     required this.image,
     required this.ingredients,
+    required this.kcal,
+    required this.prepTime,
+    required this.servings,
     required this.steps,
+    required this.tags,
   });
 
   @override
@@ -25,6 +33,7 @@ class _RecipeState extends State<Recipe> {
       body: Container(
         child: Stack(
           children: [
+            
             Image.network(
               // Imagen de la receta en la parte superior
               widget.image,
@@ -63,9 +72,14 @@ class _RecipeState extends State<Recipe> {
                       "Ingredientes",
                       style: AppWidget.lightfeildtextstyle(),
                     ),
-                    SizedBox(height: 10.0), // Espacio entre el título "Ingredientes" y la lista de ingredientes
-                    ...widget.ingredients.map( // Muestra la lista de ingredientes
-                      (ing) => Text("${ing['quantity']} ${ing['name']}"), // Muestra la cantidad y el nombre de cada ingrediente
+                    SizedBox(
+                      height: 10.0,
+                    ), // Espacio entre el título "Ingredientes" y la lista de ingredientes
+                    ...widget.ingredients.map(
+                      // Muestra la lista de ingredientes
+                      (ing) => Text(
+                        "${ing['quantity']} ${ing['name']}",
+                      ), // Muestra la cantidad y el nombre de cada ingrediente
                     ), // Lista de ingredientes
                     SizedBox(height: 20.0),
                     Text(

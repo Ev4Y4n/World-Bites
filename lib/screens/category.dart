@@ -55,6 +55,13 @@ class _Category extends State<Category> {
                             image: ds["icon"],
                             ingredients: ds["ingredients"],
                             steps: ds["steps"],
+                            difficulty: ds["difficulty"],
+                            isFavorite: ds["favorite"],
+                            kcal: ds["kcal"],
+                            prepTime: ds["prepTime"],
+                            servings: ds["servings"],
+                            tags: ds["tags"],
+                            
                           ),
                         ),
                       );

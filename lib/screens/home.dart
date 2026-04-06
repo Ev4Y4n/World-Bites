@@ -72,15 +72,33 @@ class _MainScreen extends State<MainScreen> {
                   'name':
                       recipeData['name'] ??
                       recipeName, // usar el nombre de la receta o el nombre del mapa si no existe
+                  'difficulty':
+                      recipeData['difficulty'] ??
+                      'Desconocida', // usar valor predeterminado si no existe dificultad
+                  'favorite':
+                      recipeData['favorite'] ??
+                      false, // usar false si no existe información de favorito
                   'image':
                       recipeData['image'] ??
                       'https://via.placeholder.com/150', // placeholder si no existe imagen
                   'ingredients':
                       recipeData['ingredients'] ??
                       [], // usar lista vacía si no existen ingredientes
+                  'kcal':
+                      recipeData['kcal'] ??
+                      0, // usar 0 si no existe información de calorías
                   'steps':
                       recipeData['steps'] ??
                       [], // usar lista vacía si no existen pasos
+                  'prepTime':
+                      recipeData['prepTime'] ??
+                      0, // usar 0 si no existe información de tiempo de preparación
+                  'servings':
+                      recipeData['servings'] ??
+                      0, // usar 0 si no existe información de porciones
+                  'tags':
+                      recipeData['tags'] ??
+                      [], // usar lista vacía si no existen etiquetas
                 });
               });
             }
@@ -228,18 +246,32 @@ class _MainScreen extends State<MainScreen> {
           ),
           itemCount: recipesDocs.length,
           itemBuilder: (context, index) {
-            var recipe = recipesDocs[index].data() as Map<String, dynamic>;
+            var recipe =
+                recipesDocs[index].data()
+                    as Map<
+                      String,
+                      dynamic
+                    >; // obtener datos de cada receta para mostrar en la tarjeta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
 
+            var prepTime = recipe['prepTime'];
             return GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => Recipe(
-                      foodname: recipe['name'],
-                      image: recipe['image'],
-                      ingredients: recipe['ingredients'],
+                      // manejar navegación a la pantalla de detalles de la receta al hacer tap en una receta específica, pasando los datos de la receta seleccionada a la pantalla de detalles para mostrar la información correspondiente a esa receta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
+                      foodname: recipe['name'] ?? '',
+                      difficulty: recipe['difficulty'] ?? 'Desconocida',
+                      isFavorite: recipe['favorite'] ?? false,
+                      image:
+                          recipe['image'] ?? 'https://via.placeholder.com/150',
+                      ingredients: recipe['ingredients'] ?? [],
                       steps: recipe['steps'],
+                      kcal: recipe['kcal'] ?? 0,
+                      prepTime: recipe['prepTime'] ?? 0,
+                      servings: recipe['servings'] ?? 0,
+                      tags: recipe['tags'] ?? [],
                     ),
                   ),
                 );
@@ -259,35 +291,140 @@ class _MainScreen extends State<MainScreen> {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        recipe['image'] ?? 'https://via.placeholder.com/150',
-                        height: 110,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                      child: Stack(
+                        children: [
+                          Image.network(
+                            recipe['image'] ??
+                                'https://via.placeholder.com/150',
+                            height: 110,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      "Agregado a favoritos: ${recipe['name'] ?? 'Receta'}",
+                                    ),
+                                  ),
+                                );
+                                setState(() {
+                                  recipe['favorite'] = true;
+                                });
+                              },
+                              child: Container(
+                                width: 24, // tamaño del fondo
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(
+                                    137,
+                                    255,
+                                    255,
+                                    255,
+                                  ), // fondo del círculo
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.favorite,
+                                    size: 16, // tamaño del ícono
+                                    color: (recipe['favorite'] == true)
+                                        ? Color.fromARGB(255, 178, 0, 0)
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: 10),
                     Row(
                       children: [
-                        
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          width: 100,
-                          child: Text(
-                            recipe['name'] ?? '',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                        Expanded(
+                          // El nombre ocupa todo el espacio disponible a la izquierda
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            child: Text(
+                              recipe['name'] ?? '',
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                        Icon(Icons.favorite, color: Colors.pink, size: 24.0),
+                        Container(
+                          // El prepTime siempre fijo a la derecha
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(136, 104, 92, 92),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize:
+                                MainAxisSize.min, // se ajusta al contenido
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                color: Colors.yellow,
+                                size: 14,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                prepTime <= 60
+                                    ? "$prepTime min"
+                                    : "${(prepTime / 60).toStringAsFixed(1)} hr",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      width: 100,
+                      child: Wrap(
+                        spacing: 4, // espacio horizontal entre tags
+                        runSpacing: 4, // espacio vertical
+                        children: (recipe['tags'] as List<dynamic>).map((tag) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(222, 146, 176, 172),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tag.toString(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ],
                 ),
@@ -312,6 +449,12 @@ class _MainScreen extends State<MainScreen> {
               image: data['image'],
               ingredients: data['ingredients'],
               steps: data['steps'],
+              difficulty: data['difficulty'],
+              isFavorite: data['favorite'],
+              kcal: data['kcal'],
+              prepTime: data['prepTime'],
+              servings: data['servings'],
+              tags: data['tags'],
             ),
           ),
         );
@@ -359,65 +502,74 @@ class _MainScreen extends State<MainScreen> {
         onPressed: () {},
         child: Icon(Icons.add),
       ),
-      body: Container(
-        margin: EdgeInsets.only(top: 60, left: 20),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Row(
-                children: [
-                  Text(
-                    "Descubre recetas\nde cada rincón",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top: 60, left: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      "Descubre recetas\nde cada rincón",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Spacer(),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Image.asset(
-                      "assets/images/receta1.jpg",
-                      height: 60,
-                      width: 60,
-                      fit: BoxFit.cover,
+                    Spacer(),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        "assets/images/receta1.jpg",
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.only(left: 10),
-              margin: EdgeInsets.only(right: 20, bottom: 20),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 156, 179, 222),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                onChanged: (value) => initiateSearch(value),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  suffixIcon: Icon(Icons.search_outlined),
-                  hintText: "Buscar Receta...",
+                  ],
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            search
-                ? ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    shrinkWrap: true,
-                    children: tempSearchStore
-                        .map((e) => buildResultCard(e))
-                        .toList(),
-                  )
-                : categoryList(),
-            SizedBox(height: 20),
-            search ? Container() : Expanded(child: allRecipe()),
-          ],
+              SizedBox(height: 20),
+
+              Container(
+                padding: EdgeInsets.only(left: 10),
+                margin: EdgeInsets.only(right: 20, bottom: 20),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(119, 146, 176, 172),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: TextField(
+                  onChanged: (value) => initiateSearch(value),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    suffixIcon: Icon(Icons.search_outlined),
+                    hintText: "Buscar Receta...",
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              search
+                  ? ListView(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      children: tempSearchStore
+                          .map((e) => buildResultCard(e))
+                          .toList(),
+                    )
+                  : categoryList(),
+
+              SizedBox(height: 20),
+
+              search ? Container() : allRecipe(),
+            ],
+          ),
         ),
       ),
     );
