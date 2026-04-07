@@ -246,8 +246,9 @@ class _MainScreen extends State<MainScreen> {
           ),
           itemCount: recipesDocs.length,
           itemBuilder: (context, index) {
+            var doc = recipesDocs[index];
             var recipe =
-                recipesDocs[index].data()
+                doc.data()
                     as Map<
                       String,
                       dynamic
@@ -307,17 +308,19 @@ class _MainScreen extends State<MainScreen> {
                             top: 8,
                             right: 8,
                             child: GestureDetector(
-                              onTap: () {
+                              onTap: () async {
+                                await doc.reference.update({
+                                  'favorite':
+                                      !(recipe['favorite'] ?? false), // toggle
+                                });
+
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      "Agregado a favoritos: ${recipe['name'] ?? 'Receta'}",
+                                      "Actualizado favorito: ${recipe['name'] ?? 'Receta'}",
                                     ),
                                   ),
                                 );
-                                setState(() {
-                                  recipe['favorite'] = true;
-                                });
                               },
                               child: Container(
                                 width: 24, // tamaño del fondo
@@ -329,6 +332,7 @@ class _MainScreen extends State<MainScreen> {
                                     255,
                                     255,
                                   ), // fondo del círculo
+
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
@@ -497,11 +501,7 @@ class _MainScreen extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 156, 179, 222),
-        onPressed: () {},
-        child: Icon(Icons.add),
-      ),
+      
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(top: 60, left: 20),
