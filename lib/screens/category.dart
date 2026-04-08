@@ -61,6 +61,7 @@ class _Category extends State<Category> {
                             prepTime: ds["prepTime"],
                             servings: ds["servings"],
                             tags: ds["tags"],
+                            doc: ds, //Pasa el documento completo para poder actualizar el estado de favorito desde la pantalla de detalles
                             
                           ),
                         ),

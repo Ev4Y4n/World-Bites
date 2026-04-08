@@ -273,6 +273,7 @@ class _MainScreen extends State<MainScreen> {
                       prepTime: recipe['prepTime'] ?? 0,
                       servings: recipe['servings'] ?? 0,
                       tags: recipe['tags'] ?? [],
+                      doc: doc, 
                     ),
                   ),
                 );
@@ -309,7 +310,7 @@ class _MainScreen extends State<MainScreen> {
                             right: 8,
                             child: GestureDetector(
                               onTap: () async {
-                                await doc.reference.update({
+                                await doc.reference.update({ // actualizar estado de favorito en Firestore al hacer tap en el ícono de favorito, usando toggle para cambiar entre true y false
                                   'favorite':
                                       !(recipe['favorite'] ?? false), // toggle
                                 });
@@ -459,6 +460,7 @@ class _MainScreen extends State<MainScreen> {
               prepTime: data['prepTime'],
               servings: data['servings'],
               tags: data['tags'],
+              doc: null,
             ),
           ),
         );
