@@ -21,7 +21,7 @@ class AuthLayout extends StatefulWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               widget = const AppLoadingPage();
             } else if (snapshot.hasData) {
-              widget = const MainScreen();
+              widget = const MainScreen(categoryID: 'categories_default');
             } else {
               widget = pageIfNotConnected ?? const Register();
             }

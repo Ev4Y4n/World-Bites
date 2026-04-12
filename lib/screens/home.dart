@@ -4,8 +4,9 @@ import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
+  final String categoryID;
+  const MainScreen({super.key, required this.categoryID});
+  
   @override
   State<MainScreen> createState() => _MainScreen();
 }
@@ -15,6 +16,7 @@ class _MainScreen extends State<MainScreen> {
   bool search = false;
   String? selectedSubCategory; // para almacenar la subcategoría seleccionada
 
+ 
   var queryResultSet = [];
   var tempSearchStore = [];
 
@@ -372,7 +374,7 @@ class _MainScreen extends State<MainScreen> {
                         Container(
                           // El prepTime siempre fijo a la derecha
                           padding: EdgeInsets.symmetric(
-                            horizontal: 6,
+                            horizontal: 6,   
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
@@ -541,7 +543,7 @@ class _MainScreen extends State<MainScreen> {
                 padding: EdgeInsets.only(left: 10),
                 margin: EdgeInsets.only(right: 20, bottom: 20),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(119, 146, 176, 172),
+                  color: const Color.fromARGB(150, 146, 176, 172),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(

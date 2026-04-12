@@ -67,7 +67,7 @@ class MyCustomFormState extends State<MyCustomForm> {
     void enterApp() {
       Navigator.of(
         context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const MainScreen()));
+      ).push(MaterialPageRoute<void>(builder: (context) => const MainScreen(categoryID: 'categories_default')));
     }
 
     void registerScreen() {

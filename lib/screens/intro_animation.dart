@@ -30,8 +30,8 @@ class _IntroAnimation extends State<IntroAnimation>
             context,
             PageRouteBuilder(
               transitionDuration: const Duration(milliseconds: 600),
-              pageBuilder: (_, animation, __) => const Register(),
-              transitionsBuilder: (_, animation, __, child) {
+              pageBuilder: (_, animation, _) => const Register(),
+              transitionsBuilder: (_, animation, _, child) {
                 return FadeTransition(
                   opacity: animation,
                   child: child,
