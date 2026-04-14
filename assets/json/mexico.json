@@ -4,6 +4,7 @@
         {
             "id": "starters",
             "name": "Entrantes",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fesquites.jpg?alt=media&token=a1b318a4-5289-4ec4-b22d-2d76165b99d0",
             "recipes": [
                 {
                     "id": "chilaquiles",
@@ -34,6 +35,7 @@
         {
             "id": "tacos",
             "name": "Tacos",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosalpastor.jpg?alt=media&token=04dbdf1b-92b8-463c-80ad-813627debcd2",
             "recipes": [
                 {
                     "id": "tacos_al_pastor",
@@ -64,6 +66,7 @@
         {
             "id": "soups",
             "name": "Sopas",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadefideos.jpg?alt=media&token=26b482e3-2440-493b-947a-1a785b6843f0",
             "recipes": [
                 {
                     "id": "caldo_de_res",
@@ -94,6 +97,7 @@
         {
             "id": "sauces",
             "name": "Salsas",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaranchera.jpg?alt=media&token=67ad64b1-aa81-4f54-a7c7-79355b0f16e7",
             "recipes": [
                 {
                     "id": "pico_de_gallo",
@@ -124,6 +128,7 @@
         {
             "id": "fish",
             "name": "Mariscos",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fpescadozarandeado.jpg?alt=media&token=757dc870-4589-487f-a945-2d2bc4084b3a",
             "recipes": [
                 {
                     "id": "aguachile",
@@ -154,6 +159,7 @@
         {
             "id": "meat",
             "name": "Carnes",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcarneasada.jpg?alt=media&token=a82c12f2-f460-4e70-8581-d2b35d8b42d8",
             "recipes": [
                 {
                     "id": "carne_asada",
@@ -184,6 +190,7 @@
         {
             "id": "desserts",
             "name": "Postres",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fflan.jpg?alt=media&token=3edec582-21fa-4efb-9d4d-4376af16088e",
             "recipes": [
                 {
                     "id": "arroz_con_leche",
@@ -214,6 +221,7 @@
         {
             "id": "drinks",
             "name": "Bebidas",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Faguadejamaica.jpg?alt=media&token=0fbc2e45-c077-4dc4-938e-5929b0f20d2c",
             "recipes": [
                 {
                     "id": "agua_de_jamaica",
@@ -244,6 +252,7 @@
         {
             "id": "specials",
             "name": "Especiales",
+            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fenchiladas.jpg?alt=media&token=845c5fc8-dd56-4aaa-854e-0ebe61d01b7d",
             "recipes": [
                 {
                     "id": "chiles_en_nogada",
