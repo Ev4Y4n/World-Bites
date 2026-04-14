@@ -169,7 +169,7 @@ class _CountriesPageState extends State<CountriesPage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF92B0AC),
+      //backgroundColor: const Color(0xFF92B0AC),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

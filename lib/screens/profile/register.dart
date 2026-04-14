@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/layout/nav_bar.dart';
 import 'package:flutter_application_1/screens/profile/login.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,7 +22,10 @@ class Register extends StatelessWidget {
               children: [
                 TextSpan(
                   text: 'World\n',
-                  style: GoogleFonts.arbutusSlab(fontSize: 35, color: Colors.white) ,
+                  style: GoogleFonts.arbutusSlab(
+                    fontSize: 35,
+                    color: Colors.white,
+                  ),
                 ),
                 TextSpan(
                   text: 'Bites',
@@ -70,26 +74,31 @@ class MyCustomForm extends StatefulWidget {
 }
 
 class MyCustomFormState extends State<MyCustomForm> {
-  final TextEditingController controllerEmail = TextEditingController();
-  final TextEditingController controllerPassword = TextEditingController();
+  final TextEditingController controllerEmail =
+      TextEditingController(); // Controlador para el campo de correo electrónico
+  final TextEditingController controllerPassword =
+      TextEditingController(); // Controlador para el campo de contraseña
 
   String errorMessage = "";
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); // Clave para el formulario
 
   Future<void> register() async {
     try {
-      await authService.value.createAccount(
-        email: controllerEmail.text.trim(),
-        password: controllerPassword.text.trim(),
-      );
-      print('Usuario registrado');
-      loginScreen();
-      setState(() {
-        errorMessage = '';
-      });
+      if (_formKey.currentState!.validate()) {
+        await authService.value.createAccount(
+          email: controllerEmail.text.trim(),
+          password: controllerPassword.text.trim(),
+        );
+        print('Usuario registrado');
+        enterApp(); //SOLO si todo salió bien
+      } else {
+        setState(() {
+          errorMessage = 'Formulario inválido';
+        });
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message ?? 'Ha habido un error';
+        errorMessage = e.message ?? 'Usuario ya existente o datos no válidos';
       });
     }
   }
@@ -98,6 +107,12 @@ class MyCustomFormState extends State<MyCustomForm> {
     Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (context) => const LogIn()));
+  }
+
+  void enterApp() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => const NavBar()));
   }
 
   @override
