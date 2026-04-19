@@ -1,0 +1,22 @@
+{
+  "recetas": {
+    "receta1": {
+      "comentarios": {
+        "comentario1": {
+          "userId": "user456",
+          "username": "Juan",
+          "texto": "Muy buena receta y fácil de seguir",
+          "puntuacion": 5,
+          "fecha": "2026-04-15T12:00:00Z"
+        },
+        "comentario2": {
+          "userId": "user789",
+          "username": "Ana",
+          "texto": "Fácil y rápida",
+          "puntuacion": 4,
+          "fecha": "2026-04-15T13:00:00Z"
+        }
+      }
+    }
+  }
+}

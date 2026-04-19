@@ -34,10 +34,10 @@ class _NavBarState extends State<NavBar> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white), label: 'Home', backgroundColor: Color.fromARGB(255, 146, 176, 172),),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.white), label: 'Saved', backgroundColor: Color.fromARGB(255, 146, 176, 172),),
-          BottomNavigationBarItem(icon: Icon(Icons.add, color: Colors.white), label: 'Add', backgroundColor: Color.fromARGB(255, 146, 176, 172),),
-          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white), label: 'Profile', backgroundColor: Color.fromARGB(255, 146, 176, 172),),
+          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white), label: 'Home', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.white), label: 'Saved', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
+          BottomNavigationBarItem(icon: Icon(Icons.add, color: Colors.white), label: 'Add', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
+          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white), label: 'Profile', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
         ],
       ),
     );

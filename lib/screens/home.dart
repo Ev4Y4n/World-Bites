@@ -6,7 +6,7 @@ import 'package:flutter_application_1/widget/support_widget.dart';
 class MainScreen extends StatefulWidget {
   final String categoryID;
   const MainScreen({super.key, required this.categoryID});
-  
+
   @override
   State<MainScreen> createState() => _MainScreen();
 }
@@ -16,7 +16,6 @@ class _MainScreen extends State<MainScreen> {
   bool search = false;
   String? selectedSubCategory; // para almacenar la subcategoría seleccionada
 
- 
   var queryResultSet = [];
   var tempSearchStore = [];
 
@@ -275,7 +274,7 @@ class _MainScreen extends State<MainScreen> {
                       prepTime: recipe['prepTime'] ?? 0,
                       servings: recipe['servings'] ?? 0,
                       tags: recipe['tags'] ?? [],
-                      doc: doc, 
+                      doc: doc,
                     ),
                   ),
                 );
@@ -312,7 +311,8 @@ class _MainScreen extends State<MainScreen> {
                             right: 8,
                             child: GestureDetector(
                               onTap: () async {
-                                await doc.reference.update({ // actualizar estado de favorito en Firestore al hacer tap en el ícono de favorito, usando toggle para cambiar entre true y false
+                                await doc.reference.update({
+                                  // actualizar estado de favorito en Firestore al hacer tap en el ícono de favorito, usando toggle para cambiar entre true y false
                                   'favorite':
                                       !(recipe['favorite'] ?? false), // toggle
                                 });
@@ -374,7 +374,7 @@ class _MainScreen extends State<MainScreen> {
                         Container(
                           // El prepTime siempre fijo a la derecha
                           padding: EdgeInsets.symmetric(
-                            horizontal: 6,   
+                            horizontal: 6,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
@@ -505,7 +505,6 @@ class _MainScreen extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(top: 60, left: 20),
@@ -542,16 +541,14 @@ class _MainScreen extends State<MainScreen> {
               Container(
                 padding: EdgeInsets.only(left: 10),
                 margin: EdgeInsets.only(right: 20, bottom: 20),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(150, 146, 176, 172),
-                  borderRadius: BorderRadius.circular(10),
-                ),
                 child: TextField(
                   onChanged: (value) => initiateSearch(value),
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    suffixIcon: Icon(Icons.search_outlined),
-                    hintText: "Buscar Receta...",
+                    hintText: "Buscar receta ...",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                 ),
               ),

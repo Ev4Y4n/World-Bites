@@ -1,0 +1,14 @@
+{
+  "recetas": {
+    "receta1": {
+      "valoraciones": {
+        "user456": {
+          "puntuacion": 5
+        },
+        "user789": {
+          "puntuacion": 4
+        }
+      }
+    }
+  }
+}

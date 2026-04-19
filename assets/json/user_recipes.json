@@ -1,0 +1,30 @@
+{
+  "recetas": {
+    "receta1": {
+      "titulo": "Pasta Carbonara",
+      "descripcion": "Receta italiana clásica",
+      "pais": "Italia",
+      "categoria": "Plato principal",
+      "imagen": "https://foto.com/carbonara.jpg",
+      "autorId": "user123",
+      "fecha": "2026-04-15T10:00:00Z",
+
+      "ingredientes": [
+        "200g pasta",
+        "2 huevos",
+        "queso pecorino",
+        "pimienta negra"
+      ],
+
+      "pasos": [
+        "Hervir la pasta",
+        "Mezclar huevos y queso",
+        "Añadir la pasta",
+        "Servir caliente"
+      ],
+
+      "puntuacionMedia": 4.5,
+      "numValoraciones": 23
+    }
+  }
+}

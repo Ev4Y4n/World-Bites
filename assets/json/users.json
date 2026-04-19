@@ -1,0 +1,12 @@
+{
+  "users": {
+    "user123": {
+      "username": "Maria",
+      "email": "maria@gmail.com",
+      "fotoPerfil": "https://foto.com/img.jpg",
+      "seguidores": ["user456", "user789"],
+      "siguiendo": ["user999"],
+      "recetasGuardadas": ["receta1", "receta2"]
+    }
+  }
+}
