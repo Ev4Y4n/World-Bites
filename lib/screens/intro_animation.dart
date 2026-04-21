@@ -16,7 +16,7 @@ class _IntroAnimation extends State<IntroAnimation>
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
+    _controller = AnimationController( // Controlador de animación para el efecto de fade-in
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
@@ -24,15 +24,15 @@ class _IntroAnimation extends State<IntroAnimation>
     _controller.forward();
 
     _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
+      if (status == AnimationStatus.completed) {// Cuando la animación de fade-in termine, espera un momento y luego navega a la pantalla de registro
         Future.delayed(const Duration(milliseconds: 400), () {
-          Navigator.pushReplacement(
+          Navigator.pushReplacement(// Reemplaza la pantalla actual para que el usuario no pueda volver a ella
             context,
             PageRouteBuilder(
               transitionDuration: const Duration(milliseconds: 600),
               pageBuilder: (_, animation, _) => const Register(),
               transitionsBuilder: (_, animation, _, child) {
-                return FadeTransition(
+                return FadeTransition( // Aplica un efecto de fade-out a la transición
                   opacity: animation,
                   child: child,
                 );

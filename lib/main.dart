@@ -6,6 +6,7 @@ import 'package:flutter_application_1/screens/category.dart';
 import 'package:flutter_application_1/screens/home.dart';
 import 'package:flutter_application_1/screens/intro_animation.dart';
 import 'package:flutter_application_1/screens/countries.dart';
+import 'package:flutter_application_1/screens/transition.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const IntroAnimation(),
+      home: const Transition(),
       //home: const NavBar(),
     );
   }
