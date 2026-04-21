@@ -15,6 +15,7 @@ class LogIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         toolbarHeight: 110,
@@ -51,15 +52,30 @@ class LogIn extends StatelessWidget {
             child: SafeArea(
               top: false,
               child: Image.asset(
-                'assets/images/fondo_titulo.png',
+                'assets/images/fondo_titulo_v2.png',
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
               ),
             ),
           ),
+          Positioned(
+            top: 50,
+            left: 230,
+            right: 0,
+            child: SafeArea(
+              //se usa para evitar que el contenido se superponga con elementos del sistema, como la barra de estado o la barra de navegación en dispositivos móviles.
+              top: false,
+              child: Image.asset(
+                'assets/images/tenedor_1.png',
+                width: 180,
+                height: 180,
+              ),
+            ),
+          ),
 
           Padding(
+            //Se usa para agregar espacio alrededor del widget MyCustomForm, en este caso, se agrega un espacio de 180 píxeles desde la parte superior.
             padding: const EdgeInsets.only(top: 180),
             child: const MyCustomForm(),
           ),
@@ -165,7 +181,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF92B0AC),
+                      color: Color.fromARGB(255, 42, 79, 114),
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -215,7 +231,7 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF92B0AC),
+                    backgroundColor: Color.fromARGB(255, 42, 79, 114),
                     foregroundColor: Colors.white,
                   ),
                   onPressed: isLoading
@@ -236,10 +252,13 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('¿Aún no tienes cuenta?'),
+                    const Text(
+                      '¿Aún no tienes cuenta?',
+                      style: TextStyle(fontSize: 15),
+                    ),
                     TextButton(
                       style: TextButton.styleFrom(
-                        foregroundColor: Color(0xFF92B0AC),
+                        foregroundColor: Color.fromARGB(255, 42, 79, 114),
                         textStyle: GoogleFonts.barlow(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -255,12 +274,17 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [const Text('¿Has olvidado tu contraseña?')],
+                  children: [
+                    const Text(
+                      '¿Has olvidado tu contraseña?',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ],
                 ),
 
                 TextButton(
                   style: TextButton.styleFrom(
-                    foregroundColor: Color(0xFF92B0AC),
+                    foregroundColor: Color.fromARGB(255, 42, 79, 114),
                     textStyle: GoogleFonts.barlow(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

@@ -48,10 +48,24 @@ class Register extends StatelessWidget {
             child: SafeArea(
               top: false,
               child: Image.asset(
-                'assets/images/fondo_titulo.png',
+                'assets/images/fondo_titulo_v2.png',
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 230,
+            child: SafeArea(
+              //se usa para evitar que el contenido se superponga con elementos del sistema, como la barra de estado o la barra de navegación en dispositivos móviles.
+              top: false,
+              child: Image.asset(
+                'assets/images/tenedor_2.png',
+                width: 250,
+                height: 250,
               ),
             ),
           ),
@@ -74,6 +88,8 @@ class MyCustomForm extends StatefulWidget {
 }
 
 class MyCustomFormState extends State<MyCustomForm> {
+  final TextEditingController controllerUserName =
+      TextEditingController(); // Controlador para el campo de nombre de usuario
   final TextEditingController controllerEmail =
       TextEditingController(); // Controlador para el campo de correo electrónico
   final TextEditingController controllerPassword =
@@ -86,6 +102,7 @@ class MyCustomFormState extends State<MyCustomForm> {
     try {
       if (_formKey.currentState!.validate()) {
         await authService.value.createAccount(
+          userName: controllerUserName.text.trim(),
           email: controllerEmail.text.trim(),
           password: controllerPassword.text.trim(),
         );
@@ -140,13 +157,28 @@ class MyCustomFormState extends State<MyCustomForm> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF92B0AC),
+                      color: Color.fromARGB(255, 42, 79, 114),
                     ),
                     textAlign: TextAlign.left,
                   ),
                 ),
-
                 const SizedBox(height: 30),
+
+                TextFormField(
+                  controller: controllerUserName,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.account_box),
+                    labelText: 'Nombre Usuario *',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Este campo no puede estar vacío';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 20),
 
                 TextFormField(
                   controller: controllerEmail,
@@ -190,7 +222,7 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF92B0AC),
+                    backgroundColor: Color.fromARGB(255, 42, 79, 114),
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () {
@@ -206,10 +238,13 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('¿Ya tienes cuenta?'),
+                    const Text(
+                      '¿Ya tienes cuenta?',
+                      style: TextStyle(fontSize: 15),
+                    ),
                     TextButton(
                       style: TextButton.styleFrom(
-                        foregroundColor: Color(0xFF92B0AC),
+                        foregroundColor: Color.fromARGB(255, 42, 79, 114),
                         textStyle: GoogleFonts.barlow(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

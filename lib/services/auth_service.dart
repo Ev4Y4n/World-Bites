@@ -2,15 +2,19 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/database.dart';
 
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
 class AuthService {
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth = FirebaseAuth
+      .instance; // Instancia de FirebaseAuth para manejar la autenticación de usuarios
 
-  User? get currentUser => firebaseAuth.currentUser;
+  User? get currentUser => firebaseAuth
+      .currentUser; // Obtiene el usuario actualmente autenticado, si no hay ninguno, devuelve null
 
-  Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
+  Stream<User?> get authStateChanges => firebaseAuth
+      .authStateChanges(); // Proporciona un stream que emite eventos cada vez que cambia el estado de autenticación del usuario (inicio de sesión, cierre de sesión, etc.)
 
   Future<UserCredential> signIn({
     required String email,
@@ -23,13 +27,29 @@ class AuthService {
   }
 
   Future<UserCredential> createAccount({
+    required String userName,
     required String email,
     required String password,
   }) async {
-    return await firebaseAuth.createUserWithEmailAndPassword(// Crea una nueva cuenta con el correo electrónico y la contraseña proporcionados
+    UserCredential
+    userCredentials = await firebaseAuth.createUserWithEmailAndPassword(
+      // Crea una nueva cuenta con el correo electrónico y la contraseña proporcionados
       email: email,
       password: password,
     );
+
+    String uid = userCredentials.user!.uid; 
+
+    await DatabaseMethods().addUser(uid, {
+      "userName": userName,
+      "email": email,
+      "profilePicture": "",
+      "favouriteRecipes": [],
+      "followers": [],
+      "following": [],
+    });
+
+    return userCredentials;
   }
 
   Future<void> signOut() async {
@@ -40,17 +60,18 @@ class AuthService {
     await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
-  Future<void> updateUsername({
-    required String username,
-  })async{
+  Future<void> updateUsername({required String username}) async {
     await currentUser!.updateDisplayName(username);
   }
 
   Future<void> deleteAccount({
     required String email,
     required String password,
-  })async{
-    AuthCredential credential= EmailAuthProvider.credential(email: email, password: password);
+  }) async {
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email,
+      password: password,
+    );
     await currentUser!.reauthenticateWithCredential(credential);
     await currentUser!.delete();
     await firebaseAuth.signOut();
@@ -60,8 +81,11 @@ class AuthService {
     required String currentPassword,
     required String newPassword,
     required String email,
-  })async{
-    AuthCredential credential = EmailAuthProvider.credential(email: email, password: currentPassword);
+  }) async {
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email,
+      password: currentPassword,
+    );
     await currentUser!.reauthenticateWithCredential(credential);
     await currentUser!.updatePassword(newPassword);
   }
