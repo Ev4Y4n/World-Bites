@@ -2,11 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/layout/nav_bar.dart';
-import 'package:flutter_application_1/screens/category.dart';
-import 'package:flutter_application_1/screens/home.dart';
-import 'package:flutter_application_1/screens/intro_animation.dart';
-import 'package:flutter_application_1/screens/countries.dart';
-import 'package:flutter_application_1/screens/transition.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'World Bites',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 42, 79, 114)), 
         useMaterial3: true,
       ),
       //home: const IntroAnimation(),

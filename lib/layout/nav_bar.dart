@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/add_recipe.dart';
 import 'package:flutter_application_1/screens/countries.dart';
-import 'package:flutter_application_1/screens/home.dart';
 import 'package:flutter_application_1/screens/profile/profile.dart';
 
 class NavBar extends StatefulWidget {
@@ -13,17 +12,14 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
-  static String get categoryID => "";
   
   final List<Widget> _pages = [
     CountriesPage(), //navegar a pantalla de selección del pais
-    MainScreen(categoryID: categoryID), //navega a pantalla de recetas del país seleccionado
     Icon(Icons.favorite, color: Colors.black), //navegar a recetas guardadas
     AddRecipe(), //navegar a pantalla de añadir recetas
     Profile() //navegar a perfil del usuario
   ];
   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +34,6 @@ class _NavBarState extends State<NavBar> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.public, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
           BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
           BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
           BottomNavigationBarItem(icon: Icon(Icons.add, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
