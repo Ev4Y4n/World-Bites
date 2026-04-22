@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 class Transition extends StatefulWidget {
@@ -13,8 +14,19 @@ class _Transition extends State<Transition> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Lottie.network(
-          'https://lottie.host/4ab92b77-ccb6-4c00-ada2-ab7962998a98/mNaph59n5u.lottie',
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Centra el contenido verticalmente
+          children: [
+            Lottie.network(
+              'https://lottie.host/ea0381a6-ed07-41b0-bf92-f7390c4b0257/KNDd2fVkyJ.json',
+            ),
+            const SizedBox(height: 30),
+            Text(
+              'Preparando tu viaje...',
+              style: GoogleFonts.barlow(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 42, 79, 114),)
+
+            ),
+          ],
         ),
       ),
     );

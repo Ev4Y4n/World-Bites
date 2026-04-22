@@ -59,6 +59,8 @@ class LogIn extends StatelessWidget {
               ),
             ),
           ),
+
+          // Imagen tenedor pollo
           Positioned(
             top: 50,
             left: 230,
@@ -247,7 +249,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                       : const Text('INICIAR SESIÓN'),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

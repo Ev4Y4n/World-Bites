@@ -6,48 +6,14 @@
       "name": "Pastas",
       "icon": "https://example.com/icons/pasta.png",
       "recipes": [
-        {
-          "id": "spaghetti_aglio",
-          "name": "Spaghetti Aglio, Olio e Peperoncino",
-          "image": "https://example.com/recipes/carbonara.jpg",
-          "favourite": false
-        },
-        {
-          "id": "penne_rigate",
-          "name": "Penne rigate all’Amatriciana",
-          "image": "https://example.com/recipes/lasagna.jpg",
-          "favourite": false
-        },
-        {
-          "id": "penne_arrabbiata",
-          "name": "Penne Rigate all’Arrabbiata",
-          "image": "https://example.com/recipes/pesto.jpg",
-          "favourite": false
-        },
-        {
-          "id": "spaghetti_carbonara",
-          "name": "Spaghetti alla Carbonara",
-          "image": "https://example.com/recipes/pesto.jpg",
-          "favourite": false
-        },
-        {
-          "id": "spaghetti_puttanesca",
-          "name": "Spaghetti alla Puttanesca",
-          "image": "https://example.com/recipes/pesto.jpg",
-          "favourite": false
-        },
-        {
-          "id": "fusilli_norma",
-          "name": "Fusilli alla Norma",
-          "image": "https://example.com/recipes/pesto.jpg",
-          "favourite": false
-        },
-        {
-          "id": "lasagne_bolognese",
-          "name": "Lasagne al Ragù Bolognese",
-          "image": "https://example.com/recipes/pesto.jpg",
-          "favourite": false
-        }
+        { "id": "carbonara" },
+        { "id": "spaghetti_aglio" },
+        { "id": "penne_rigate" },
+        { "id": "penne_arrabbiata" },
+        { "id": "spaghetti_carbonara" },
+        { "id": "spaghetti_puttanesca" },
+        { "id": "fusilli_norma" },
+        { "id": "lasagne_bolognese" }
       ]
     },
     {
@@ -55,78 +21,18 @@
       "name": "Pizzas",
       "icon": "https://example.com/icons/meat.png",
       "recipes": [
-        {
-          "id": "margherita",
-          "name": "Margherita",
-          "image": "https://example.com/recipes/ossobuco.jpg",
-          "favourite": false
-        },
-        {
-          "id": "marinara",
-          "name": "Marinara",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "diavola",
-          "name": "Diavola",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "capricciosa",
-          "name": "Capricciosa",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "quattro_formaggi",
-          "name": "Quattro Formaggi",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "quattro_stagioni",
-          "name": "Quattro Stagioni",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "prosciutto",
-          "name": "Prosciutto",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "ortolana",
-          "name": "Ortolana",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "frutti_mare",
-          "name": "Frutti di Mare",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "calzone",
-          "name": "Calzone",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "al_pesto",
-          "name": "Al pesto",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        },
-        {
-          "id": "carbonara",
-          "name": "Carbonara",
-          "image": "https://example.com/recipes/cacciatora.jpg",
-          "favourite": false
-        }
+        { "id": "margherita" },
+        { "id": "marinara" },
+        { "id": "diavola" },
+        { "id": "capricciosa" },
+        { "id": "quattro_formaggi" },
+        { "id": "quattro_stagioni" },
+        { "id": "prosciutto" },
+        { "id": "ortolana" },
+        { "id": "frutti_mare" },
+        { "id": "calzone" },
+        { "id": "al_pesto" },
+        { "id": "carbonara" }
       ]
     },
     {
@@ -134,54 +40,14 @@
       "name": "Carnes",
       "icon": "https://example.com/icons/fish.png",
       "recipes": [
-        {
-          "id": "carpaccio",
-          "name": "Carpaccio",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "cocido_piamontesa",
-          "name": "Cocido a la piamontesa",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "ragout",
-          "name": "Ragout",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "pollo_cacciatora",
-          "name": "Pollo alla cacciatora",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "vincisgrassi",
-          "name": "Vincisgrassi",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "vitello_tonnato",
-          "name": "Vitello tonnato",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "conejo_estofado",
-          "name": "Conejo estofado al estilo de Isquia",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        },
-        {
-          "id": "piccata_limone",
-          "name": "Piccata al limone con basilico",
-          "image": "https://example.com/recipes/branzino.jpg",
-          "favourite": false
-        }
+        { "id": "carpaccio" },
+        { "id": "cocido_piamontesa" },
+        { "id": "ragout" },
+        { "id": "pollo_cacciatora" },
+        { "id": "vincisgrassi" },
+        { "id": "vitello_tonnato" },
+        { "id": "conejo_estofado" },
+        { "id": "piccata_limone" }
       ]
     },
     {
@@ -189,48 +55,13 @@
       "name": "Pescados y Mariscos",
       "icon": "https://example.com/icons/starters.png",
       "recipes": [
-        {
-          "id": "sopa_mejillones",
-          "name": "Sopa de mejillones y almejas",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "risotto_mar",
-          "name": "Risotto con frutos del mar",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "espaguetis_almejas",
-          "name": "Espaguetis con almejas",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "calamares_rellenos",
-          "name": "Calamares rellenos a la plancha",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "lingüinis_mariscos",
-          "name": "Lingüinis con mariscos",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "emperador_siciliana",
-          "name": "Emperador en salsa a la siciliana",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "sardina_frita",
-          "name": "Sardina frita con cebolla",
-          "image": "https://example.com/recipes/bruschetta.jpg",
-          "favourite": false
-        }
+        { "id": "sopa_mejillones" },
+        { "id": "risotto_mar" },
+        { "id": "espaguetis_almejas" },
+        { "id": "calamares_rellenos" },
+        { "id": "linguinis_mariscos" },
+        { "id": "emperador_siciliana" },
+        { "id": "sardina_frita" }
       ]
     },
     {
@@ -238,54 +69,14 @@
       "name": "Entrantes",
       "icon": "https://example.com/icons/salad.png",
       "recipes": [
-        {
-          "id": "provolone",
-          "name": "Provolone",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "carpaccio",
-          "name": "Carpaccio",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "tabla_embutidos",
-          "name": "Tabla de embutidos italianos",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "caponata_siciliana",
-          "name": "Caponata siciliana",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "focaccina_pancetta",
-          "name": "Focaccina con pancetta arrotolata",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "alcachofas_asadas",
-          "name": "Alcachofas asadas",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "olive_escolana",
-          "name": "Olive all´escolana",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "arancine_sicilianas",
-          "name": "Arancine sicilianas",
-          "image": "https://example.com/recipes/caprese.jpg",
-          "favourite": false
-        }
+        { "id": "provolone" },
+        { "id": "carpaccio" },
+        { "id": "tabla_embutidos" },
+        { "id": "caponata_siciliana" },
+        { "id": "focaccina_pancetta" },
+        { "id": "alcachofas_asadas" },
+        { "id": "olive_escolana" },
+        { "id": "arancine_sicilianas" }
       ]
     },
     {
@@ -293,60 +84,15 @@
       "name": "Sopas y Cremas",
       "icon": "https://example.com/icons/dessert.png",
       "recipes": [
-        {
-          "id": "sopa_minestrone",
-          "name": "Sopa minestrone",
-          "image": "https://example.com/recipes/tiramisu.jpg",
-          "favourite": false
-        },
-        {
-          "id": "crema_calabaza",
-          "name": "Crema de calabaza y queso gorgonzola",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "crema_garbanzos",
-          "name": "Crema de garbanzos y camarones",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "sopa_cicerchie",
-          "name": "Sopa cicerchie",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "menestra_maritata",
-          "name": "Menestra maritata al estilo napolitano",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "sopa_campesina",
-          "name": "Sopa campesina",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "sopa_cebolla",
-          "name": "Sopa de cebolla y pan duro",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "sopa_tomate",
-          "name": "Sopa de tomate",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        },
-        {
-          "id": "sopa_lentejas",
-          "name": "Sopas de lentejas",
-          "image": "https://example.com/recipes/pannacotta.jpg",
-          "favourite": false
-        }
+        { "id": "sopa_minestrone" },
+        { "id": "crema_calabaza" },
+        { "id": "crema_garbanzos" },
+        { "id": "sopa_cicerchie" },
+        { "id": "menestra_maritata" },
+        { "id": "sopa_campesina" },
+        { "id": "sopa_cebolla" },
+        { "id": "sopa_tomate" },
+        { "id": "sopa_lentejas" }
       ]
     },
     {
@@ -354,66 +100,16 @@
       "name": "Salsas",
       "icon": "https://example.com/icons/soup.png",
       "recipes": [
-        {
-          "id": "salsa_amatriciana",
-          "name": "Salsa amatriciana",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_puttanesca",
-          "name": "Salsa puttanesca",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_pesto",
-          "name": "Salsa pesto genovés",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_bolognesa",
-          "name": "Salsa bolognesa",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_marinara",
-          "name": "Salsa marinara",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_arrabbiata",
-          "name": "Salsa arrabbiata",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_funghi",
-          "name": "Salsa funghi",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_aglio_olio",
-          "name": "Salsa aglio e olio",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_cacio_pepe",
-          "name": "Salsa cacio e pepe",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        },
-        {
-          "id": "salsa_alfredo",
-          "name": "Salsa alfredo",
-          "image": "https://example.com/recipes/minestrone.jpg",
-          "favourite": false
-        }
+        { "id": "salsa_amatriciana" },
+        { "id": "salsa_puttanesca" },
+        { "id": "salsa_pesto" },
+        { "id": "salsa_bolognesa" },
+        { "id": "salsa_marinara" },
+        { "id": "salsa_arrabbiata" },
+        { "id": "salsa_funghi" },
+        { "id": "salsa_aglio_olio" },
+        { "id": "salsa_cacio_pepe" },
+        { "id": "salsa_alfredo" }
       ]
     },
     {
@@ -421,54 +117,14 @@
       "name": "Postres",
       "icon": "https://example.com/icons/sauce.png",
       "recipes": [
-        {
-          "id": "tiramisu",
-          "name": "Tiramisú",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "castagnole",
-          "name": "Castagnole",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "bussola_buranetti",
-          "name": "Bussola buranetti",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "casatiello_napolitano",
-          "name": "Casatiello napolitano",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "biscotti",
-          "name": "Biscotti",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "torta_caprese",
-          "name": "Torta caprese",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "torta_tenerina",
-          "name": "Torta tenerina",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        },
-        {
-          "id": "panna_cotta",
-          "name": "Panna cotta",
-          "image": "https://example.com/recipes/bolognese.jpg",
-          "favourite": false
-        }
+        { "id": "tiramisu" },
+        { "id": "castagnole" },
+        { "id": "bussola_buranetti" },
+        { "id": "casatiello_napolitano" },
+        { "id": "biscotti" },
+        { "id": "torta_caprese" },
+        { "id": "torta_tenerina" },
+        { "id": "panna_cotta" }
       ]
     },
     {
@@ -476,73 +132,15 @@
       "name": "Bebidas y Cócteles",
       "icon": "https://example.com/icons/drink.png",
       "recipes": [
-        {
-          "id": "cocktail_garibaldi",
-          "name": "Cocktail Garibaldi",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "espresso_martini",
-          "name": "Cocktail Espresso Martini",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "aperol_spritz",
-          "name": "Aperol Spritz",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "negroni",
-          "name": "Negroni",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "americano",
-          "name": "Americano",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "bellini_sin_alcohol",
-          "name": "Bellini sin alcohol",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "aperol_spritz",
-          "name": "Mocktail Aperol Spritz",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "lemon_ginger",
-          "name": "Lemon ginger mocktail",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        },
-        {
-          "id": "mocktail_negroni",
-          "name": "Mocktail Negroni",
-          "image": "https://example.com/recipes/limoncello.jpg",
-          "favourite": false
-        }
-      ]
-    },
-    {
-      "id": "specials",
-      "name": "Recetas Especiales",
-      "icon": "https://example.com/icons/special.png",
-      "recipes": [
-        {
-          "id": "risotto_oro",
-          "name": "Risotto al Azafrán y Oro",
-          "image": "https://example.com/recipes/risotto.jpg",
-          "favourite": false
-        }
+        { "id": "cocktail_garibaldi" },
+        { "id": "espresso_martini" },
+        { "id": "aperol_spritz" },
+        { "id": "negroni" },
+        { "id": "americano" },
+        { "id": "bellini_sin_alcohol" },
+        { "id": "mocktail_aperol_spritz" },
+        { "id": "lemon_ginger" },
+        { "id": "mocktail_negroni" }
       ]
     }
   ]

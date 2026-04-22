@@ -1,38 +1,40 @@
 {
   "id": "carbonara",
-  "name": "Pasta Carbonara",
   "categoryId": "pastas",
-  "countryId": "italy",
-  "image": "carbonara_big",
-
+  "difficulty": "medium",
+  "favourte": false,
+  "image": "meter link de la imagen desde el storage",
+  "ingredients": [
+    {
+      "image": "spaghetti",
+      "name": "Espaguetis",
+      "quantity": "200 g",
+      "tag": "main"
+    },
+    {
+      "image": "egg",
+      "name": "Huevo",
+      "quantity": "2 uds.",
+      "tag": "secondary"
+    }
+  ],
+  "name": "Pasta Carbonara",
   "kcal": 650,
   "prepTimeMinutes": 25,
-  "difficulty": "medium",
-
+  "steps": [
+    {
+      "tag": "main",
+      "steps": [
+        "Cocer la pasta en agua con sal",
+        "Mezclar huevos y queso",
+        "Añadir la pasta caliente"
+      ]
+    }
+  ],
   "tags": [
     "meat",
     "gluten",
     "egg",
     "dairy"
-  ],
-
-  "ingredients": [
-    {
-      "name": "Espaguetis",
-      "quantity": "200 g",
-      "image": "spaghetti"
-    },
-    {
-      "name": "Huevo",
-      "quantity": "2",
-      "image": "egg"
-    }
-  ],
-
-  "steps": [
-    "Cocer la pasta en agua con sal",
-    "Mezclar huevos y queso",
-    "Añadir la pasta caliente"
   ]
 }
-
