@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/add_recipe.dart';
 import 'package:flutter_application_1/screens/countries.dart';
 import 'package:flutter_application_1/screens/profile/profile.dart';
+import 'package:flutter_application_1/screens/home.dart';
+import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -12,32 +15,47 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
-  
-  final List<Widget> _pages = [
-    CountriesPage(), //navegar a pantalla de selección del pais
-    Icon(Icons.favorite, color: Colors.black), //navegar a recetas guardadas
-    AddRecipe(), //navegar a pantalla de añadir recetas
-    Profile() //navegar a perfil del usuario
-  ];
-  
+
+  /// Construye la pantalla correcta SIN reconstruir todo el árbol entero.
+  Widget _buildPage(int index, String? selectedCountry) {
+    if (index == 0) {
+      if (selectedCountry == null || selectedCountry.isEmpty) {
+        return const CountriesPage();
+      } else {
+        return MainScreen(categoryID: selectedCountry);
+      }
+    }
+
+    if (index == 1) return const Icon(Icons.favorite);
+    if (index == 2) return AddRecipe();
+    if (index == 3) return Profile();
+
+    return const SizedBox();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final selectedCountry = context.watch<AppState>().selectedCountryID;
+
     return Scaffold(
-      body: Center(
-        child: _pages[_currentIndex]
-        ),
+      body: _buildPage(_currentIndex, selectedCountry),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (int newIndex) {
+        onTap: (index) {
           setState(() {
-            _currentIndex = newIndex;
+            _currentIndex = index;
           });
         },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.add, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        backgroundColor: const Color.fromARGB(255, 42, 79, 114),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.public), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
       ),
     );
