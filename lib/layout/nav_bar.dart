@@ -1,3 +1,4 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/add_recipe.dart';
@@ -39,23 +40,22 @@ class _NavBarState extends State<NavBar> {
 
     return Scaffold(
       body: _buildPage(_currentIndex, selectedCountry),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+      backgroundColor: Colors.white,
+      bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        backgroundColor: const Color.fromARGB(255, 42, 79, 114),
+        backgroundColor: Colors.white,
+        color: const Color.fromARGB(255, 42, 79, 114),
+        animationDuration: const Duration(milliseconds: 400),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.public), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+          Icon(Icons.public, color: Colors.white),
+          Icon(Icons.favorite, color: Colors.white),
+          Icon(Icons.add, color: Colors.white),
+          Icon(Icons.person, color: Colors.white),
         ],
       ),
     );

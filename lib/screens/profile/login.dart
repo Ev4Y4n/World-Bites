@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/layout/nav_bar.dart';
 import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
+import 'package:flutter_application_1/screens/transition.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -128,6 +129,13 @@ class MyCustomFormState extends State<MyCustomForm> {
     ).push(MaterialPageRoute(builder: (context) => const ResetPassword()));
   }
 
+  void loadTransition() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Transition()),
+    );
+  }
+
   Future<void> loginUser() async {
     setState(() {
       isLoading = true;
@@ -142,7 +150,7 @@ class MyCustomFormState extends State<MyCustomForm> {
 
       if (!mounted) return;
 
-      enterApp();
+      loadTransition();
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message ?? "Error al iniciar sesión";
