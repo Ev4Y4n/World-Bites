@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_application_1/providers/app_state.dart';
+import 'package:flutter_application_1/screens/comming_soon.dart';
 import 'package:provider/provider.dart';
 
 class CountriesPage extends StatefulWidget {
@@ -77,6 +78,12 @@ class _CountriesPageState extends State<CountriesPage> {
     });
   }
 
+  void commingSoon() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => const CommingSoon()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: _buildCountriesList());
@@ -88,13 +95,38 @@ class _CountriesPageState extends State<CountriesPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Text(
-              "¿A qué país quieres",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(136, 97, 87, 87),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        commingSoon();
+                      },
+                      icon: Icon(
+                        Icons.mark_chat_unread_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Text(
-              "viajar hoy?",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "¿A qué país quieres\nviajar hoy?",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
 
             const SizedBox(height: 20),

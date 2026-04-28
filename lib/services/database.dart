@@ -37,11 +37,9 @@ class DatabaseMethods {
     );
   }
 
-  //Actualiza la foto de perfil de un usuario específico en la colección "Users" en Firebase
-  Future updateUserProfilePicture(String uid, String newProfilePicture) async {
-    return await FirebaseFirestore.instance.collection("Users").doc(uid).update(
-      {"profilePicture": newProfilePicture},
-    );
+  //Agrega la URL de la foto de perfil a la colección "Users" en Firebase para un usuario específico
+  Future addProfilePicture(String uid, String downloadurl) async {
+    return await FirebaseFirestore.instance.collection("Users").doc(uid).update({"Image": downloadurl});
   }
 
   //Obtiene un stream de datos en tiempo real de las recetas filtradas por categoría
@@ -60,4 +58,5 @@ class DatabaseMethods {
         .where("Key", isEqualTo: name.substring(0, 1).toUpperCase())
         .get();
   }
+   
 }

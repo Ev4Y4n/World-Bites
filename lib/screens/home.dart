@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/comming_soon.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 import 'package:provider/provider.dart';
@@ -48,8 +49,7 @@ class _MainScreen extends State<MainScreen> {
       search = true;
     });
 
-    var capitalizedValue =
-        value[0].toUpperCase() + value.substring(1);
+    var capitalizedValue = value[0].toUpperCase() + value.substring(1);
 
     if (queryResultSet.isEmpty && value.length == 1) {
       FirebaseFirestore.instance.collection("categories_italy").get().then((
@@ -68,7 +68,8 @@ class _MainScreen extends State<MainScreen> {
                   'name': recipeData['name'] ?? recipeName,
                   'difficulty': recipeData['difficulty'] ?? 'Desconocida',
                   'favorite': recipeData['favorite'] ?? false,
-                  'image': recipeData['image'] ?? 'https://via.placeholder.com/150',
+                  'image':
+                      recipeData['image'] ?? 'https://via.placeholder.com/150',
                   'ingredients': recipeData['ingredients'] ?? [],
                   'kcal': recipeData['kcal'] ?? 0,
                   'steps': recipeData['steps'] ?? [],
@@ -98,6 +99,12 @@ class _MainScreen extends State<MainScreen> {
     }
 
     setState(() {});
+  }
+
+  void commingSoon() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => const CommingSoon()));
   }
 
   Widget categoryList() {
@@ -220,7 +227,8 @@ class _MainScreen extends State<MainScreen> {
                       foodname: recipe['name'] ?? '',
                       difficulty: recipe['difficulty'] ?? 'Desconocida',
                       isFavorite: recipe['favorite'] ?? false,
-                      image: recipe['image'] ?? 'https://via.placeholder.com/150',
+                      image:
+                          recipe['image'] ?? 'https://via.placeholder.com/150',
                       ingredients: recipe['ingredients'] ?? [],
                       steps: recipe['steps'],
                       kcal: recipe['kcal'] ?? 0,
@@ -253,7 +261,8 @@ class _MainScreen extends State<MainScreen> {
                       child: Stack(
                         children: [
                           Image.network(
-                            recipe['image'] ?? 'https://via.placeholder.com/150',
+                            recipe['image'] ??
+                                'https://via.placeholder.com/150',
                             height: 110,
                             width: double.infinity,
                             fit: BoxFit.cover,
@@ -447,20 +456,42 @@ class _MainScreen extends State<MainScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Align(
                 alignment: Alignment.centerLeft,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(136, 97, 87, 87),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      context.read<AppState>().selectCountry(null);
-                    },
-                  ),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(136, 97, 87, 87),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          context.read<AppState>().selectCountry(null);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 260),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(136, 97, 87, 87),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            commingSoon();
+                          },
+                          icon: Icon(
+                            Icons.mark_chat_unread_outlined,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -479,15 +510,6 @@ class _MainScreen extends State<MainScreen> {
                       ),
                     ),
                     Spacer(),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.asset(
-                        "assets/images/receta1.jpg",
-                        height: 60,
-                        width: 60,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
                   ],
                 ),
               ),

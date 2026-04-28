@@ -38,7 +38,7 @@ class _AddRecipeState extends State<AddRecipe> {
     }
   }
 
-  Future<void> uploadItem() async {
+  Future<void> uploadItem() async { //FUNCIÓN PARA SUBIR LA RECETA A LA BASE DE DATOS, PRIMERO SUBE LA IMAGEN A FIREBASE STORAGE Y OBTIENE SU URL PARA GUARDARLA EN LA BASE DE DATOS
     if (selectedImage != null &&
         namecontroller.text != "" &&
         detailcontroller.text != "") {
