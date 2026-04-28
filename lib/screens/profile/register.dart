@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/layout/nav_bar.dart';
 import 'package:flutter_application_1/screens/profile/login.dart';
+import 'package:flutter_application_1/screens/transition.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -108,7 +109,7 @@ class MyCustomFormState extends State<MyCustomForm> {
           password: controllerPassword.text.trim(),
         );
         print('Usuario registrado');
-        enterApp(); //SOLO si todo salió bien
+        loadTransition(); //SOLO si todo salió bien
       } else {
         setState(() {
           errorMessage = 'Formulario inválido';
@@ -131,6 +132,13 @@ class MyCustomFormState extends State<MyCustomForm> {
     Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (context) => const NavBar()));
+  }
+
+  void loadTransition() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Transition()),
+    );
   }
 
   @override

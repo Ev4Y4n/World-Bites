@@ -1,8 +1,11 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/add_recipe.dart';
 import 'package:flutter_application_1/screens/countries.dart';
-import 'package:flutter_application_1/screens/home.dart';
 import 'package:flutter_application_1/screens/profile/profile.dart';
+import 'package:flutter_application_1/screens/home.dart';
+import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -13,36 +16,46 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
-  static String get categoryID => "";
-  
-  final List<Widget> _pages = [
-    CountriesPage(), //navegar a pantalla de selección del pais
-    MainScreen(categoryID: categoryID), //navega a pantalla de recetas del país seleccionado
-    Icon(Icons.favorite, color: Colors.black), //navegar a recetas guardadas
-    AddRecipe(), //navegar a pantalla de añadir recetas
-    Profile() //navegar a perfil del usuario
-  ];
-  
+
+  /// Construye la pantalla correcta SIN reconstruir todo el árbol entero.
+  Widget _buildPage(int index, String? selectedCountry) {
+    if (index == 0) {
+      if (selectedCountry == null || selectedCountry.isEmpty) {
+        return const CountriesPage();
+      } else {
+        return MainScreen(categoryID: selectedCountry);
+      }
+    }
+
+    if (index == 1) return const Icon(Icons.favorite);
+    if (index == 2) return AddRecipe();
+    if (index == 3) return Profile();
+
+    return const SizedBox();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final selectedCountry = context.watch<AppState>().selectedCountryID;
+
     return Scaffold(
-      body: Center(
-        child: _pages[_currentIndex]
-        ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (int newIndex) {
+      body: _buildPage(_currentIndex, selectedCountry),
+      backgroundColor: Colors.white,
+      bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
+        onTap: (index) {
           setState(() {
-            _currentIndex = newIndex;
+            _currentIndex = index;
           });
         },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.public, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.add, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
-          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white), label: '', backgroundColor: Color.fromARGB(255, 42, 79, 114),),
+        backgroundColor: Colors.white,
+        color: const Color.fromARGB(255, 42, 79, 114),
+        animationDuration: const Duration(milliseconds: 400),
+        items: const [
+          Icon(Icons.public, color: Colors.white),
+          Icon(Icons.favorite, color: Colors.white),
+          Icon(Icons.add, color: Colors.white),
+          Icon(Icons.person, color: Colors.white),
         ],
       ),
     );

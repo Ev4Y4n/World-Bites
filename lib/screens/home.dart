@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_application_1/providers/app_state.dart';
 
 class MainScreen extends StatefulWidget {
   final String categoryID;
@@ -14,7 +16,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreen extends State<MainScreen> {
   Stream? recipeStream;
   bool search = false;
-  String? selectedSubCategory; // para almacenar la subcategoría seleccionada
+  String? selectedSubCategory;
 
   var queryResultSet = [];
   var tempSearchStore = [];
@@ -26,7 +28,6 @@ class _MainScreen extends State<MainScreen> {
   }
 
   Future<void> getOnTheLoad() async {
-    // cargar recetas al inicio
     recipeStream = FirebaseFirestore.instance
         .collection("categories_italy")
         .snapshots();
@@ -34,7 +35,6 @@ class _MainScreen extends State<MainScreen> {
   }
 
   void initiateSearch(String value) {
-    // función de búsqueda
     if (value.isEmpty) {
       setState(() {
         search = false;
@@ -45,16 +45,13 @@ class _MainScreen extends State<MainScreen> {
     }
 
     setState(() {
-      // activar modo búsqueda
       search = true;
     });
 
     var capitalizedValue =
-        value[0].toUpperCase() +
-        value.substring(1); // capitalizar primera letra
+        value[0].toUpperCase() + value.substring(1);
 
     if (queryResultSet.isEmpty && value.length == 1) {
-      // cargar datos solo la primera vez que se ingresa un carácter
       FirebaseFirestore.instance.collection("categories_italy").get().then((
         QuerySnapshot docs,
       ) {
@@ -64,65 +61,37 @@ class _MainScreen extends State<MainScreen> {
           data.forEach((subCatName, subCatData) {
             if (subCatData is Map<String, dynamic> &&
                 subCatData.containsKey('recipes')) {
-              // verificar que existe la clave 'recipes' y que es un mapa
               var recipesMap = subCatData['recipes'] as Map<String, dynamic>;
 
               recipesMap.forEach((recipeName, recipeData) {
-                // iterar sobre cada receta y agregarla a queryResultSet
                 queryResultSet.add({
-                  'name':
-                      recipeData['name'] ??
-                      recipeName, // usar el nombre de la receta o el nombre del mapa si no existe
-                  'difficulty':
-                      recipeData['difficulty'] ??
-                      'Desconocida', // usar valor predeterminado si no existe dificultad
-                  'favorite':
-                      recipeData['favorite'] ??
-                      false, // usar false si no existe información de favorito
-                  'image':
-                      recipeData['image'] ??
-                      'https://via.placeholder.com/150', // placeholder si no existe imagen
-                  'ingredients':
-                      recipeData['ingredients'] ??
-                      [], // usar lista vacía si no existen ingredientes
-                  'kcal':
-                      recipeData['kcal'] ??
-                      0, // usar 0 si no existe información de calorías
-                  'steps':
-                      recipeData['steps'] ??
-                      [], // usar lista vacía si no existen pasos
-                  'prepTime':
-                      recipeData['prepTime'] ??
-                      0, // usar 0 si no existe información de tiempo de preparación
-                  'servings':
-                      recipeData['servings'] ??
-                      0, // usar 0 si no existe información de porciones
-                  'tags':
-                      recipeData['tags'] ??
-                      [], // usar lista vacía si no existen etiquetas
+                  'name': recipeData['name'] ?? recipeName,
+                  'difficulty': recipeData['difficulty'] ?? 'Desconocida',
+                  'favorite': recipeData['favorite'] ?? false,
+                  'image': recipeData['image'] ?? 'https://via.placeholder.com/150',
+                  'ingredients': recipeData['ingredients'] ?? [],
+                  'kcal': recipeData['kcal'] ?? 0,
+                  'steps': recipeData['steps'] ?? [],
+                  'prepTime': recipeData['prepTime'] ?? 0,
+                  'servings': recipeData['servings'] ?? 0,
+                  'tags': recipeData['tags'] ?? [],
                 });
               });
             }
           });
         }
 
-        filterSearch(
-          capitalizedValue,
-        ); // filtrar resultados después de cargar todos los datos
+        filterSearch(capitalizedValue);
       });
     } else {
-      filterSearch(
-        capitalizedValue,
-      ); // filtrar resultados en cada cambio de texto después de la primera carga
+      filterSearch(capitalizedValue);
     }
   }
 
   void filterSearch(String capitalizedValue) {
-    // filtrar resultados de búsqueda
     tempSearchStore = [];
 
     for (var element in queryResultSet) {
-      // agregar a tempSearchStore solo los elementos que coincidan con el texto ingresado
       if ((element["name"] as String).startsWith(capitalizedValue)) {
         tempSearchStore.add(element);
       }
@@ -132,14 +101,11 @@ class _MainScreen extends State<MainScreen> {
   }
 
   Widget categoryList() {
-    // lista de categorías horizontales
     return StreamBuilder(
-      // escuchar cambios en la colección de categorías para actualizar la lista automáticamente
       stream: FirebaseFirestore.instance
           .collection("categories_italy")
           .snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
-        // manejar estados de carga y datos vacíos
         if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
           return SizedBox(
             height: 180,
@@ -149,33 +115,27 @@ class _MainScreen extends State<MainScreen> {
 
         var docs = snapshot.data.docs;
 
-        // seleccionar primera categoría automáticamente
         if (selectedSubCategory == null && docs.isNotEmpty) {
           selectedSubCategory = docs[0].id;
         }
 
         return SizedBox(
-          // mostrar lista horizontal de categorías con imagen e indicador de selección
           height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: docs.length, // número de categorías disponibles
+            itemCount: docs.length,
             itemBuilder: (context, index) {
               var ds = docs[index];
 
               String name = ds['name'];
               String icon = ds['icon'];
 
-              bool isSelected =
-                  selectedSubCategory ==
-                  ds.id; // verificar si la categoría actual es la seleccionada para mostrar el indicador visual
+              bool isSelected = selectedSubCategory == ds.id;
 
               return GestureDetector(
-                // manejar selección de categoría al hacer tap en la categoría correspondiente
                 onTap: () {
                   setState(() {
-                    selectedSubCategory = ds
-                        .id; // actualizar categoría seleccionada para mostrar recetas correspondientes a esa categoría
+                    selectedSubCategory = ds.id;
                   });
                 },
                 child: Container(
@@ -240,20 +200,15 @@ class _MainScreen extends State<MainScreen> {
           physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.only(right: 20),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 columnas
+            crossAxisCount: 2,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.75, // ajusta tamaño de cada card
+            childAspectRatio: 0.75,
           ),
           itemCount: recipesDocs.length,
           itemBuilder: (context, index) {
             var doc = recipesDocs[index];
-            var recipe =
-                doc.data()
-                    as Map<
-                      String,
-                      dynamic
-                    >; // obtener datos de cada receta para mostrar en la tarjeta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
+            var recipe = doc.data() as Map<String, dynamic>;
 
             var prepTime = recipe['prepTime'];
             return GestureDetector(
@@ -262,12 +217,10 @@ class _MainScreen extends State<MainScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => Recipe(
-                      // manejar navegación a la pantalla de detalles de la receta al hacer tap en una receta específica, pasando los datos de la receta seleccionada a la pantalla de detalles para mostrar la información correspondiente a esa receta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
                       foodname: recipe['name'] ?? '',
                       difficulty: recipe['difficulty'] ?? 'Desconocida',
                       isFavorite: recipe['favorite'] ?? false,
-                      image:
-                          recipe['image'] ?? 'https://via.placeholder.com/150',
+                      image: recipe['image'] ?? 'https://via.placeholder.com/150',
                       ingredients: recipe['ingredients'] ?? [],
                       steps: recipe['steps'],
                       kcal: recipe['kcal'] ?? 0,
@@ -300,8 +253,7 @@ class _MainScreen extends State<MainScreen> {
                       child: Stack(
                         children: [
                           Image.network(
-                            recipe['image'] ??
-                                'https://via.placeholder.com/150',
+                            recipe['image'] ?? 'https://via.placeholder.com/150',
                             height: 110,
                             width: double.infinity,
                             fit: BoxFit.cover,
@@ -312,9 +264,7 @@ class _MainScreen extends State<MainScreen> {
                             child: GestureDetector(
                               onTap: () async {
                                 await doc.reference.update({
-                                  // actualizar estado de favorito en Firestore al hacer tap en el ícono de favorito, usando toggle para cambiar entre true y false
-                                  'favorite':
-                                      !(recipe['favorite'] ?? false), // toggle
+                                  'favorite': !(recipe['favorite'] ?? false),
                                 });
 
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -326,22 +276,16 @@ class _MainScreen extends State<MainScreen> {
                                 );
                               },
                               child: Container(
-                                width: 24, // tamaño del fondo
+                                width: 24,
                                 height: 24,
                                 decoration: BoxDecoration(
-                                  color: Color.fromARGB(
-                                    137,
-                                    255,
-                                    255,
-                                    255,
-                                  ), // fondo del círculo
-
+                                  color: Color.fromARGB(137, 255, 255, 255),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
                                   child: Icon(
                                     Icons.favorite,
-                                    size: 16, // tamaño del ícono
+                                    size: 16,
                                     color: (recipe['favorite'] == true)
                                         ? Color.fromARGB(255, 178, 0, 0)
                                         : Colors.grey,
@@ -357,7 +301,6 @@ class _MainScreen extends State<MainScreen> {
                     Row(
                       children: [
                         Expanded(
-                          // El nombre ocupa todo el espacio disponible a la izquierda
                           child: Container(
                             margin: EdgeInsets.symmetric(horizontal: 5),
                             child: Text(
@@ -372,7 +315,6 @@ class _MainScreen extends State<MainScreen> {
                           ),
                         ),
                         Container(
-                          // El prepTime siempre fijo a la derecha
                           padding: EdgeInsets.symmetric(
                             horizontal: 6,
                             vertical: 2,
@@ -382,8 +324,7 @@ class _MainScreen extends State<MainScreen> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
-                            mainAxisSize:
-                                MainAxisSize.min, // se ajusta al contenido
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.schedule,
@@ -409,8 +350,8 @@ class _MainScreen extends State<MainScreen> {
                       margin: EdgeInsets.symmetric(horizontal: 5),
                       width: 100,
                       child: Wrap(
-                        spacing: 4, // espacio horizontal entre tags
-                        runSpacing: 4, // espacio vertical
+                        spacing: 4,
+                        runSpacing: 4,
                         children: (recipe['tags'] as List<dynamic>).map((tag) {
                           return Container(
                             padding: EdgeInsets.symmetric(
@@ -444,14 +385,12 @@ class _MainScreen extends State<MainScreen> {
   }
 
   Widget buildResultCard(data) {
-    // mostrar cada resultado de búsqueda en una tarjeta con imagen y nombre de la receta, y manejar navegación a la pantalla de detalles de la receta al hacer tap en un resultado específico
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => Recipe(
-              // manejar navegación a la pantalla de detalles de la receta al hacer tap en un resultado específico, pasando los datos de la receta seleccionada a la pantalla de detalles para mostrar la información correspondiente a esa receta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
               foodname: data['name'],
               image: data['image'],
               ingredients: data['ingredients'],
@@ -468,7 +407,6 @@ class _MainScreen extends State<MainScreen> {
         );
       },
       child: Container(
-        // mostrar cada resultado de búsqueda en una tarjeta con imagen y nombre de la receta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
         margin: EdgeInsets.symmetric(vertical: 8),
         child: Material(
           elevation: 5,
@@ -480,10 +418,8 @@ class _MainScreen extends State<MainScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
-              // mostrar cada resultado de búsqueda en una fila con imagen y nombre de la receta, usando valores predeterminados para evitar errores si no existen datos específicos en la receta
               children: [
                 ClipRRect(
-                  // mostrar la imagen de la receta en un círculo con un borde redondeado, usando un placeholder si no existe una imagen específica para evitar errores
                   borderRadius: BorderRadius.circular(60),
                   child: Image.network(
                     data['image'] ?? 'https://via.placeholder.com/70',
@@ -511,6 +447,25 @@ class _MainScreen extends State<MainScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(136, 97, 87, 87),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () {
+                      context.read<AppState>().selectCountry(null);
+                    },
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
               Padding(
                 padding: const EdgeInsets.only(right: 20),
                 child: Row(
@@ -536,6 +491,7 @@ class _MainScreen extends State<MainScreen> {
                   ],
                 ),
               ),
+
               SizedBox(height: 20),
 
               Container(
@@ -568,7 +524,12 @@ class _MainScreen extends State<MainScreen> {
 
               SizedBox(height: 20),
 
-              search ? Container() : allRecipe(),
+              search
+                  ? Container()
+                  : SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: allRecipe(),
+                    ),
             ],
           ),
         ),

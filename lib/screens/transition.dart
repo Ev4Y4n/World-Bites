@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/layout/nav_bar.dart';
+import 'package:flutter_application_1/screens/profile/register.dart';
+import 'package:flutter_application_1/screens/profile/reset_password.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
@@ -10,6 +13,35 @@ class Transition extends StatefulWidget {
 }
 
 class _Transition extends State<Transition> {
+
+    @override
+    void initState() {
+      super.initState();
+      Future.delayed(const Duration(seconds: 5), () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const NavBar()),
+        );
+      });
+    }
+  
+    void enterApp() {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (context) => const NavBar()));
+    }
+  
+    void registerScreen() {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (context) => const Register()));
+    }
+  
+    void resetPassword() {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (context) => const ResetPassword()));
+    }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
