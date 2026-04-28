@@ -1,0 +1,176 @@
+{
+  "country": "México",
+  "categories": [
+    {
+      "id": "tacos",
+      "name": "Tacos",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacos_mexico.jpg?alt=media&token=7dafe8b4-1b41-4966-b93a-f8f3413582c9",
+      "recipes": [
+        {
+          "id": "tacos_al_pastor"
+        },
+        {
+          "id": "tacos_birria"
+        },
+        {
+          "id": "tacos_carnitas"
+        },
+        {
+          "id": "tacos_gambas"
+        }
+      ]
+    },
+    {
+      "id": "soups",
+      "name": "Sopas",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopa_mexico.jpg?alt=media&token=5eb0d80d-039d-4348-abac-fd5187df35e4",
+      "recipes": [
+        {
+          "id": "caldo_de_res"
+        },
+        {
+          "id": "pozole"
+        },
+        {
+          "id": "sopa_de_fideos"
+        },
+        {
+          "id": "sopa_de_tortilla"
+        }
+      ]
+    },
+    {
+      "id": "meat",
+      "name": "Carnes",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcarne_mexico.jpg?alt=media&token=f3bed3f4-ef65-454d-86b1-98bb0279ef44",
+      "recipes": [
+        {
+          "id": "carne_asada"
+        },
+        {
+          "id": "barbacoa_de_res"
+        },
+        {
+          "id": "cochinita_pibil"
+        },
+        {
+          "id": "pollo_con_mole"
+        }
+      ]
+    },
+    {
+      "id": "fish",
+      "name": "Pescados y Mariscos",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fpescado_mexico.jpg?alt=media&token=a0e7c9a7-8c57-4cef-a249-4ac6392bc83e",
+      "recipes": [
+        {
+          "id": "aguachile"
+        },
+        {
+          "id": "camarones_al_mojo_de_ajo"
+        },
+        {
+          "id": "ceviche"
+        },
+        {
+          "id": "pescado_zarandeado"
+        }
+      ]
+    },
+    {
+      "id": "starters",
+      "name": "Entrantes",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fentrantes_mexico.jpg?alt=media&token=70a5f72b-a26a-4a29-a676-ac68d768126c",
+      "recipes": [
+        {
+          "id": "chilaquiles"
+        },
+        {
+          "id": "esquites"
+        },
+        {
+          "id": "guacamole"
+        },
+        {
+          "id": "tamales"
+        }
+      ]
+    },
+    {
+      "id": "sauces",
+      "name": "Salsas",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsas_mexico.jpg?alt=media&token=36459d1b-bc56-43e9-8c20-4a6bb11107dd",
+      "recipes": [
+        {
+          "id": "pico_de_gallo"
+        },
+        {
+          "id": "salsa_ranchera"
+        },
+        {
+          "id": "salsa_roja"
+        },
+        {
+          "id": "salsa_verde"
+        }
+      ]
+    },
+    {
+      "id": "desserts",
+      "name": "Postres",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fpostres_mexico.jpg?alt=media&token=4a820f5f-afd9-4a2f-8ac5-22f2fd5783d8",
+      "recipes": [
+        {
+          "id": "arroz_con_leche"
+        },
+        {
+          "id": "churros"
+        },
+        {
+          "id": "flan"
+        },
+        {
+          "id": "pan_de_muerto"
+        }
+      ]
+    },
+    {
+      "id": "drinks",
+      "name": "Bebidas y Cócteles",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fbebidas_mexico.jpg?alt=media&token=ebf377e2-34ac-44b1-a11b-6dc0bff0870c",
+      "recipes": [
+        {
+          "id": "agua_de_jamaica"
+        },
+        {
+          "id": "horchata"
+        },
+        {
+          "id": "margarita_fresa"
+        },
+        {
+          "id": "michelada"
+        }
+      ]
+    },
+    {
+      "id": "specials",
+      "name": "Especiales",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fespeciales_mexico.jpg?alt=media&token=e8f57365-87d6-443a-b6c0-90ea0ef5b176",
+      "recipes": [
+        {
+          "id": "chiles_en_nogada"
+        },
+        {
+          "id": "enchiladas"
+        },
+        {
+          "id": "quesadillas"
+        },
+        {
+          "id": "tostadas"
+        }
+      ]
+    }
+  ]
+}

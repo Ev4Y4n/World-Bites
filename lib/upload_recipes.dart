@@ -7,56 +7,26 @@ import 'firebase_options.dart';
 
 Future<void> subirPais(String assetPath) async {
   try {
-    print("Leyendo JSON...");
-
     final jsonString = await rootBundle.loadString(assetPath);
     final data = jsonDecode(jsonString);
 
     final String country = data['country'];
     final List categories = data['categories'];
 
-    // evita crash si no existe
-    final List<String> recommended = List<String>.from(
-      data['recommended'] ?? [],
-    );
-
-    print("Subiendo país: $country");
+    print("Subiendo categorías de $country");
 
     for (var category in categories) {
       final String categoryId = category['id'];
-      final String categoryName = category['name'];
-      final String categoryImage = category['image'];
 
-      final List recipes = category['recipes'];
-
-      for (var recipe in recipes) {
-        final String recipeId = recipe['id'];
-
-        print("Subiendo receta: $recipeId");
-
-        await FirebaseFirestore.instance
-            .collection('recipes')
-            .doc(recipeId)
-            .set({
-              'id': recipeId,
-              'name': recipe['name'],
-              'image': recipe['image'],
-              'favorite': recipe['favorite'] ?? false,
-
-              // relación
-              'categoryId': categoryId,
-              'categoryName': categoryName,
-              'categoryImage': categoryImage,
-
-              'country': country,
-
-              // recomendado seguro
-              'isRecommended': recommended.contains(recipeId),
-            }, SetOptions(merge: true));
-      }
+      await FirebaseFirestore.instance
+          .collection('categories_mexico')
+          .doc(categoryId)
+          .set({
+        'name': category['name'] ?? '',
+        'icon': category['icon'] ?? '',
+      });
     }
-
-    print("País $country subido correctamente");
+    print("OK");
   } catch (e, stack) {
     print("ERROR: $e");
     print(stack);
@@ -72,18 +42,9 @@ Future<void> main() async {
 
   print("Firebase listo");
 
-  // 🧪 test rápido (puedes borrarlo luego)
-  await FirebaseFirestore.instance.collection('test').doc('conexion').set({
-    'ok': true,
-  });
+  await subirPais('assets/json/categorias_mexico.json');
 
-  print("Test Firestore OK");
+  print("TODO TERMINADO!");
 
-  // 🚀 subir JSON
-  await subirPais('assets/json/mexico.json');
-
-  print("TODO TERMINADO");
-
-  // ⏳ evitar que se cierre antes
   await Future.delayed(const Duration(seconds: 10));
 }
