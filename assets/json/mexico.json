@@ -4,30 +4,30 @@
         {
             "id": "starters",
             "name": "Entrantes",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fesquites.jpg?alt=media&token=a1b318a4-5289-4ec4-b22d-2d76165b99d0",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fesquites.jpg?alt=media&token=a1b318a4-5289-4ec4-b22d-2d76165b99d0",
             "recipes": [
                 {
                     "id": "chilaquiles",
                     "name": "Chilaquiles",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fchilaquiles.jpg?alt=media&token=a11a1368-ff57-49ea-86c2-a235b80bdbf5",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fchilaquiles.jpg?alt=media&token=a11a1368-ff57-49ea-86c2-a235b80bdbf5",
                     "favorite": false
                 },
                 {
                     "id": "esquites",
                     "name": "Esquites",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fesquites.jpg?alt=media&token=a1b318a4-5289-4ec4-b22d-2d76165b99d0",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fesquites.jpg?alt=media&token=a1b318a4-5289-4ec4-b22d-2d76165b99d0",
                     "favorite": false
                 },
                 {
                     "id": "guacamole",
                     "name": "Guacamole",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fguacamole.jpg?alt=media&token=baac4386-5845-4776-b058-6a15de0c8a60",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Fguacamole.jpg?alt=media&token=baac4386-5845-4776-b058-6a15de0c8a60",
                     "favorite": false
                 },
                 {
                     "id": "tamales",
                     "name": "Tamales",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Ftamales.jpg?alt=media&token=abebe434-be53-476b-bb4c-7f23dddd8bca",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fstarters%2Ftamales.jpg?alt=media&token=abebe434-be53-476b-bb4c-7f23dddd8bca",
                     "favorite": false
                 }
             ]
@@ -35,30 +35,30 @@
         {
             "id": "tacos",
             "name": "Tacos",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosalpastor.jpg?alt=media&token=04dbdf1b-92b8-463c-80ad-813627debcd2",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosalpastor.jpg?alt=media&token=04dbdf1b-92b8-463c-80ad-813627debcd2",
             "recipes": [
                 {
                     "id": "tacos_al_pastor",
                     "name": "Tacos al Pastor",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosalpastor.jpg?alt=media&token=04dbdf1b-92b8-463c-80ad-813627debcd2",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosalpastor.jpg?alt=media&token=04dbdf1b-92b8-463c-80ad-813627debcd2",
                     "favorite": false
                 },
                 {
                     "id": "tacos_birria",
                     "name": "Tacos de Birria",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosdebirria.jpeg?alt=media&token=5bad6240-23e7-46e1-b1bd-1b9642082f73",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosdebirria.jpeg?alt=media&token=5bad6240-23e7-46e1-b1bd-1b9642082f73",
                     "favorite": false
                 },
                 {
                     "id": "tacos_carnitas",
                     "name": "Tacos de Carnitas",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosdecarnitas.jpg?alt=media&token=b364ae97-5a65-41a9-b147-c3559ce5ddb3",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosdecarnitas.jpg?alt=media&token=b364ae97-5a65-41a9-b147-c3559ce5ddb3",
                     "favorite": false
                 },
                 {
                     "id": "tacos_gambas",
                     "name": "Tacos de Gambas",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosdegambas.jpg?alt=media&token=90fc328c-9162-426d-87ad-daaa97fd8959",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ftacos%2Ftacosdegambas.jpg?alt=media&token=90fc328c-9162-426d-87ad-daaa97fd8959",
                     "favorite": false
                 }
             ]
@@ -66,30 +66,30 @@
         {
             "id": "soups",
             "name": "Sopas",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadefideos.jpg?alt=media&token=26b482e3-2440-493b-947a-1a785b6843f0",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadefideos.jpg?alt=media&token=26b482e3-2440-493b-947a-1a785b6843f0",
             "recipes": [
                 {
                     "id": "caldo_de_res",
                     "name": "Caldo de Res",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fcaldoderes.jpg?alt=media&token=a6c44463-3ba9-47cd-bf56-c65d06927279",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fcaldoderes.jpg?alt=media&token=a6c44463-3ba9-47cd-bf56-c65d06927279",
                     "favorite": false
                 },
                 {
                     "id": "pozole",
                     "name": "Pozole",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fpozole.jpg?alt=media&token=6bf85c84-8d1b-40ea-9679-0c1b317fd3c7",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fpozole.jpg?alt=media&token=6bf85c84-8d1b-40ea-9679-0c1b317fd3c7",
                     "favorite": false
                 },
                 {
                     "id": "sopa_de_fideos",
                     "name": "Sopa de Fideos",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadefideos.jpg?alt=media&token=26b482e3-2440-493b-947a-1a785b6843f0",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadefideos.jpg?alt=media&token=26b482e3-2440-493b-947a-1a785b6843f0",
                     "favorite": false
                 },
                 {
                     "id": "sopa_de_tortilla",
                     "name": "Sopa de Tortilla",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadetortilla.jpg?alt=media&token=b67c3fcf-ccac-4753-bb20-68dc73384d02",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsoups%2Fsopadetortilla.jpg?alt=media&token=b67c3fcf-ccac-4753-bb20-68dc73384d02",
                     "favorite": false
                 }
             ]
@@ -97,30 +97,30 @@
         {
             "id": "sauces",
             "name": "Salsas",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaranchera.jpg?alt=media&token=67ad64b1-aa81-4f54-a7c7-79355b0f16e7",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaranchera.jpg?alt=media&token=67ad64b1-aa81-4f54-a7c7-79355b0f16e7",
             "recipes": [
                 {
                     "id": "pico_de_gallo",
                     "name": "Pico de Gallo",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fpicodegallo.jpg?alt=media&token=8ef2184f-b1b8-46f1-bbca-febb2347be38",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fpicodegallo.jpg?alt=media&token=8ef2184f-b1b8-46f1-bbca-febb2347be38",
                     "favorite": false
                 },
                 {
                     "id": "salsa_ranchera",
                     "name": "Salsa Ranchera",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaranchera.jpg?alt=media&token=67ad64b1-aa81-4f54-a7c7-79355b0f16e7",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaranchera.jpg?alt=media&token=67ad64b1-aa81-4f54-a7c7-79355b0f16e7",
                     "favorite": false
                 },
                 {
                     "id": "salsa_roja",
                     "name": "Salsa Roja",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaroja.jpg?alt=media&token=f1886d4e-fcec-49a1-a0be-5e93684dd845",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaroja.jpg?alt=media&token=f1886d4e-fcec-49a1-a0be-5e93684dd845",
                     "favorite": false
                 },
                 {
                     "id": "salsa_verde",
                     "name": "Salsa Verde",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaverde.jpg?alt=media&token=169bdc3b-60d1-44de-9d82-598217a130bd",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fsauces%2Fsalsaverde.jpg?alt=media&token=169bdc3b-60d1-44de-9d82-598217a130bd",
                     "favorite": false
                 }
             ]
@@ -128,30 +128,30 @@
         {
             "id": "fish",
             "name": "Mariscos",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fpescadozarandeado.jpg?alt=media&token=757dc870-4589-487f-a945-2d2bc4084b3a",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fpescadozarandeado.jpg?alt=media&token=757dc870-4589-487f-a945-2d2bc4084b3a",
             "recipes": [
                 {
                     "id": "aguachile",
                     "name": "Aguachile",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Faguachile.jpg?alt=media&token=1f3c78d9-08c4-4468-8782-9a30af5b3184",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Faguachile.jpg?alt=media&token=1f3c78d9-08c4-4468-8782-9a30af5b3184",
                     "favorite": false
                 },
                 {
                     "id": "camarones_al_mojo_de_ajo",
                     "name": "Camarones al Mojo de Ajo",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fcamaronesalmojodeajo.jpg?alt=media&token=9213f72a-3c87-427d-85ee-b2edf685f2ca",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fcamaronesalmojodeajo.jpg?alt=media&token=9213f72a-3c87-427d-85ee-b2edf685f2ca",
                     "favorite": false
                 },
                 {
                     "id": "ceviche",
                     "name": "Ceviche",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fceviche.jpg?alt=media&token=960bb860-115a-49ee-aab5-94c611e432f8",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fceviche.jpg?alt=media&token=960bb860-115a-49ee-aab5-94c611e432f8",
                     "favorite": false
                 },
                 {
                     "id": "pescado_zarandeado",
                     "name": "Pescado Zarandeado",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fpescadozarandeado.jpg?alt=media&token=757dc870-4589-487f-a945-2d2bc4084b3a",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Ffish%2Fpescadozarandeado.jpg?alt=media&token=757dc870-4589-487f-a945-2d2bc4084b3a",
                     "favorite": false
                 }
             ]
@@ -159,30 +159,30 @@
         {
             "id": "meat",
             "name": "Carnes",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcarneasada.jpg?alt=media&token=a82c12f2-f460-4e70-8581-d2b35d8b42d8",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcarneasada.jpg?alt=media&token=a82c12f2-f460-4e70-8581-d2b35d8b42d8",
             "recipes": [
                 {
                     "id": "carne_asada",
                     "name": "Carne Asada",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcarneasada.jpg?alt=media&token=a82c12f2-f460-4e70-8581-d2b35d8b42d8",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcarneasada.jpg?alt=media&token=a82c12f2-f460-4e70-8581-d2b35d8b42d8",
                     "favorite": false
                 },
                 {
                     "id": "barbacoa_de_res",
                     "name": "Barbacoa de Res",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fbarbacoaderes.jpg?alt=media&token=25cbc733-a1b4-4dc9-b55a-602652e0c673",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fbarbacoaderes.jpg?alt=media&token=25cbc733-a1b4-4dc9-b55a-602652e0c673",
                     "favorite": false
                 },
                 {
                     "id": "cochinita_pibil",
                     "name": "Cochinita Pibil",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcochinitapibil.jpg?alt=media&token=3c969db2-7887-4877-93e7-3d6ed84b3ac6",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fcochinitapibil.jpg?alt=media&token=3c969db2-7887-4877-93e7-3d6ed84b3ac6",
                     "favorite": false
                 },
                 {
                     "id": "pollo_con_mole",
                     "name": "Pollo con Mole",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fpolloconmole.jpg?alt=media&token=b01eae49-cb8a-45ab-aabd-0a90f296907e",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fmeat%2Fpolloconmole.jpg?alt=media&token=b01eae49-cb8a-45ab-aabd-0a90f296907e",
                     "favorite": false
                 }
             ]
@@ -190,30 +190,30 @@
         {
             "id": "desserts",
             "name": "Postres",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fflan.jpg?alt=media&token=3edec582-21fa-4efb-9d4d-4376af16088e",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fflan.jpg?alt=media&token=3edec582-21fa-4efb-9d4d-4376af16088e",
             "recipes": [
                 {
                     "id": "arroz_con_leche",
                     "name": "Arroz con Leche",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Farrozconleche.jpg?alt=media&token=082a6779-d763-486e-8fe1-c42e638ba8a4",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Farrozconleche.jpg?alt=media&token=082a6779-d763-486e-8fe1-c42e638ba8a4",
                     "favorite": false
                 },
                 {
                     "id": "churros",
                     "name": "Churros",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fchurros.jpg?alt=media&token=10fee299-4599-48b4-ae2f-d7ce1ca87f49",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fchurros.jpg?alt=media&token=10fee299-4599-48b4-ae2f-d7ce1ca87f49",
                     "favorite": false
                 },
                 {
                     "id": "flan",
                     "name": "Flan",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fflan.jpg?alt=media&token=3edec582-21fa-4efb-9d4d-4376af16088e",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fflan.jpg?alt=media&token=3edec582-21fa-4efb-9d4d-4376af16088e",
                     "favorite": false
                 },
                 {
                     "id": "pan_de_muerto",
                     "name": "Pan de Muerto",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fpandemuerto.jpg?alt=media&token=d479f20d-0cdb-425b-8fa7-726ea664bac7",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdesserts%2Fpandemuerto.jpg?alt=media&token=d479f20d-0cdb-425b-8fa7-726ea664bac7",
                     "favorite": false
                 }
             ]
@@ -221,30 +221,30 @@
         {
             "id": "drinks",
             "name": "Bebidas",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Faguadejamaica.jpg?alt=media&token=0fbc2e45-c077-4dc4-938e-5929b0f20d2c",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Faguadejamaica.jpg?alt=media&token=0fbc2e45-c077-4dc4-938e-5929b0f20d2c",
             "recipes": [
                 {
                     "id": "agua_de_jamaica",
                     "name": "Agua de Jamaica",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Faguadejamaica.jpg?alt=media&token=0fbc2e45-c077-4dc4-938e-5929b0f20d2c",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Faguadejamaica.jpg?alt=media&token=0fbc2e45-c077-4dc4-938e-5929b0f20d2c",
                     "favorite": false
                 },
                 {
                     "id": "horchata",
                     "name": "Horchata",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fhorchata.jpg?alt=media&token=e6099091-e3e2-4fa4-b574-5501db8ff4bc",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fhorchata.jpg?alt=media&token=e6099091-e3e2-4fa4-b574-5501db8ff4bc",
                     "favorite": false
                 },
                 {
                     "id": "margarita_fresa",
                     "name": "Margarita de Fresa",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fmargaritadefresa.jpg?alt=media&token=5add7a29-223a-415b-8d6b-d6506b7d6e21",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fmargaritadefresa.jpg?alt=media&token=5add7a29-223a-415b-8d6b-d6506b7d6e21",
                     "favorite": false
                 },
                 {
                     "id": "michelada",
                     "name": "Michelada",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fmichelada.jpg?alt=media&token=64d93226-3ed0-47f0-b98c-f67532c084c7",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fdrinks%2Fmichelada.jpg?alt=media&token=64d93226-3ed0-47f0-b98c-f67532c084c7",
                     "favorite": false
                 }
             ]
@@ -252,30 +252,30 @@
         {
             "id": "specials",
             "name": "Especiales",
-            "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fenchiladas.jpg?alt=media&token=845c5fc8-dd56-4aaa-854e-0ebe61d01b7d",
+            "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fenchiladas.jpg?alt=media&token=845c5fc8-dd56-4aaa-854e-0ebe61d01b7d",
             "recipes": [
                 {
                     "id": "chiles_en_nogada",
                     "name": "Chiles en Nogada",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fchilesennogada.jpg?alt=media&token=109a819a-47e3-4a2c-b653-965c5d627d81",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fchilesennogada.jpg?alt=media&token=109a819a-47e3-4a2c-b653-965c5d627d81",
                     "favorite": false
                 },
                 {
                     "id": "enchiladas",
                     "name": "Enchiladas",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fenchiladas.jpg?alt=media&token=845c5fc8-dd56-4aaa-854e-0ebe61d01b7d",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fenchiladas.jpg?alt=media&token=845c5fc8-dd56-4aaa-854e-0ebe61d01b7d",
                     "favorite": false
                 },
                 {
                     "id": "quesadillas",
                     "name": "Quesadillas",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fquesadillas.jpg?alt=media&token=2b68f925-4540-4c2d-bdc1-82991f7d6bc3",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Fquesadillas.jpg?alt=media&token=2b68f925-4540-4c2d-bdc1-82991f7d6bc3",
                     "favorite": false
                 },
                 {
                     "id": "tostadas",
                     "name": "Tostadas",
-                    "image": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Ftostadas.jpg?alt=media&token=ed0e4d3a-602c-4a52-9610-d9c86782a0c3",
+                    "icon": "https://firebasestorage.googleapis.com/v0/b/world-bites-f5a54.firebasestorage.app/o/Countries%2Fmexico%2Fspecials%2Ftostadas.jpg?alt=media&token=ed0e4d3a-602c-4a52-9610-d9c86782a0c3",
                     "favorite": false
                 }
             ]
