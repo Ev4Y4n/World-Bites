@@ -9,83 +9,97 @@ import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/database.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({super.key});
 
   @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  File? selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future getProfileImage() async {
+    var image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (!mounted || image == null) return;
+
+    setState(() {
+      selectedImage = File(image.path);
+    });
+  }
+
+  Future<void> uploadProfileImage() async {
+    if (selectedImage != null) {
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child("UserProfileImages");
+
+      final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
+
+      var downloadurl = await (await task).ref.getDownloadURL();
+
+      DatabaseMethods()
+          .addProfilePicture(
+            FirebaseAuth.instance.currentUser!.uid,
+            downloadurl,
+          )
+          .then((value) {
+        setState(() {
+          selectedImage = null;
+        });
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: "Error al subir la imagen",
+        backgroundColor: Colors.orange,
+        textColor: Colors.white,
+      );
+    }
+  }
+
+  void exitApp() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (context) => const Register()));
+  }
+
+  void reset() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (context) => const ResetPassword()),
+    );
+  }
+
+  void change() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (context) => ChangePassword()));
+  }
+
+  void delete() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (context) => const DeleteAccount()),
+    );
+  }
+
+  void logout() async {
+    try {
+      await authService.value.signOut();
+      exitApp();
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    File? selectedImage;
-    final ImagePicker _picker = ImagePicker();
-
-    Future getProfileImage() async {
-      // Lógica para obtener la foto de perfil del usuario desde Firebase Storage
-      var image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        selectedImage = File(image.path);
-        //setState(() {});
-      }
-    }
-
-    Future<void> uploadProfileImage() async {
-      // Lógica para subir la foto de perfil del usuario a Firebase Storage
-      if (selectedImage != null) {
-        Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
-          "UserProfileImages",
-        );
-        final UploadTask task = firebaseStorageRef.putFile(
-          selectedImage!,
-        ); // Subir la imagen a Firebase Storage
-        var downloadurl = await (await task).ref
-            .getDownloadURL(); // Obtener la URL
-        Map<String, dynamic> addrecipe = {"Image": downloadurl};
-        DatabaseMethods().addProfilePicture(
-          FirebaseAuth.instance.currentUser!.uid,
-          downloadurl,
-        ); // Guardar la URL en la base de datos
-      }
-    }
-
-    void exitApp() {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const Register()));
-    }
-
-    void reset() {
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (context) => const ResetPassword()),
-      );
-    }
-
-    void change() {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => ChangePassword()));
-    }
-
-    void delete() {
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (context) => const DeleteAccount()),
-      );
-    }
-
-    void logout() async {
-      try {
-        await authService.value.signOut();
-        exitApp();
-      } on FirebaseAuthException catch (e) {
-        print(e.message);
-      }
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          //Fondo
+          // Fondo
           Positioned(
             top: -30,
             left: 0,
@@ -97,14 +111,23 @@ class Profile extends StatelessWidget {
             ),
           ),
 
-          //Avatar (foto + icono)
+          // Avatar
           Positioned(
             top: 80,
             left: 0,
             right: 0,
-            child: const Center(child: ProfilePic()),
+            child: Center(
+              child: ProfilePic(
+                onPressed: () async {
+                  print("CLICK EN CÁMARA");
+                  await getProfileImage();
+                  uploadProfileImage();
+                },
+              ),
+            ),
           ),
 
+          // Nombre
           Positioned(
             top: 200,
             left: 0,
@@ -112,6 +135,7 @@ class Profile extends StatelessWidget {
             child: const Center(child: UserName()),
           ),
 
+          // Info
           Positioned(
             top: 260,
             left: 0,
@@ -119,63 +143,65 @@ class Profile extends StatelessWidget {
             child: const Center(child: UserInfo()),
           ),
 
-          //Contenido
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 330),
-            child: Column(
-              children: [
-                ProfileMenu(
-                  text: "Tus recetas",
-                  textStyle: GoogleFonts.barlow(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 100, 100, 100),
+          // 🔥 SCROLL QUE YA NO BLOQUEA EL AVATAR
+          Positioned.fill(
+            top: 330,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ProfileMenu(
+                    text: "Tus recetas",
+                    textStyle: GoogleFonts.barlow(
+                      fontSize: 15,
+                      color: const Color.fromARGB(255, 100, 100, 100),
+                    ),
+                    icon: Icons.local_dining,
+                    press: () {},
                   ),
-                  icon: Icons.local_dining,
-                  press: () {},
-                ),
-                ProfileMenu(
-                  text: "Cambiar Contraseña",
-                  textStyle: GoogleFonts.barlow(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ProfileMenu(
+                    text: "Cambiar Contraseña",
+                    textStyle: GoogleFonts.barlow(
+                      fontSize: 15,
+                      color: const Color.fromARGB(255, 100, 100, 100),
+                    ),
+                    icon: Icons.change_circle_outlined,
+                    press: () {
+                      reset();
+                    },
                   ),
-                  icon: Icons.change_circle_outlined,
-                  press: () {
-                    reset();
-                  },
-                ),
-                ProfileMenu(
-                  text: "Ayuda",
-                  textStyle: GoogleFonts.barlow(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ProfileMenu(
+                    text: "Ayuda",
+                    textStyle: GoogleFonts.barlow(
+                      fontSize: 15,
+                      color: const Color.fromARGB(255, 100, 100, 100),
+                    ),
+                    icon: Icons.help_outline,
+                    press: () {},
                   ),
-                  icon: Icons.help_outline,
-                  press: () {},
-                ),
-                ProfileMenu(
-                  text: "Cerrar Sesión",
-                  textStyle: GoogleFonts.barlow(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ProfileMenu(
+                    text: "Cerrar Sesión",
+                    textStyle: GoogleFonts.barlow(
+                      fontSize: 15,
+                      color: const Color.fromARGB(255, 100, 100, 100),
+                    ),
+                    icon: Icons.logout_outlined,
+                    press: () {
+                      logout();
+                    },
                   ),
-                  icon: Icons.logout_outlined,
-                  press: () {
-                    logout();
-                  },
-                ),
-                ProfileMenu(
-                  text: "Eliminar Cuenta",
-                  textStyle: GoogleFonts.barlow(
-                    fontSize: 15,
-                    color: const Color.fromARGB(255, 100, 100, 100),
+                  ProfileMenu(
+                    text: "Eliminar Cuenta",
+                    textStyle: GoogleFonts.barlow(
+                      fontSize: 15,
+                      color: const Color.fromARGB(255, 100, 100, 100),
+                    ),
+                    icon: Icons.delete_outline,
+                    press: () {
+                      delete();
+                    },
                   ),
-                  icon: Icons.delete_outline,
-                  press: () {
-                    delete();
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -185,7 +211,9 @@ class Profile extends StatelessWidget {
 }
 
 class ProfilePic extends StatelessWidget {
-  const ProfilePic({Key? key}) : super(key: key);
+  final VoidCallback onPressed;
+
+  const ProfilePic({Key? key, required this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -204,24 +232,27 @@ class ProfilePic extends StatelessWidget {
           Positioned(
             right: -16,
             bottom: 0,
-            child: SizedBox(
-              height: 46,
-              width: 46,
-              child: TextButton(
-                //Icono para cambiar foto de perfil
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    side: const BorderSide(color: Colors.white),
+            child: Material(
+              color: Colors.transparent,
+              child: InkResponse(
+                radius: 28,
+                onTap: () {
+                  print("CLICK CÁMARA");
+                  onPressed();
+                },
+                child: Container(
+                  height: 46,
+                  width: 46,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 42, 79, 114),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white),
                   ),
-                  backgroundColor: const Color.fromARGB(255, 42, 79, 114),
-                ),
-                onPressed: () {},
-                child: const Icon(
-                  Icons.add_a_photo_outlined,
-                  color: Colors.white,
-                  size: 20,
+                  child: const Icon(
+                    Icons.add_a_photo_outlined,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -253,8 +284,7 @@ class UserName extends StatelessWidget {
           onPressed: () {},
           icon: const Icon(Icons.edit),
           padding: EdgeInsets.zero,
-          constraints:
-              const BoxConstraints(), // Elimina el espacio alrededor del icono
+          constraints: const BoxConstraints(),
         ),
       ],
     );
@@ -285,7 +315,6 @@ class UserInfo extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 100, 100, 100),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -295,7 +324,6 @@ class UserInfo extends StatelessWidget {
                 fontSize: 16,
                 color: Color.fromARGB(255, 100, 100, 100),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -316,7 +344,6 @@ class UserInfo extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 100, 100, 100),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -326,7 +353,6 @@ class UserInfo extends StatelessWidget {
                 fontSize: 16,
                 color: Color.fromARGB(255, 100, 100, 100),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -347,7 +373,6 @@ class UserInfo extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 100, 100, 100),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -357,7 +382,6 @@ class UserInfo extends StatelessWidget {
                 fontSize: 16,
                 color: Color.fromARGB(255, 100, 100, 100),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -386,7 +410,7 @@ class ProfileMenu extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: TextButton(
         style: TextButton.styleFrom(
-          foregroundColor: Color.fromARGB(255, 42, 79, 114),
+          foregroundColor: const Color.fromARGB(255, 42, 79, 114),
           padding: const EdgeInsets.all(20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -404,7 +428,7 @@ class ProfileMenu extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                color: const Color.fromARGB(255, 255, 255, 255),
+                color: Colors.white,
                 size: 20,
               ),
             ),
