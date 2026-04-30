@@ -39,7 +39,7 @@ class DatabaseMethods {
 
   //Agrega la URL de la foto de perfil a la colección "Users" en Firebase para un usuario específico
   Future addProfilePicture(String uid, String downloadurl) async {
-    return await FirebaseFirestore.instance.collection("Users").doc(uid).update({"Image": downloadurl});
+    return await FirebaseFirestore.instance.collection("Users").doc(uid).update({"profileImage": downloadurl});
   }
 
   //Obtiene un stream de datos en tiempo real de las recetas filtradas por categoría

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   File? selectedImage;
+  String? imageUrl;
   final ImagePicker _picker = ImagePicker();
 
   Future getProfileImage() async {
@@ -36,23 +38,19 @@ class _ProfileState extends State<Profile> {
 
   Future<void> uploadProfileImage() async {
     if (selectedImage != null) {
-      Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child("UserProfileImages");
+      Reference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child("UserProfileImages")
+          .child("${FirebaseAuth.instance.currentUser!.uid}.jpg");
 
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
 
       var downloadurl = await (await task).ref.getDownloadURL();
 
-      DatabaseMethods()
-          .addProfilePicture(
-            FirebaseAuth.instance.currentUser!.uid,
-            downloadurl,
-          )
-          .then((value) {
-        setState(() {
-          selectedImage = null;
-        });
-      });
+      await DatabaseMethods().addProfilePicture(
+        FirebaseAuth.instance.currentUser!.uid,
+        downloadurl,
+      );
     } else {
       Fluttertoast.showToast(
         msg: "Error al subir la imagen",
@@ -63,8 +61,9 @@ class _ProfileState extends State<Profile> {
   }
 
   void exitApp() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => const Register()));
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => const Register()));
   }
 
   void reset() {
@@ -74,8 +73,9 @@ class _ProfileState extends State<Profile> {
   }
 
   void change() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => ChangePassword()));
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (context) => ChangePassword()));
   }
 
   void delete() {
@@ -91,6 +91,25 @@ class _ProfileState extends State<Profile> {
     } on FirebaseAuthException catch (e) {
       print(e.message);
     }
+  }
+
+  @override //overide se utiliza para cargar la imagen de perfil al iniciar la pantalla de perfil, si el usuario ya tiene una imagen de perfil guardada en la base de datos, se carga esa imagen en lugar del icono por defecto
+  void initState() {
+    super.initState();
+    loadProfileImage();
+  }
+
+  Future loadProfileImage() async {
+    var userDoc = await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    if (!userDoc.exists) return;
+
+    setState(() {
+      imageUrl = userDoc.data()?["profileImage"];
+    });
   }
 
   @override
@@ -118,6 +137,8 @@ class _ProfileState extends State<Profile> {
             right: 0,
             child: Center(
               child: ProfilePic(
+                selectedImage: selectedImage,
+                imageUrl: imageUrl,
                 onPressed: () async {
                   print("CLICK EN CÁMARA");
                   await getProfileImage();
@@ -143,7 +164,6 @@ class _ProfileState extends State<Profile> {
             child: const Center(child: UserInfo()),
           ),
 
-          // 🔥 SCROLL QUE YA NO BLOQUEA EL AVATAR
           Positioned.fill(
             top: 330,
             child: SingleChildScrollView(
@@ -212,8 +232,15 @@ class _ProfileState extends State<Profile> {
 
 class ProfilePic extends StatelessWidget {
   final VoidCallback onPressed;
+  final File? selectedImage;
+  final String? imageUrl;
 
-  const ProfilePic({Key? key, required this.onPressed}) : super(key: key);
+  const ProfilePic({
+    Key? key,
+    required this.onPressed,
+    this.selectedImage,
+    this.imageUrl,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -224,10 +251,16 @@ class ProfilePic extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: [
-          const CircleAvatar(
-            backgroundImage: NetworkImage(
-              "https://i.postimg.cc/0jqKB6mS/Profile-Image.png",
-            ),
+          CircleAvatar(
+            radius: 55,
+            backgroundColor: Colors.grey[200],
+            backgroundImage: selectedImage != null
+                ? FileImage(selectedImage!)
+                : (imageUrl != null ? NetworkImage(imageUrl!) : null)
+                      as ImageProvider?,
+            child: (selectedImage == null && imageUrl == null)
+                ? const Icon(Icons.person, size: 60, color: Colors.grey)
+                : null,
           ),
           Positioned(
             right: -16,
@@ -426,11 +459,7 @@ class ProfileMenu extends StatelessWidget {
                 color: Color.fromARGB(255, 42, 79, 114),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: Icon(icon, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 20),
             Expanded(
