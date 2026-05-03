@@ -216,7 +216,6 @@ class _MainScreen extends State<MainScreen> {
           itemBuilder: (context, index) {
             var doc = recipesDocs[index];
             var recipe = doc.data() as Map<String, dynamic>;
-
             var prepTime = recipe['prepTime'];
             return GestureDetector(
               onTap: () {

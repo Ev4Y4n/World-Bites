@@ -5,6 +5,7 @@ import 'package:flutter_application_1/screens/add_recipe.dart';
 import 'package:flutter_application_1/screens/countries.dart';
 import 'package:flutter_application_1/screens/profile/profile.dart';
 import 'package:flutter_application_1/screens/home.dart';
+import 'package:flutter_application_1/screens/saved_recipes.dart';
 import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {
@@ -27,7 +28,7 @@ class _NavBarState extends State<NavBar> {
       }
     }
 
-    if (index == 1) return const Icon(Icons.favorite);
+    if (index == 1) return SavedRecipes();
     if (index == 2) return AddRecipe();
     if (index == 3) return Profile();
 

@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const IntroAnimation(),
-      //home: const NavBar(),
+      //home: const IntroAnimation(),
+      home: const NavBar(),
     );
   }
 }
