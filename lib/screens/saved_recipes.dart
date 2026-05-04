@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,7 +10,23 @@ class SavedRecipes extends StatefulWidget {
 }
 
 class _SavedRecipesState extends State<SavedRecipes> {
+  Stream? recipeStream;
   int selectedTab = 0;
+
+  @override
+  void initState() {
+    getOnTheLoad();
+    super.initState();
+  }
+
+  Future<void> getOnTheLoad() async {
+    recipeStream = FirebaseFirestore.instance
+        .collectionGroup("recipes")
+        .where('favorite', isEqualTo: true)
+        .snapshots();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,21 +134,110 @@ class _SavedRecipesState extends State<SavedRecipes> {
             child: Padding(
               padding: const EdgeInsets.only(top: 320),
               child: selectedTab == 0
-                  ? Container(
-                    child: const Text(
-                        "FAVORITOS",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                  )
-                  : Container(
-                    child: const Text(
-                        "MIS RECETAS",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                  ),
+                  ? Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 400,
+                          child: allRecipe(), // Muestra las recetas favoritas
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        Text(
+                          "MIS RECETAS",
+                          style: TextStyle(fontSize: 20, color: Colors.black),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget allRecipe() {
+    // Agrega esta función para mostrar las recetas favoritas
+    return StreamBuilder(
+      stream: recipeStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return const Center(child: Text("Error al cargar datos"));
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('Aun no tienes recetas guardadas'));
+        }
+        return ListView.builder(
+          padding: EdgeInsets.zero,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (context, index) {
+            DocumentSnapshot ds = snapshot.data!.docs[index]; // Obtiene los datos de cada receta
+            return recipesCard(ds['name'], ds['categoryId'], ds['image'], ds['favorite']);
+          },
+        );
+      },
+    );
+  }
+
+  Widget recipesCard(String name, String category, String imageUrl, bool  isFavorite) {
+    return Card(
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              delete(name, isFavorite),
+              Image.network(
+                imageUrl,
+                height: 110,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
+          ListTile(title: Text(name), subtitle: Text(category)),
+        ],
+      ),
+    );
+  }
+
+  Positioned delete(String name, bool  isFavorite) {
+    return Positioned(
+      top: 10,
+      right: 10,
+      child: GestureDetector(
+        onTap: () async{
+            await FirebaseFirestore.instance
+                .collectionGroup("recipes")
+                .where('name', isEqualTo: name)
+                .get()
+                .then((querySnapshot) {
+                  querySnapshot.docs.forEach((doc) {
+                    doc.reference.update({'favorite': false});
+                  });
+                });
+        },
+        child: Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: Color.fromARGB(137, 255, 255, 255),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Icon(
+                Icons.favorite,
+                size: 16,
+                color: (isFavorite)
+                    ? Color.fromARGB(255, 178, 0, 0)
+                    : Colors.grey,
+              ),
+            ),
+          ),
       ),
     );
   }
