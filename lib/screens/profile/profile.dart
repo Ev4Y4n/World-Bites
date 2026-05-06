@@ -47,7 +47,7 @@ class _ProfileState extends State<Profile> {
 
       var downloadurl = await (await task).ref.getDownloadURL();
 
-      await DatabaseMethods().addProfilePicture(
+      await DatabaseService().addProfilePicture(
         FirebaseAuth.instance.currentUser!.uid,
         downloadurl,
       );

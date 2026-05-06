@@ -59,7 +59,7 @@ class _AddRecipeState extends State<AddRecipe> {
         "Key": namecontroller.text.substring(0,1).toUpperCase(),
         "SearchedName": namecontroller.text.toUpperCase()
       };
-      DatabaseMethods().addRecipe(addrecipe).then((value) {
+      DatabaseService().addRecipe(addrecipe).then((value) {
         Fluttertoast.showToast(
           msg: "Receta añadida a la base de datos",
           toastLength: Toast.LENGTH_LONG,

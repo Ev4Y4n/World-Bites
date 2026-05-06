@@ -17,7 +17,7 @@ class _Category extends State<Category> {
 
   //Método que carga los datos desde Firebase
   Future<void> getOnTheLoad() async {
-    categoryStream = DatabaseMethods().getRecipeCategory(widget.category);
+    categoryStream = DatabaseService().getRecipeCategory(widget.category);
     setState(() {});
   }
 
@@ -56,7 +56,6 @@ class _Category extends State<Category> {
                             ingredients: ds["ingredients"],
                             steps: ds["steps"],
                             difficulty: ds["difficulty"],
-                            isFavorite: ds["favorite"],
                             kcal: ds["kcal"],
                             prepTime: ds["prepTime"],
                             servings: ds["servings"],

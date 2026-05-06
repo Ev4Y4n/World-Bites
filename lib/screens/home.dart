@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/comming_soon.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
+import 'package:flutter_application_1/screens/ui_elements/category_item.dart';
+import 'package:flutter_application_1/screens/ui_elements/recipe_card.dart';
+import 'package:flutter_application_1/screens/ui_elements/recipe_grid.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/app_state.dart';
@@ -20,12 +24,15 @@ class _MainScreen extends State<MainScreen> {
   bool search = false;
   String? selectedSubCategory;
 
+  List<String> favouriteRecipes = [];
+
   var queryResultSet = [];
   var tempSearchStore = [];
 
   @override
   void initState() {
     getOnTheLoad();
+    createUserIfNotExists();
     super.initState();
   }
 
@@ -34,6 +41,20 @@ class _MainScreen extends State<MainScreen> {
         .collection("categories_italy")
         .snapshots();
     setState(() {});
+  }
+
+  Future<void> createUserIfNotExists() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final userRef = FirebaseFirestore.instance.collection('Users').doc(uid);
+
+    final doc = await userRef.get();
+
+    if (!doc.exists) {
+      await userRef.set({
+        'favouriteRecipes': [],
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
   }
 
   void initiateSearch(String value) {
@@ -70,7 +91,6 @@ class _MainScreen extends State<MainScreen> {
                 queryResultSet.add({
                   'name': recipeData['name'] ?? recipeName,
                   'difficulty': recipeData['difficulty'] ?? 'Desconocida',
-                  'favorite': recipeData['favorite'] ?? false,
                   'image':
                       recipeData['image'] ?? 'https://via.placeholder.com/150',
                   'ingredients': recipeData['ingredients'] ?? [],
@@ -117,7 +137,7 @@ class _MainScreen extends State<MainScreen> {
           .snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-          return SizedBox(
+          return const SizedBox(
             height: 180,
             child: Center(child: CircularProgressIndicator()),
           );
@@ -137,46 +157,15 @@ class _MainScreen extends State<MainScreen> {
             itemBuilder: (context, index) {
               var ds = docs[index];
 
-              String name = ds['name'];
-              String icon = ds['icon'];
-
-              bool isSelected = selectedSubCategory == ds.id;
-
-              return GestureDetector(
+              return CategoryItem(
+                name: ds['name'],
+                icon: ds['icon'],
+                isSelected: selectedSubCategory == ds.id,
                 onTap: () {
                   setState(() {
                     selectedSubCategory = ds.id;
                   });
                 },
-                child: Container(
-                  margin: EdgeInsets.only(right: 20),
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          icon,
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            height: 120,
-                            width: 120,
-                            color: Colors.grey,
-                            child: Icon(Icons.image),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        name,
-                        style: AppWidget.lightfeildtextstyle()?.copyWith(
-                          color: isSelected ? Colors.blue : Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               );
             },
           ),
@@ -196,204 +185,17 @@ class _MainScreen extends State<MainScreen> {
           .snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         var recipesDocs = snapshot.data.docs;
 
         if (recipesDocs.isEmpty) {
-          return Center(child: Text("No hay recetas"));
+          return const Center(child: Text("No hay recetas"));
         }
 
-        return recipeCard(recipesDocs);
+        return RecipeGrid(recipesDocs: recipesDocs);
       },
-    );
-  }
-
-  GridView recipeCard(recipesDocs) {
-    return GridView.builder(
-      // Cambia a GridView.builder para mostrar las recetas en una cuadrícula
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(right: 20),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        // Configura la cuadrícula
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: recipesDocs.length,
-      itemBuilder: (context, index) {
-        var doc = recipesDocs[index];
-        var recipe = doc.data() as Map<String, dynamic>;
-        var prepTime = recipe['prepTime'];
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Recipe(
-                  foodname: recipe['name'] ?? '',
-                  difficulty: recipe['difficulty'] ?? 'Desconocida',
-                  isFavorite: recipe['favorite'] ?? false,
-                  image: recipe['image'] ?? 'https://via.placeholder.com/150',
-                  ingredients: recipe['ingredients'] ?? [],
-                  steps: recipe['steps'],
-                  kcal: recipe['kcal'] ?? 0,
-                  prepTime: recipe['prepTime'] ?? 0,
-                  servings: recipe['servings'] ?? 0,
-                  tags: recipe['tags'] ?? [],
-                  doc: doc,
-                ),
-              ),
-            );
-          },
-          child: Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 5,
-                  color: Colors.black12,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Stack(
-                    children: [
-                      Image.network(
-                        recipe['image'] ?? 'https://via.placeholder.com/150',
-                        height: 110,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                      addToFavorite(doc, recipe, context),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(
-                          recipe['name'] ?? '',
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(136, 104, 92, 92),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.schedule, color: Colors.yellow, size: 14),
-                          SizedBox(width: 4),
-                          Text(
-                            prepTime <= 60
-                                ? "$prepTime min"
-                                : "${(prepTime / 60).toStringAsFixed(1)} hr",
-                            style: TextStyle(color: Colors.black, fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                  width: 100,
-                  child: Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
-                    children: (recipe['tags'] as List<dynamic>).map((tag) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(222, 146, 176, 172),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tag.toString(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Positioned addToFavorite(
-    doc,
-    Map<String, dynamic> recipe,
-    BuildContext context,
-  ) {
-    return Positioned(
-      top: 8,
-      right: 8,
-      child: GestureDetector(
-        onTap: () async {
-          await doc.reference.update({
-            'favorite': !(recipe['favorite'] ?? false),
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "Actualizado favorito: ${recipe['name'] ?? 'Receta'}",
-              ),
-            ),
-          );
-        },
-        child: Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: Color.fromARGB(137, 255, 255, 255),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Icon(
-              Icons.favorite,
-              size: 16,
-              color: (recipe['favorite'] == true)
-                  ? Color.fromARGB(255, 178, 0, 0)
-                  : Colors.grey,
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -410,7 +212,6 @@ class _MainScreen extends State<MainScreen> {
               ingredients: data['ingredients'],
               steps: data['steps'],
               difficulty: data['difficulty'],
-              isFavorite: data['favorite'],
               kcal: data['kcal'],
               prepTime: data['prepTime'],
               servings: data['servings'],

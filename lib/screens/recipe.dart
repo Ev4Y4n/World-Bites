@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/ui_elements/favorite_button.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 
 class Recipe extends StatefulWidget {
   final String image, foodname, difficulty;
   final List<dynamic> ingredients, steps, tags;
   final int kcal, prepTime, servings;
-  bool isFavorite;
   final dynamic doc;
 
   Recipe({
     super.key,
     required this.foodname,
     required this.difficulty,
-    required this.isFavorite,
     required this.image,
     required this.ingredients,
     required this.kcal,
@@ -70,49 +69,13 @@ class _RecipeState extends State<Recipe> {
             Positioned(
               top: 40.0,
               right: 20.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(136, 97, 87, 87),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.favorite,
-                    color: widget.isFavorite
-                        ? Color.fromARGB(255, 178, 0, 0)
-                        : Colors.white,
-                    size: 30.0,
-                  ),
-                  onPressed: () async {
-                    if (widget.doc != null) {
-                      try {
-                        await widget.doc.reference.update(
-                            {'favorite': !(widget.isFavorite)});
-                        setState(() {
-                          widget.isFavorite = !widget.isFavorite;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "Actualizado favorito: ${widget.foodname} - ${widget.isFavorite ? "Agregado a favoritos" : "Eliminado de favoritos"}",
-                            ),
-                          ),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Error actualizando favorito"),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                ),
-              ),
+              child: FavoriteButton(recipeId: widget.doc.id),
             ),
             Container(
               padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
-              margin: EdgeInsets.only(top: MediaQuery.of(context).size.width / 1.1),
+              margin: EdgeInsets.only(
+                top: MediaQuery.of(context).size.width / 1.1,
+              ),
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -190,14 +153,17 @@ class _RecipeState extends State<Recipe> {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(right: 4.0),
-                            child: Icon(Icons.local_dining,
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                size: 14),
+                            child: Icon(
+                              Icons.local_dining,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              size: 14,
+                            ),
                           ),
                           Text(
                             "Ingredientes",
-                            style: AppWidget.lightfeildtextstyle()
-                                .copyWith(fontSize: 15.0),
+                            style: AppWidget.lightfeildtextstyle().copyWith(
+                              fontSize: 15.0,
+                            ),
                           ),
                         ],
                       ),
@@ -221,7 +187,8 @@ class _RecipeState extends State<Recipe> {
                                     ? Image.network(
                                         image,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Icon(Icons.image_not_supported),
+                                        errorBuilder: (_, __, ___) =>
+                                            Icon(Icons.image_not_supported),
                                       )
                                     : Icon(Icons.image_not_supported),
                               ),
@@ -239,7 +206,9 @@ class _RecipeState extends State<Recipe> {
                           Text(
                             "$quantity",
                             style: TextStyle(
-                                fontSize: 14.0, fontWeight: FontWeight.bold),
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.end,
                           ),
                         ],
@@ -257,15 +226,18 @@ class _RecipeState extends State<Recipe> {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(right: 4.0),
-                            child: Icon(Icons.menu_book,
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                size: 14),
+                            child: Icon(
+                              Icons.menu_book,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              size: 14,
+                            ),
                           ),
                           SizedBox(width: 4),
                           Text(
                             "Instrucciones",
-                            style: AppWidget.lightfeildtextstyle()
-                                .copyWith(fontSize: 15.0),
+                            style: AppWidget.lightfeildtextstyle().copyWith(
+                              fontSize: 15.0,
+                            ),
                           ),
                         ],
                       ),
