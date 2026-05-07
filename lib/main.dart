@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/layout/nav_bar.dart';
 import 'package:flutter_application_1/providers/app_state.dart';
+import 'package:flutter_application_1/screens/add_recipe.dart';
 import 'package:flutter_application_1/screens/comming_soon.dart';
 import 'package:flutter_application_1/screens/intro_animation.dart';
 import 'package:provider/provider.dart';
@@ -30,8 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const IntroAnimation(),
+      //home: const IntroAnimation(),
       //home: const NavBar(),
+      home: const AddRecipe()
     );
   }
 }

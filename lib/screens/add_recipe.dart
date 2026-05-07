@@ -1,12 +1,16 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/services/database.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
+import 'package:multiselect/multiselect.dart';
+
 
 class AddRecipe extends StatefulWidget {
   const AddRecipe({super.key});
@@ -16,16 +20,47 @@ class AddRecipe extends StatefulWidget {
 }
 
 class _AddRecipeState extends State<AddRecipe> {
-  String? value;
-  final List<String> recipe = [
+  String? selectedCategory;
+  String? selectedDifficulty;
+  String? selectedCountry;
+  final List<String> categories = [
     'Soup Recipes',
     'Main Course',
     'Chinese',
     'Italian',
   ];
+  final List<String> countries = [
+    'Italia',
+    'Francia',
+    'España',
+    'China',
+    'Japón',
+  ];
+  final List<String> tags = [
+    'Vegetariano',
+    'Vegano',
+    'Sin gluten',
+    'Sin lactosa',
+    'Sin azúcar',
+    'Bajo en calorías',
+    'Con gluten',
+    'Con lactosa',
+    'Alcohol',
+    'Sin alcohol',
+  ];
+  List<String> selectedTags = [];
+  final List<String> difficulties = ['Fácil', 'Medio', 'Dificil'];
+  List<Map<String, dynamic>> ingredients = [];
+  List<Map<String, dynamic>> steps = [];
   File? selectedImage;
-  TextEditingController namecontroller = TextEditingController();
-  TextEditingController detailcontroller = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController detailController = TextEditingController();
+  TextEditingController kcalController = TextEditingController();
+  TextEditingController ingredientName = TextEditingController();
+  TextEditingController ingredientQty = TextEditingController();
+  TextEditingController stepController = TextEditingController();
 
   //CREACIÓN FUNCIÓN QUE ACCEDE A LA GALERÍA DEL MOVIL PARA SELECCIONAR UNA FOTO
   final ImagePicker _picker = ImagePicker();
@@ -38,10 +73,11 @@ class _AddRecipeState extends State<AddRecipe> {
     }
   }
 
-  Future<void> uploadItem() async { //FUNCIÓN PARA SUBIR LA RECETA A LA BASE DE DATOS, PRIMERO SUBE LA IMAGEN A FIREBASE STORAGE Y OBTIENE SU URL PARA GUARDARLA EN LA BASE DE DATOS
+  Future<void> uploadItem() async {
+    //FUNCIÓN PARA SUBIR LA RECETA A LA BASE DE DATOS, PRIMERO SUBE LA IMAGEN A FIREBASE STORAGE Y OBTIENE SU URL PARA GUARDARLA EN LA BASE DE DATOS
     if (selectedImage != null &&
-        namecontroller.text != "" &&
-        detailcontroller.text != "") {
+        nameController.text != "" &&
+        detailController.text != "") {
       String addId = randomAlphaNumeric(10);
       Reference firebaseStorageRef = FirebaseStorage.instance
           .ref()
@@ -52,12 +88,19 @@ class _AddRecipeState extends State<AddRecipe> {
       var downloadurl = await (await task).ref.getDownloadURL();
       //TODOS ESTOS CAMPOS TIENEN QUE ESTAR EN LA BASE DE DATOS PARA QUE FUNCIONE
       Map<String, dynamic> addrecipe = {
-        "Name": namecontroller.text,
-        "Detail": detailcontroller.text,
+        "Name": nameController.text,
+        "Detail": detailController.text,
         "Image": downloadurl,
-        "Category": value,
-        "Key": namecontroller.text.substring(0,1).toUpperCase(),
-        "SearchedName": namecontroller.text.toUpperCase()
+        "Category": selectedCategory,
+        "Difficulty": selectedDifficulty,
+        "PrepTime": timeController.text,
+        "Quantity": quantityController.text,
+        "Kcal": kcalController.text,
+        "Ingredients": ingredients,
+        "Steps": steps,
+        "userId": FirebaseAuth.instance.currentUser?.uid,
+        "Key": nameController.text.substring(0, 1).toUpperCase(),
+        "SearchedName": nameController.text.toUpperCase(),
       };
       DatabaseService().addRecipe(addrecipe).then((value) {
         Fluttertoast.showToast(
@@ -70,9 +113,14 @@ class _AddRecipeState extends State<AddRecipe> {
         );
 
         setState(() {
-          namecontroller.clear();
-          detailcontroller.clear();
+          nameController.clear();
+          detailController.clear();
+          timeController.clear();
+          quantityController.clear();
           selectedImage = null;
+          selectedCategory = null;
+          selectedDifficulty = null;
+          selectedCountry = null;
         });
       });
     } else {
@@ -156,25 +204,25 @@ class _AddRecipeState extends State<AddRecipe> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
-                  controller: namecontroller,
+                  controller: nameController,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Nombre Receta ...",
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 10.0),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all()
+                  border: Border.all(),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    items: recipe
+                    items: countries
                         .map(
                           (item) => DropdownMenuItem(
                             value: item,
@@ -188,21 +236,88 @@ class _AddRecipeState extends State<AddRecipe> {
                           ),
                         )
                         .toList(),
-                        onChanged: ((value)=> setState(() {
-                          this.value= value;
-                        })),
-                        dropdownColor: Colors.white,
-                        hint: Text("Select Category"),
-                        iconSize: 36,
-                        icon: Icon(Icons.arrow_drop_down, color: Colors.black),
-                        value: value,
+                    onChanged: ((country) => setState(() {
+                      this.selectedCountry = country;
+                    })),
+                    dropdownColor: Colors.white,
+                    hint: Text("Selecciona País"),
+                    iconSize: 36,
+                    icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                    value: selectedCountry,
                   ),
                 ),
               ),
-              SizedBox(height: 20.0,),
-              Text(
-                "Instrucciones Receta",
-                style: AppWidget.boldfieldtextstyle(),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    items: categories
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: ((category) => setState(() {
+                      this.selectedCategory = category;
+                    })),
+                    dropdownColor: Colors.white,
+                    hint: Text("Selecciona Categoría"),
+                    iconSize: 36,
+                    icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                    value: selectedCategory,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    items: difficulties
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: ((difficulty) => setState(() {
+                      this.selectedDifficulty = difficulty;
+                    })),
+                    dropdownColor: Colors.white,
+                    hint: Text("Dificultad ..."),
+                    iconSize: 36,
+                    icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                    value: selectedDifficulty,
+                  ),
+                ),
               ),
               SizedBox(height: 10.0),
               Container(
@@ -214,12 +329,188 @@ class _AddRecipeState extends State<AddRecipe> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
-                  controller: detailcontroller,
-                  maxLines: 10,
+                  controller: timeController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "Instrucciones Receta ...",
+                    hintText: "Tiempo preparación ...",
                   ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.only(left: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: TextField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Cantidad ...",
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.only(left: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: TextField(
+                  controller: kcalController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Kcal ...",
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0),
+              Text("Ingredientes", style: AppWidget.boldfieldtextstyle()),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.only(left: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: ingredientName,
+                        decoration: InputDecoration(hintText: "Nombre"),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: ingredientQty,
+                        decoration: InputDecoration(hintText: "Cantidad"),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          ingredients.add({
+                            "name": ingredientName.text,
+                            "quantity": ingredientQty.text,
+                          });
+
+                          ingredientName.clear();
+                          ingredientQty.clear();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: ingredients.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(ingredients[index]["name"]),
+                    subtitle: Text(ingredients[index]["quantity"]),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          ingredients.removeAt(index);
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
+              Text("Pasos", style: AppWidget.boldfieldtextstyle()),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.only(left: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: stepController,
+                        decoration: InputDecoration(
+                          hintText: "Añadir paso ...",
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          steps.add({"description": stepController.text});
+                          stepController.clear();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: steps.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text("${index + 1}. ${steps[index]["description"]}"), // Muestra el número del paso junto con su descripción
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          steps.removeAt(index);
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropDownMultiSelect(
+                      key: const ValueKey("tags_dropdown"),
+                      onChanged: (List<String> x) {
+                        setState(() => selectedTags = x); 
+                      },
+                      options: tags, 
+                      selectedValues: selectedTags,
+                      whenEmpty: 'Selecciona al menos una etiqueta', 
+                      
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 30.0),
@@ -229,6 +520,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 },
                 child: Container(
                   padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  margin: EdgeInsets.only(bottom: 40.0),
                   decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(20),
