@@ -12,10 +12,7 @@ class DatabaseService {
   }
 
   Stream<QuerySnapshot> getUserById(String uid) {
-    return _db
-        .collection("Users")
-        .where("id", isEqualTo: uid)
-        .snapshots();
+    return _db.collection("Users").where("id", isEqualTo: uid).snapshots();
   }
 
   Future<List<String>> getFavorites(String uid) async {
@@ -42,12 +39,44 @@ class DatabaseService {
     }
   }
 
+  Future<List<Map<String, String>>> getCountries() async {
+  final snapshot = await _db.collection('countries').get();
+
+  return snapshot.docs.map((doc) {
+    return {
+      "id": doc.id,
+      "name": doc.data()['name'] as String,
+    };
+  }).toList();
+}
+
   Stream<QuerySnapshot> getRecipeCategory(String category) {
     return _db
         .collection("categories_italy")
         .doc(category)
         .collection("recipes")
         .snapshots();
+  }
+
+  Future<List<Map<String, String>>> getCategoriesByCountry(String countryDocId) async {
+    // Busca el país seleccionado
+    final countryDoc = await _db
+        .collection('countries')
+        .doc(countryDocId)
+        .get();
+
+    // Saca categoryID
+    final String categoryId = countryDoc.data()?['categoryID'] ?? '';
+    if (categoryId.isEmpty) return [];
+    // Busca la colección dinámica
+    final snapshot = await _db.collection(categoryId).get();
+    // Devuelve IDs de documentos como lista
+    return snapshot.docs.map((doc) {
+      return {
+        "id": doc.id,
+        "name": doc.data()['name'] as String,
+      };
+    }).toList();
   }
 
   Future<QuerySnapshot> search(String name) async {

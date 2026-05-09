@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      //home: const IntroAnimation(),
+      home: const IntroAnimation(),
       //home: const NavBar(),
-      home: const AddRecipe()
+      //home: const AddRecipe()
     );
   }
 }

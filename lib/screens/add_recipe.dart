@@ -11,7 +11,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 import 'package:multiselect/multiselect.dart';
 
-
 class AddRecipe extends StatefulWidget {
   const AddRecipe({super.key});
 
@@ -23,19 +22,11 @@ class _AddRecipeState extends State<AddRecipe> {
   String? selectedCategory;
   String? selectedDifficulty;
   String? selectedCountry;
-  final List<String> categories = [
-    'Soup Recipes',
-    'Main Course',
-    'Chinese',
-    'Italian',
-  ];
-  final List<String> countries = [
-    'Italia',
-    'Francia',
-    'España',
-    'China',
-    'Japón',
-  ];
+
+  List<Map<String, String>> categories = [];
+
+  List<Map<String, String>> countries = [];
+
   final List<String> tags = [
     'Vegetariano',
     'Vegano',
@@ -48,6 +39,7 @@ class _AddRecipeState extends State<AddRecipe> {
     'Alcohol',
     'Sin alcohol',
   ];
+
   List<String> selectedTags = [];
   final List<String> difficulties = ['Fácil', 'Medio', 'Dificil'];
   List<Map<String, dynamic>> ingredients = [];
@@ -56,7 +48,6 @@ class _AddRecipeState extends State<AddRecipe> {
   TextEditingController nameController = TextEditingController();
   TextEditingController timeController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
-  TextEditingController detailController = TextEditingController();
   TextEditingController kcalController = TextEditingController();
   TextEditingController ingredientName = TextEditingController();
   TextEditingController ingredientQty = TextEditingController();
@@ -64,6 +55,29 @@ class _AddRecipeState extends State<AddRecipe> {
 
   //CREACIÓN FUNCIÓN QUE ACCEDE A LA GALERÍA DEL MOVIL PARA SELECCIONAR UNA FOTO
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    loadCountries();
+  }
+
+  void loadCountries() async {
+    final data = await DatabaseService().getCountries();
+
+    setState(() {
+      countries = data;
+    });
+  }
+
+  void loadCategories(String countryId) async {
+    final data = await DatabaseService().getCategoriesByCountry(countryId);
+
+    setState(() {
+      categories = data;
+      selectedCategory = null;
+    });
+  }
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
@@ -74,22 +88,42 @@ class _AddRecipeState extends State<AddRecipe> {
   }
 
   Future<void> uploadItem() async {
-    //FUNCIÓN PARA SUBIR LA RECETA A LA BASE DE DATOS, PRIMERO SUBE LA IMAGEN A FIREBASE STORAGE Y OBTIENE SU URL PARA GUARDARLA EN LA BASE DE DATOS
-    if (selectedImage != null &&
-        nameController.text != "" &&
-        detailController.text != "") {
+    print("IMAGE: $selectedImage");
+    print("NAME: ${nameController.text}");
+    print("COUNTRY: $selectedCountry");
+    print("CATEGORY: $selectedCategory");
+    print("DIFFICULTY: $selectedDifficulty");
+    print("INGREDIENTS: ${ingredients.length}");
+    print("STEPS: ${steps.length}");
+    if (selectedImage == null ||
+        nameController.text.trim().isEmpty ||
+        selectedCountry == null ||
+        selectedCategory == null ||
+        selectedDifficulty == null ||
+        ingredients.isEmpty ||
+        steps.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Faltan campos por rellenar",
+        backgroundColor: const Color.fromARGB(255, 42, 79, 114),
+        textColor: Colors.white,
+      );
+
+      return;
+    }
+
+    try {
       String addId = randomAlphaNumeric(10);
+
       Reference firebaseStorageRef = FirebaseStorage.instance
           .ref()
-          .child("blocgImage")
+          .child("UserRecipes")
           .child(addId);
 
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
       var downloadurl = await (await task).ref.getDownloadURL();
-      //TODOS ESTOS CAMPOS TIENEN QUE ESTAR EN LA BASE DE DATOS PARA QUE FUNCIONE
+
       Map<String, dynamic> addrecipe = {
         "Name": nameController.text,
-        "Detail": detailController.text,
         "Image": downloadurl,
         "Category": selectedCategory,
         "Difficulty": selectedDifficulty,
@@ -98,37 +132,27 @@ class _AddRecipeState extends State<AddRecipe> {
         "Kcal": kcalController.text,
         "Ingredients": ingredients,
         "Steps": steps,
+        "Tags": selectedTags,
         "userId": FirebaseAuth.instance.currentUser?.uid,
         "Key": nameController.text.substring(0, 1).toUpperCase(),
         "SearchedName": nameController.text.toUpperCase(),
       };
-      DatabaseService().addRecipe(addrecipe).then((value) {
-        Fluttertoast.showToast(
-          msg: "Receta añadida a la base de datos",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
 
-        setState(() {
-          nameController.clear();
-          detailController.clear();
-          timeController.clear();
-          quantityController.clear();
-          selectedImage = null;
-          selectedCategory = null;
-          selectedDifficulty = null;
-          selectedCountry = null;
-        });
-      });
-    } else {
+      await DatabaseService().addRecipe(addrecipe);
+
       Fluttertoast.showToast(
-        msg: "Faltan campos por rellenar",
-        backgroundColor: Colors.orange,
+        msg: "Receta añadida a la base de datos",
+        backgroundColor: Colors.green,
         textColor: Colors.white,
       );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error al guardar receta",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+
+      print("ERROR ADD RECIPE: $e");
     }
   }
 
@@ -222,23 +246,24 @@ class _AddRecipeState extends State<AddRecipe> {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    items: countries
-                        .map(
-                          (item) => DropdownMenuItem(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: ((country) => setState(() {
-                      this.selectedCountry = country;
-                    })),
+                    items: countries.map((item) {
+                      return DropdownMenuItem<String>(
+                        value: item["id"], // valor real (japan)
+                        child: Text(
+                          item["name"]!, // lo que ve el usuario (Japón)
+                          style: TextStyle(fontSize: 18.0, color: Colors.black),
+                        ),
+                      );
+                    }).toList(),
+
+                    onChanged: (countryId) {
+                      setState(() {
+                        selectedCountry = countryId;
+                      });
+
+                      loadCategories(countryId!);
+                    },
+
                     dropdownColor: Colors.white,
                     hint: Text("Selecciona País"),
                     iconSize: 36,
@@ -261,9 +286,9 @@ class _AddRecipeState extends State<AddRecipe> {
                     items: categories
                         .map(
                           (item) => DropdownMenuItem(
-                            value: item,
+                            value: item["id"],
                             child: Text(
-                              item,
+                              item["name"]!,
                               style: TextStyle(
                                 fontSize: 18.0,
                                 color: Colors.black,
@@ -476,7 +501,9 @@ class _AddRecipeState extends State<AddRecipe> {
                 itemCount: steps.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text("${index + 1}. ${steps[index]["description"]}"), // Muestra el número del paso junto con su descripción
+                    title: Text(
+                      "${index + 1}. ${steps[index]["description"]}",
+                    ), // Muestra el número del paso junto con su descripción
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
@@ -497,20 +524,16 @@ class _AddRecipeState extends State<AddRecipe> {
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropDownMultiSelect(
-                      key: const ValueKey("tags_dropdown"),
-                      onChanged: (List<String> x) {
-                        setState(() => selectedTags = x); 
-                      },
-                      options: tags, 
-                      selectedValues: selectedTags,
-                      whenEmpty: 'Selecciona al menos una etiqueta', 
-                      
-                    ),
-                  ],
+                child: DropDownMultiSelect(
+                  onChanged: (List<String> x) {
+                    setState(() {
+                      selectedTags = x;
+                    });
+                  },
+                  options: tags,
+                  selectedValues: selectedTags,
+                  whenEmpty: 'Selecciona al menos una etiqueta',
+                  decoration: InputDecoration(border: InputBorder.none),
                 ),
               ),
               SizedBox(height: 30.0),
