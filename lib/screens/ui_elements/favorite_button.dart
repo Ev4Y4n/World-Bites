@@ -24,6 +24,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   Future<void> loadFavourites() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     favourites = await db.getFavorites(uid);
+
+    if (!mounted) return;
+
     setState(() {});
   }
 

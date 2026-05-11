@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'favorite_button.dart';
 
+//Clase que muestra las recetas en formato grid, usada en SavedRecipes y MyRecipes
 class RecipeGrid extends StatelessWidget {
   final List recipesDocs;
 

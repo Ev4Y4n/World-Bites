@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/screens/ui_elements/favorite_button.dart';
+import 'package:flutter_application_1/services/database.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SavedRecipes extends StatefulWidget {
@@ -149,15 +150,41 @@ class _SavedRecipesState extends State<SavedRecipes> {
           Expanded(
             child: selectedTab == 0
                 ? allRecipe()
-                : const Center(
-                    child: Text(
-                      "MIS RECETAS",
-                      style: TextStyle(fontSize: 20, color: Colors.black),
-                    ),
-                  ),
+                : userRecipes(FirebaseAuth.instance.currentUser!.uid),
           ),
         ],
       ),
+    );
+  }
+
+  Widget userRecipes(String uid) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: DatabaseService().getUserRecipes(uid),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final userDocs = snapshot.data!.docs;
+
+        if (userDocs.isEmpty) {
+          return const Center(child: Text('Aún no tienes recetas creadas'));
+        }
+
+        return GridView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.7,
+          ),
+          itemCount: userDocs.length,
+          itemBuilder: (context, index) {
+            return recipesCard(userDocs[index]);
+          },
+        );
+      },
     );
   }
 
@@ -243,7 +270,8 @@ class _SavedRecipesState extends State<SavedRecipes> {
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Colors.grey.shade300, width: 1),
         ),
-        clipBehavior: Clip.antiAlias, // para que el contenido respete los bordes redondeados
+        clipBehavior: Clip
+            .antiAlias, // para que el contenido respete los bordes redondeados
         child: Column(
           children: [
             Stack(

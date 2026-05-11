@@ -20,6 +20,15 @@ class DatabaseService {
     return List<String>.from(doc.data()?['favoriteRecipes'] ?? []);
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserRecipes(String uid) {
+    return _db
+        .collection('Recipe')
+        .where('userId', isEqualTo: uid)
+        .snapshots();
+
+  }
+  
+  // Agrega o quita una receta de favoritos del usuario
   Future<void> toggleFavorite(String uid, String recipeId) async {
     final ref = _db.collection('Users').doc(uid);
 

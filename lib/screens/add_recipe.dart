@@ -123,19 +123,19 @@ class _AddRecipeState extends State<AddRecipe> {
       var downloadurl = await (await task).ref.getDownloadURL();
 
       Map<String, dynamic> addrecipe = {
-        "Name": nameController.text,
-        "Image": downloadurl,
-        "Category": selectedCategory,
-        "Difficulty": selectedDifficulty,
-        "PrepTime": timeController.text,
-        "Quantity": quantityController.text,
-        "Kcal": kcalController.text,
-        "Ingredients": ingredients,
-        "Steps": steps,
-        "Tags": selectedTags,
+        "name": nameController.text,
+        "image": downloadurl,
+        "category": selectedCategory,
+        "difficulty": selectedDifficulty,
+        "prepTime": timeController.text,
+        "quantity": quantityController.text,
+        "kcal": kcalController.text,
+        "ingredients": ingredients,
+        "steps": steps,
+        "tags": selectedTags,
         "userId": FirebaseAuth.instance.currentUser?.uid,
-        "Key": nameController.text.substring(0, 1).toUpperCase(),
-        "SearchedName": nameController.text.toUpperCase(),
+        "key": nameController.text.substring(0, 1).toUpperCase(),
+        "searchedName": nameController.text.toUpperCase(),
       };
 
       await DatabaseService().addRecipe(addrecipe);
