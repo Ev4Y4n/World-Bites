@@ -21,13 +21,9 @@ class DatabaseService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserRecipes(String uid) {
-    return _db
-        .collection('Recipe')
-        .where('userId', isEqualTo: uid)
-        .snapshots();
-
+    return _db.collection('Recipe').where('userId', isEqualTo: uid).snapshots();
   }
-  
+
   // Agrega o quita una receta de favoritos del usuario
   Future<void> toggleFavorite(String uid, String recipeId) async {
     final ref = _db.collection('Users').doc(uid);
@@ -49,16 +45,14 @@ class DatabaseService {
   }
 
   Future<List<Map<String, String>>> getCountries() async {
-  final snapshot = await _db.collection('countries').get();
+    final snapshot = await _db.collection('countries').get();
 
-  return snapshot.docs.map((doc) {
-    return {
-      "id": doc.id,
-      "name": doc.data()['name'] as String,
-    };
-  }).toList();
-}
+    return snapshot.docs.map((doc) {
+      return {"id": doc.id, "name": doc.data()['name'] as String};
+    }).toList();
+  }
 
+  //accede a la categoría específica dentro de la colección dinámica (categories_italy, categories_mexico...)
   Stream<QuerySnapshot> getRecipeCategory(String category) {
     return _db
         .collection("categories_italy")
@@ -67,7 +61,8 @@ class DatabaseService {
         .snapshots();
   }
 
-  Future<List<Map<String, String>>> getCategoriesByCountry(String countryDocId) async {
+  //obtiene todas las categorias de cada pais
+  Future<List<Map<String, String>>> getCategoriesByCountry(String countryDocId,) async {
     // Busca el país seleccionado
     final countryDoc = await _db
         .collection('countries')
@@ -78,13 +73,10 @@ class DatabaseService {
     final String categoryId = countryDoc.data()?['categoryID'] ?? '';
     if (categoryId.isEmpty) return [];
     // Busca la colección dinámica
-    final snapshot = await _db.collection(categoryId).get();
+    final snapshot = await _db.collection(categoryId).orderBy('index').get();
     // Devuelve IDs de documentos como lista
     return snapshot.docs.map((doc) {
-      return {
-        "id": doc.id,
-        "name": doc.data()['name'] as String,
-      };
+      return {"id": doc.id, "name": doc.data()['name'] as String};
     }).toList();
   }
 

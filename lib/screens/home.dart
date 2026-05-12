@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/comming_soon.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/screens/ui_elements/category_item.dart';
+import 'package:flutter_application_1/screens/ui_elements/chatbot_button.dart';
 import 'package:flutter_application_1/screens/ui_elements/recipe_card.dart';
 import 'package:flutter_application_1/screens/ui_elements/recipe_grid.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
@@ -280,24 +281,7 @@ class _MainScreen extends State<MainScreen> {
                       ),
                     ),
                     const SizedBox(width: 260),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(136, 97, 87, 87),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            commingSoon();
-                          },
-                          icon: Icon(
-                            Icons.mark_chat_unread_outlined,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
+                    const ChatbotButton(),
                   ],
                 ),
               ),
