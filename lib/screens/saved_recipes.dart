@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/screens/ui_elements/favorite_button.dart';
+import 'package:flutter_application_1/screens/ui_elements/recipe_card.dart';
+import 'package:flutter_application_1/screens/ui_elements/user_recipe_card.dart';
 import 'package:flutter_application_1/services/database.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -36,25 +38,15 @@ class _SavedRecipesState extends State<SavedRecipes> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uid != null) {
-      // Cargar lista de favoritos del usuario
-      final userDoc = await FirebaseFirestore.instance
-          .collection("Users")
-          .doc(uid)
-          .get();
-
-      // IMPORTANTE: usar siempre "favoriteRecipes"
-      favouriteIds = List<String>.from(
-        userDoc.data()?["favoriteRecipes"] ?? [],
-      );
-
-      // Stream con TODAS las recetas
-      recipeStream = FirebaseFirestore.instance
-          .collectionGroup("recipes")
-          .snapshots();
+      favouriteIds = await DatabaseService().getFavorites(uid);
+      recipeStream = DatabaseService().getAllRecipes();
     }
 
     loadingFavs = false;
-    setState(() {});
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -181,7 +173,9 @@ class _SavedRecipesState extends State<SavedRecipes> {
           ),
           itemCount: userDocs.length,
           itemBuilder: (context, index) {
-            return recipesCard(userDocs[index]);
+            return userRecipesCard(
+              userDocs[index],
+            ); // Tarjeta de receta del usuario
           },
         );
       },
@@ -240,67 +234,27 @@ class _SavedRecipesState extends State<SavedRecipes> {
 
   Widget recipesCard(DocumentSnapshot<Map<String, dynamic>> ds) {
     final data = ds.data()!;
-    final String name = data['name'] ?? '';
-    final String category = data['categoryId'] ?? '';
-    final String imageUrl = data['image'] ?? '';
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Recipe(
-              foodname: name,
-              image: imageUrl,
-              ingredients: data['ingredients'] ?? [],
-              steps: data['steps'] ?? [],
-              difficulty: data['difficulty'] ?? '',
-              kcal: data['kcal'] ?? 0,
-              prepTime: data['prepTime'] ?? 0,
-              servings: data['servings'] ?? 0,
-              tags: data['tags'] ?? [],
-              doc: ds, // pantalla Recipe lo usa
-            ),
-          ),
-        );
+    return RecipeCard(
+      doc: ds,
+      recipe: data,
+      onFavoriteTap: () {
+        setState(() {
+          loadFavorites();
+        });
       },
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 12), // espacio entre tarjetas
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.grey.shade300, width: 1),
-        ),
-        clipBehavior: Clip
-            .antiAlias, // para que el contenido respete los bordes redondeados
-        child: Column(
-          children: [
-            Stack(
-              // imagen + botón favorito
-              children: [
-                CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  height: 110, // altura fija para todas las tarjetas
-                  width: double.infinity, // ocupar todo el ancho disponible
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const SizedBox(
-                    //el placeholder se utiliza para mostrar un widget mientras se carga la imagen, en este caso un CircularProgressIndicator centrado dentro de un SizedBox con la misma altura que la imagen para evitar saltos de diseño.
-                    height:
-                        110, // misma altura que la imagen para evitar saltos
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, url, error) => const SizedBox(
-                    height:
-                        110, // misma altura que la imagen para evitar saltos
-                    child: Center(child: Icon(Icons.broken_image)),
-                  ),
-                ),
-                FavoriteButton(recipeId: ds.id),
-              ],
-            ),
-            ListTile(title: Text(name), subtitle: Text(category)),
-          ],
-        ),
-      ),
+    );
+  }
+
+  Widget userRecipesCard(DocumentSnapshot<Map<String, dynamic>> ds) {
+    final data = ds.data()!;
+
+    return UserRecipeCard(
+      doc: ds,
+      recipe: data,
+      onDeleteTap: () {
+        loadFavorites();
+      },
     );
   }
 }

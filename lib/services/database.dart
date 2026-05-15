@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -7,26 +8,40 @@ class DatabaseService {
     return await _db.collection("Recipe").add(addrecipe);
   }
 
-  Stream<QuerySnapshot> getAllRecipes() {
-    return _db.collection("categories_italy").snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getAllRecipes() {
+    //return _db.collection("categories_italy").snapshots();
+      return _db.collectionGroup('recipes').snapshots();
+
   }
 
-  Stream<QuerySnapshot> getUserById(String uid) {
-    return _db.collection("Users").where("id", isEqualTo: uid).snapshots();
+  Stream<QuerySnapshot> getUserById(String userID) {
+    return _db.collection("Users").where("id", isEqualTo: userID).snapshots();
   }
 
-  Future<List<String>> getFavorites(String uid) async {
-    final doc = await _db.collection('Users').doc(uid).get();
+  Future<List<String>> getFavorites(String userID) async {
+    final doc = await _db.collection('Users').doc(userID).get();
     return List<String>.from(doc.data()?['favoriteRecipes'] ?? []);
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getUserRecipes(String uid) {
-    return _db.collection('Recipe').where('userId', isEqualTo: uid).snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserRecipes(String userID) {
+    return _db
+        .collection('Recipe')
+        .where('userId', isEqualTo: userID)
+        .snapshots();
+  }
+
+  Future<void> deleteUserRecipe(String recipeId, {String? imageUrl}) async {
+    // borrar imagen si existe
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+    }
+    // borrar receta
+    await _db.collection('Recipe').doc(recipeId).delete();
   }
 
   // Agrega o quita una receta de favoritos del usuario
-  Future<void> toggleFavorite(String uid, String recipeId) async {
-    final ref = _db.collection('Users').doc(uid);
+  Future<void> toggleFavorite(String userID, String recipeId) async {
+    final ref = _db.collection('Users').doc(userID);
 
     final doc = await ref.get();
     final data = doc.data() ?? {};
@@ -62,7 +77,9 @@ class DatabaseService {
   }
 
   //obtiene todas las categorias de cada pais
-  Future<List<Map<String, String>>> getCategoriesByCountry(String countryDocId,) async {
+  Future<List<Map<String, String>>> getCategoriesByCountry(
+    String countryDocId,
+  ) async {
     // Busca el país seleccionado
     final countryDoc = await _db
         .collection('countries')
@@ -87,18 +104,18 @@ class DatabaseService {
         .get();
   }
 
-  Future addUser(String uid, Map<String, dynamic> user) async {
-    return await _db.collection("Users").doc(uid).set(user);
+  Future addUser(String userID, Map<String, dynamic> user) async {
+    return await _db.collection("Users").doc(userID).set(user);
   }
 
-  Future updateUserName(String uid, String newUserName) async {
-    return await _db.collection("Users").doc(uid).update({
+  Future updateUserName(String userID, String newUserName) async {
+    return await _db.collection("Users").doc(userID).update({
       "userName": newUserName,
     });
   }
 
-  Future addProfilePicture(String uid, String downloadurl) async {
-    return await _db.collection("Users").doc(uid).update({
+  Future addProfilePicture(String userID, String downloadurl) async {
+    return await _db.collection("Users").doc(userID).update({
       "profileImage": downloadurl,
     });
   }

@@ -58,7 +58,6 @@ class _RecipeState extends State<Recipe> {
               child: const Icon(Icons.image_not_supported, size: 50),
             ),
           ),
-
           Positioned(
             top: 40,
             left: 20,
@@ -77,18 +76,12 @@ class _RecipeState extends State<Recipe> {
               ),
             ),
           ),
-          Positioned(child: 
-            const ChatbotButton(),
-            top: 110,
-            left: 20,
-          ),
-
+          Positioned(top: 110, left: 20, child: ChatbotButton()),
           Positioned(
             top: 40,
             right: 20,
-            child: FavoriteButton(recipeId: widget.doc.id),
+            child: FavoriteButton(recipeId: widget.doc.id, size: 35),
           ),
-
           Container(
             padding: const EdgeInsets.only(left: 20, right: 20, top: 40),
             margin: EdgeInsets.only(
@@ -129,9 +122,7 @@ class _RecipeState extends State<Recipe> {
                         ),
                     ],
                   ),
-
                   const Divider(),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -161,12 +152,10 @@ class _RecipeState extends State<Recipe> {
                         ),
                     ],
                   ),
-
                   const SizedBox(height: 10),
-
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
+                      horizontal: 6, 
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
@@ -200,7 +189,8 @@ class _RecipeState extends State<Recipe> {
                     final quantity = ing['quantity'] ?? '';
                     final image = ing['image'] ?? '';
 
-                    return CheckboxListTile( // añade CheckboxListTile para mostrar cada ingrediente con un checkbox
+                    return CheckboxListTile(
+                      // añade CheckboxListTile para mostrar cada ingrediente con un checkbox
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
                       value: checkedIngredients[index],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/add_recipe.dart';
 import 'package:flutter_application_1/screens/countries.dart';
+import 'package:flutter_application_1/screens/explore.dart';
 import 'package:flutter_application_1/screens/profile/profile.dart';
 import 'package:flutter_application_1/screens/home.dart';
 import 'package:flutter_application_1/screens/saved_recipes.dart';
@@ -29,8 +30,9 @@ class _NavBarState extends State<NavBar> {
     }
 
     if (index == 1) return SavedRecipes();
-    if (index == 2) return AddRecipe();
-    if (index == 3) return Profile();
+    if (index == 2) return const Explore();
+    if (index == 3) return AddRecipe();
+    if (index == 4) return Profile();
 
     return const SizedBox();
   }
@@ -55,6 +57,7 @@ class _NavBarState extends State<NavBar> {
         items: const [
           Icon(Icons.public, color: Colors.white),
           Icon(Icons.favorite, color: Colors.white),
+          Icon(Icons.explore, color: Colors.white),
           Icon(Icons.add, color: Colors.white),
           Icon(Icons.person, color: Colors.white),
         ],

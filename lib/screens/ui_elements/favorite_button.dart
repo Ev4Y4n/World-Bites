@@ -4,8 +4,13 @@ import 'package:flutter_application_1/services/database.dart';
 
 class FavoriteButton extends StatefulWidget {
   final String recipeId;
+  final double size;
 
-  const FavoriteButton({super.key, required this.recipeId});
+  const FavoriteButton({
+    super.key,
+    required this.recipeId,
+    this.size = 24,
+  });
 
   @override
   State<FavoriteButton> createState() => _FavoriteButtonState();
@@ -26,7 +31,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     favourites = await db.getFavorites(uid);
 
     if (!mounted) return;
-
     setState(() {});
   }
 
@@ -35,7 +39,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
     await db.toggleFavorite(uid, widget.recipeId);
 
-    // refresco local simple
     if (favourites.contains(widget.recipeId)) {
       favourites.remove(widget.recipeId);
     } else {
@@ -49,23 +52,19 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   Widget build(BuildContext context) {
     final isFav = favourites.contains(widget.recipeId);
 
-    return Positioned(
-      top: 8,
-      right: 8,
-      child: GestureDetector(
-        onTap: toggleFavorite,
-        child: Container(
-          width: 24,
-          height: 24,
-          decoration: const BoxDecoration(
-            color: Color.fromARGB(137, 255, 255, 255),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.favorite,
-            size: 16,
-            color: isFav ? Colors.red : Colors.grey,
-          ),
+    return GestureDetector(
+      onTap: toggleFavorite,
+      child: Container(
+        width: widget.size + 12,
+        height: widget.size + 12,
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(137, 255, 255, 255),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.favorite,
+          size: widget.size,
+          color: isFav ? Colors.red : Colors.grey,
         ),
       ),
     );
