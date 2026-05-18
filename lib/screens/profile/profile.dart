@@ -8,6 +8,7 @@ import 'package:flutter_application_1/screens/profile/change_password.dart';
 import 'package:flutter_application_1/screens/profile/delete_account.dart';
 import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
+import 'package:flutter_application_1/screens/saved_recipes.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/database.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -170,13 +171,21 @@ class _ProfileState extends State<Profile> {
               child: Column(
                 children: [
                   ProfileMenu(
-                    text: "Tus recetas",
+                    text: "Mis recetas",
                     textStyle: GoogleFonts.barlow(
                       fontSize: 15,
                       color: const Color.fromARGB(255, 100, 100, 100),
                     ),
                     icon: Icons.local_dining,
-                    press: () {},
+                    press: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const SavedRecipes(initialTab: 1),
+                        ),
+                      );
+                    },
                   ),
                   ProfileMenu(
                     text: "Cambiar Contraseña",

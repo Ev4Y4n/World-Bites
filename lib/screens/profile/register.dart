@@ -4,6 +4,7 @@ import 'package:flutter_application_1/layout/nav_bar.dart';
 import 'package:flutter_application_1/screens/profile/login.dart';
 import 'package:flutter_application_1/screens/transition.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/firebase_error_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Register extends StatelessWidget {
@@ -31,7 +32,10 @@ class Register extends StatelessWidget {
                 ),
                 TextSpan(
                   text: 'Bites',
-                  style: GoogleFonts.barlow(fontSize: 30, color: Colors.white),
+                  style: GoogleFonts.barlow(
+                    fontSize: 30,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -62,7 +66,6 @@ class Register extends StatelessWidget {
             left: 0,
             right: 230,
             child: SafeArea(
-              //se usa para evitar que el contenido se superponga con elementos del sistema, como la barra de estado o la barra de navegación en dispositivos móviles.
               top: false,
               child: Image.asset(
                 'assets/images/tenedor_2.png',
@@ -90,17 +93,29 @@ class MyCustomForm extends StatefulWidget {
 }
 
 class MyCustomFormState extends State<MyCustomForm> {
-  final TextEditingController controllerUserName =
-      TextEditingController(); // Controlador para el campo de nombre de usuario
-  final TextEditingController controllerEmail =
-      TextEditingController(); // Controlador para el campo de correo electrónico
-  final TextEditingController controllerPassword =
-      TextEditingController(); // Controlador para el campo de contraseña
+  final TextEditingController controllerUserName = TextEditingController();
+  final TextEditingController controllerEmail = TextEditingController();
+  final TextEditingController controllerPassword = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   String errorMessage = "";
-  final _formKey = GlobalKey<FormState>(); // Clave para el formulario
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    controllerUserName.dispose();
+    controllerEmail.dispose();
+    controllerPassword.dispose();
+    super.dispose();
+  }
 
   Future<void> register() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = "";
+    });
+
     try {
       if (_formKey.currentState!.validate()) {
         await authService.value.createAccount(
@@ -108,30 +123,30 @@ class MyCustomFormState extends State<MyCustomForm> {
           email: controllerEmail.text.trim(),
           password: controllerPassword.text.trim(),
         );
-        print('Usuario registrado');
-        loadTransition(); //SOLO si todo salió bien
-      } else {
-        setState(() {
-          errorMessage = 'Formulario inválido';
-        });
+
+        if (!mounted) return;
+
+        loadTransition();
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message ?? 'Usuario ya existente o datos no válidos';
+        errorMessage = FirebaseErrorHandler.getMessage(e);
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = "Error inesperado";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
 
   void loginScreen() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const LogIn()));
-  }
-
-  void enterApp() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const NavBar()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const LogIn()),
+    );
   }
 
   void loadTransition() {
@@ -159,18 +174,18 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 const SizedBox(height: 20),
 
-                Align(
+                const Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
+                  child: Text(
                     'Registrar',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: Color.fromARGB(255, 42, 79, 114),
                     ),
-                    textAlign: TextAlign.left,
                   ),
                 ),
+
                 const SizedBox(height: 30),
 
                 TextFormField(
@@ -217,7 +232,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                       return 'Este campo no puede estar vacío';
                     }
                     if (value.length < 6) {
-                      return 'La contraseña debe tener mínimo 6 caracteres';
+                      return 'Mínimo 6 caracteres';
                     }
                     return null;
                   },
@@ -225,21 +240,28 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 const SizedBox(height: 10),
 
-                Text(errorMessage, style: const TextStyle(color: Colors.red)),
+                Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
 
                 const SizedBox(height: 10),
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 42, 79, 114),
+                    backgroundColor: const Color.fromARGB(255, 42, 79, 114),
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      register();
-                    }
-                  },
-                  child: const Text('REGISTRAR'),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          if (_formKey.currentState!.validate()) {
+                            register();
+                          }
+                        },
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('REGISTRAR'),
                 ),
 
                 const SizedBox(height: 20),
@@ -247,21 +269,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '¿Ya tienes cuenta?',
-                      style: TextStyle(fontSize: 15),
-                    ),
+                    const Text('¿Ya tienes cuenta?'),
                     TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Color.fromARGB(255, 42, 79, 114),
-                        textStyle: GoogleFonts.barlow(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        loginScreen();
-                      },
+                      onPressed: loginScreen,
                       child: const Text('INICIAR SESIÓN'),
                     ),
                   ],

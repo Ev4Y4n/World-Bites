@@ -57,7 +57,7 @@ class UserRecipeCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // 🖼 IMAGE + FAVORITO
+            // IMAGE + FAVORITO
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Stack(
@@ -76,7 +76,7 @@ class UserRecipeCard extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // 🍝 NAME + TIME
+            // NAME + TIME
             Row(
               children: [
                 Expanded(
@@ -115,7 +115,7 @@ class UserRecipeCard extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            // 🏷 TAGS
+            // TAGS
             Wrap(
               spacing: 4,
               runSpacing: 4,

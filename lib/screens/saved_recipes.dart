@@ -10,14 +10,19 @@ import 'package:flutter_application_1/services/database.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SavedRecipes extends StatefulWidget {
-  const SavedRecipes({super.key});
+  final int initialTab;
+
+  const SavedRecipes({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<SavedRecipes> createState() => _SavedRecipesState();
 }
 
 class _SavedRecipesState extends State<SavedRecipes> {
-  int selectedTab = 0;
+  late int selectedTab;
 
   /// IDs de recetas favoritas del usuario
   List<String> favouriteIds = [];
@@ -30,6 +35,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
   @override
   void initState() {
     super.initState();
+    selectedTab = widget.initialTab;
     loadFavorites();
   }
 

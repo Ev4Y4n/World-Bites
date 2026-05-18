@@ -64,7 +64,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         child: Icon(
           Icons.favorite,
           size: widget.size,
-          color: isFav ? Colors.red : Colors.grey,
+          color: isFav ? const Color.fromARGB(255, 161, 25, 16) : Colors.grey,
         ),
       ),
     );
