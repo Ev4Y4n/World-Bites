@@ -13,7 +13,6 @@ Future<void> subirCategorias(String assetPath) async {
 
   for (var category in categories) {
     final String categoryId = category['id'];
-    final List recipes = category['recipes'] ?? [];
 
     final categoryRef = FirebaseFirestore.instance
         .collection('categories_mexico')
@@ -23,17 +22,10 @@ Future<void> subirCategorias(String assetPath) async {
       'name': category['name'],
       'icon': category['icon'],
       'index': category['index'],
-    });
-
-    for (var recipe in recipes) {
-      await categoryRef.collection('recipes').doc(recipe['id']).set({
-        'name': recipe['name'] ?? '',
-        'icon': recipe['icon'] ?? '',
-      }, SetOptions(merge: true));
-    }
-
-    print("Categoría subida: $categoryId");
+    }, SetOptions(merge: true));
   }
+
+  print("Categorías subidas");
 }
 
 Future<void> subirRecetas(String assetPath) async {
@@ -44,30 +36,32 @@ Future<void> subirRecetas(String assetPath) async {
 
   for (var category in categories) {
     final String categoryId = category['id'];
-    final List recipes = category['recipes'];
+    final List recipes = category['recipes'] ?? [];
+
+    final categoryRef = FirebaseFirestore.instance
+        .collection('categories_mexico')
+        .doc(categoryId);
 
     for (var recipe in recipes) {
       final String recipeId = recipe['id'];
 
-      await FirebaseFirestore.instance
-          .collection('categories_mexico')
-          .doc(categoryId)
-          .collection('recipes')
-          .doc(recipeId)
-          .set({
-            'name': recipe['name'] ?? '',
-            'image': recipe['image'] ?? '',
-            'difficulty': recipe['difficulty'] ?? '',
-            'kcal': recipe['kcal'] ?? 0,
-            'prepTime': recipe['prepTime'] ?? 0,
-            'servings': recipe['servings'] ?? 0,
-            'tags': recipe['tags'] ?? [],
-            'ingredients': recipe['ingredients'] ?? [],
-            'steps': recipe['steps'] ?? [],
-          }, SetOptions(merge: true));
+      await categoryRef.collection('recipes').doc(recipeId).set({
+        'categoryId': categoryId,
 
-      print("Receta subida: $recipeId");
+        // 🔥 datos completos
+        'name': recipe['name'] ?? '',
+        'image': recipe['image'] ?? '',
+        'difficulty': recipe['difficulty'] ?? '',
+        'kcal': recipe['kcal'] ?? 0,
+        'prepTime': recipe['prepTime'] ?? 0,
+        'servings': recipe['servings'] ?? 0,
+        'tags': recipe['tags'] ?? [],
+        'ingredients': recipe['ingredients'] ?? [],
+        'steps': recipe['steps'] ?? [],
+      }, SetOptions(merge: true));
     }
+
+    print("Recetas subidas: $categoryId");
   }
 }
 
@@ -79,7 +73,6 @@ Future<void> main() async {
   print("Firebase listo");
 
   await subirCategorias('assets/json/categorias_mexico.json');
-
   await subirRecetas('assets/json/recetas_mexico.json');
 
   print("TODO TERMINADO");
