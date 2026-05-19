@@ -2,20 +2,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/screens/ui_elements/favorite_button.dart';
 import 'package:flutter_application_1/screens/ui_elements/recipe_card.dart';
 import 'package:flutter_application_1/screens/ui_elements/user_recipe_card.dart';
 import 'package:flutter_application_1/services/database.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class SavedRecipes extends StatefulWidget {
   final int initialTab;
 
-  const SavedRecipes({
-    super.key,
-    this.initialTab = 0,
-  });
+  const SavedRecipes({super.key, this.initialTab = 0});
 
   @override
   State<SavedRecipes> createState() => _SavedRecipesState();
@@ -35,7 +34,6 @@ class _SavedRecipesState extends State<SavedRecipes> {
   @override
   void initState() {
     super.initState();
-    selectedTab = widget.initialTab;
     loadFavorites();
   }
 
@@ -57,6 +55,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedTab = context.watch<AppState>().savedRecipesTab;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -121,7 +120,9 @@ class _SavedRecipesState extends State<SavedRecipes> {
                         ? const Color.fromARGB(255, 42, 79, 114)
                         : const Color.fromARGB(255, 203, 212, 221),
                   ),
-                  onPressed: () => setState(() => selectedTab = 0),
+                  onPressed: () {
+                    context.read<AppState>().setSavedRecipesTab(0);
+                  },
                   child: const Text(
                     'FAVORITOS',
                     style: TextStyle(fontSize: 15, color: Colors.white),
@@ -134,7 +135,9 @@ class _SavedRecipesState extends State<SavedRecipes> {
                         ? const Color.fromARGB(255, 42, 79, 114)
                         : const Color.fromARGB(255, 203, 212, 221),
                   ),
-                  onPressed: () => setState(() => selectedTab = 1),
+                  onPressed: () {
+                    context.read<AppState>().setSavedRecipesTab(1);
+                  },
                   child: const Text(
                     'MIS RECETAS',
                     style: TextStyle(fontSize: 15, color: Colors.white),

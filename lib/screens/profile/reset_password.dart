@@ -11,6 +11,7 @@ class ResetPassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      // Mantenemos el AppBar para el título "World Bites"
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
@@ -41,7 +42,7 @@ class ResetPassword extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Fondo header
+          // 1. Fondo (Abajo del todo)
           Positioned(
             top: 0,
             left: 0,
@@ -54,7 +55,7 @@ class ResetPassword extends StatelessWidget {
             ),
           ),
 
-          // Imagen burrito
+          // 2. Decoración
           Positioned(
             top: -10,
             left: 0,
@@ -65,8 +66,6 @@ class ResetPassword extends StatelessWidget {
               height: 170,
             ),
           ),
-
-          // Imagen tenedor pollo
           Positioned(
             top: 50,
             left: 250,
@@ -78,10 +77,13 @@ class ResetPassword extends StatelessWidget {
             ),
           ),
 
+          // 3. El Formulario
           Padding(
             padding: const EdgeInsets.only(top: 180),
             child: const MyCustomForm(),
           ),
+
+          
         ],
       ),
     );
@@ -135,16 +137,11 @@ class _MyCustomFormState extends State<MyCustomForm> {
       alignment: Alignment.topCenter,
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 120, 
-          ),
+          padding: const EdgeInsets.only(left: 24, right: 24, top: 120),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize:
-                  MainAxisSize.min, // Ajusta el tamaño del Column al contenido
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '¿Has olvidado tu contraseña?',

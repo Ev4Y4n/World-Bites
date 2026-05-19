@@ -10,8 +10,7 @@ class DatabaseService {
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getAllRecipes() {
     //return _db.collection("categories_italy").snapshots();
-      return _db.collectionGroup('recipes').snapshots();
-
+    return _db.collectionGroup('recipes').snapshots();
   }
 
   Stream<QuerySnapshot> getUserById(String userID) {
@@ -68,11 +67,14 @@ class DatabaseService {
   }
 
   //accede a la categoría específica dentro de la colección dinámica (categories_italy, categories_mexico...)
-  Stream<QuerySnapshot> getRecipeCategory(String category) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getRecipeCategory(
+    String country,
+    String categoryID,
+  ) {
     return _db
-        .collection("categories_italy")
-        .doc(category)
-        .collection("recipes")
+        .collection(country) // categories_italy
+        .doc(categoryID) // desserts
+        .collection("recipes") // Subcolección de recetas
         .snapshots();
   }
 

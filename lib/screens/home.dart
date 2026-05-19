@@ -1,3 +1,4 @@
+import 'dart:async'; // Necesario para el Timer (Debounce)
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,34 +21,48 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreen extends State<MainScreen> {
-  Stream?
-  recipeStream; // Agrega esta variable para almacenar el stream de recetas
+  Stream? recipeStream;
   bool search = false;
   String? selectedSubCategory;
-
   List<String> favouriteRecipes = [];
 
-  var queryResultSet = [];
-  var tempSearchStore = [];
+  // Variables para la lógica de búsqueda fluida
+  List<Map<String, dynamic>> allRecipesForSearch = [];
+  List<Map<String, dynamic>> tempSearchStore = [];
+  Timer? _debounce; // Controla el retraso al escribir
 
   @override
   void initState() {
+    super.initState();
     getOnTheLoad();
     createUserIfNotExists();
-    super.initState();
+    _preloadSearchData();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel(); // Limpiamos el timer para evitar errores de memoria
+    super.dispose();
   }
 
   Future<void> getOnTheLoad() async {
-    recipeStream = FirebaseFirestore.instance
-        .collection("categories_italy")
-        .snapshots();
-    setState(() {});
+  // Coge el primer documento de la colección del país
+  final snapshot = await FirebaseFirestore.instance
+      .collection(widget.categoryID)
+      .orderBy('index') // si tienes campo index, si no quítalo
+      .limit(1)
+      .get();
+
+  if (snapshot.docs.isNotEmpty) {
+    selectedSubCategory = snapshot.docs.first.id;
   }
+
+  setState(() {});
+}
 
   Future<void> createUserIfNotExists() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final userRef = FirebaseFirestore.instance.collection('Users').doc(uid);
-
     final doc = await userRef.get();
 
     if (!doc.exists) {
@@ -58,120 +73,107 @@ class _MainScreen extends State<MainScreen> {
     }
   }
 
-  void initiateSearch(String value) {
-    if (value.isEmpty) {
-      setState(() {
-        search = false;
-        queryResultSet = []; // Limpia los resultados anteriores
-        tempSearchStore = []; // Limpia los resultados temporales anteriores
-      });
-      return;
-    }
+  // Pre-carga los datos en segundo plano
+  Future<void> _preloadSearchData() async {
+    try {
+      var categoryDocs = await FirebaseFirestore.instance
+          .collection(widget.categoryID)
+          .get();
+      List<Map<String, dynamic>> tempList = [];
 
-    setState(() {
-      search = true;
-    });
-
-    var capitalizedValue = value[0].toUpperCase() + value.substring(1);
-
-    if (queryResultSet.isEmpty && value.length == 1) {
-      // Solo realiza la consulta a Firestore la primera vez que se ingresa un carácter
-      FirebaseFirestore.instance.collection("categories_italy").get().then((
-        QuerySnapshot docs,
-      ) {
-        for (var doc in docs.docs) {
-          var data = doc.data()! as Map<String, dynamic>;
-
-          data.forEach((subCatName, subCatData) {
-            // Itera sobre cada subcategoría
-            if (subCatData is Map<String, dynamic> &&
-                subCatData.containsKey('recipes')) {
-              var recipesMap = subCatData['recipes'] as Map<String, dynamic>;
-
-              recipesMap.forEach((recipeName, recipeData) {
-                queryResultSet.add({
-                  'name': recipeData['name'] ?? recipeName,
-                  'difficulty': recipeData['difficulty'] ?? 'Desconocida',
-                  'image':
-                      recipeData['image'] ?? 'https://via.placeholder.com/150',
-                  'ingredients': recipeData['ingredients'] ?? [],
-                  'kcal': recipeData['kcal'] ?? 0,
-                  'steps': recipeData['steps'] ?? [],
-                  'prepTime': recipeData['prepTime'] ?? 0,
-                  'servings': recipeData['servings'] ?? 0,
-                  'tags': recipeData['tags'] ?? [],
-                });
-              });
-            }
+      for (var doc in categoryDocs.docs) {
+        var recipeDocs = await doc.reference.collection('recipes').get();
+        for (var recipe in recipeDocs.docs) {
+          var data = recipe.data();
+          tempList.add({
+            'name': data['name'] ?? 'Sin nombre',
+            'difficulty': data['difficulty'] ?? 'Desconocida',
+            'image': data['image'] ?? '',
+            'ingredients': data['ingredients'] ?? [],
+            'kcal': data['kcal'] ?? 0,
+            'steps': data['steps'] ?? [],
+            'prepTime': data['prepTime'] ?? 0,
+            'servings': data['servings'] ?? 0,
+            'tags': data['tags'] ?? [],
           });
         }
-
-        filterSearch(capitalizedValue);
-      });
-    } else {
-      filterSearch(capitalizedValue);
-    }
-  }
-
-  void filterSearch(String capitalizedValue) {
-    tempSearchStore = [];
-
-    for (var element in queryResultSet) {
-      if ((element["name"] as String).startsWith(capitalizedValue)) {
-        tempSearchStore.add(element);
       }
+      if (mounted) {
+        setState(() {
+          allRecipesForSearch = tempList;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error precargando búsqueda: $e");
     }
-
-    setState(() {});
   }
 
-  void commingSoon() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const CommingSoon()));
+  // Lógica de búsqueda con Debounce para evitar el "pete" (Jank)
+  void initiateSearch(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (value.isEmpty) {
+        setState(() {
+          search = false;
+          tempSearchStore = [];
+        });
+        return;
+      }
+
+      setState(() {
+        search = true;
+        tempSearchStore = allRecipesForSearch.where((recipe) {
+          final name = recipe['name'].toString().toLowerCase();
+          return name.contains(value.toLowerCase());
+        }).toList();
+      });
+    });
   }
 
   Widget categoryList() {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection("categories_italy")
-          .snapshots(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-          return const SizedBox(
-            height: 180,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20), // 👈 SOLO ESTO
+      child: SizedBox(
+        height: 180,
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection(widget.categoryID)
+              .orderBy('index') 
+              .snapshots(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        var docs = snapshot.data.docs;
+            var docs = snapshot.data.docs;
 
-        if (selectedSubCategory == null && docs.isNotEmpty) {
-          selectedSubCategory = docs[0].id;
-        }
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: docs.length,
+              itemBuilder: (context, index) {
+                var ds = docs[index];
 
-        return SizedBox(
-          height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              var ds = docs[index];
-
-              return CategoryItem(
-                name: ds['name'],
-                icon: ds['icon'],
-                isSelected: selectedSubCategory == ds.id,
-                onTap: () {
-                  setState(() {
-                    selectedSubCategory = ds.id;
-                  });
-                },
-              );
-            },
-          ),
-        );
-      },
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    right: 12,
+                  ), // 👈 separación entre cards
+                  child: CategoryItem(
+                    name: ds['name'],
+                    icon: ds['icon'],
+                    isSelected: selectedSubCategory == ds.id,
+                    onTap: () {
+                      setState(() {
+                        selectedSubCategory = ds.id;
+                      });
+                    },
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -180,7 +182,7 @@ class _MainScreen extends State<MainScreen> {
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('categories_italy')
+          .collection(widget.categoryID)
           .doc(selectedSubCategory)
           .collection('recipes')
           .snapshots(),
@@ -190,7 +192,6 @@ class _MainScreen extends State<MainScreen> {
         }
 
         var recipesDocs = snapshot.data.docs;
-
         if (recipesDocs.isEmpty) {
           return const Center(child: Text("No hay recetas"));
         }
@@ -201,7 +202,6 @@ class _MainScreen extends State<MainScreen> {
   }
 
   Widget buildResultCard(data) {
-    // Muestra los resultados de búsqueda
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -223,12 +223,12 @@ class _MainScreen extends State<MainScreen> {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         child: Material(
           elevation: 5,
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            padding: EdgeInsets.all(18),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -237,15 +237,25 @@ class _MainScreen extends State<MainScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(60),
-                  child: Image.network(
-                    data['image'] ?? 'https://via.placeholder.com/70',
-                    height: 70,
-                    width: 70,
-                    fit: BoxFit.cover,
+                  child: data['image'] != ''
+                      ? Image.network(
+                          data['image'],
+                          height: 70,
+                          width: 70,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stack) =>
+                              const Icon(Icons.fastfood, size: 40),
+                        )
+                      : const Icon(Icons.fastfood, size: 70),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Text(
+                    data['name'] ?? '',
+                    style: AppWidget.boldfieldtextstyle(),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(width: 20),
-                Text(data['name'] ?? '', style: AppWidget.boldfieldtextstyle()),
               ],
             ),
           ),
@@ -256,90 +266,82 @@ class _MainScreen extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Construye la interfaz de usuario
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: 60, left: 20),
+          margin: const EdgeInsets.only(top: 60),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color.fromARGB(136, 97, 87, 87),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () {
                           context.read<AppState>().selectCountry(null);
                         },
                       ),
                     ),
-                    const SizedBox(width: 260),
                     const ChatbotButton(),
                   ],
                 ),
               ),
-
-              SizedBox(height: 20),
-
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      "Descubre recetas\nde cada rincón",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Spacer(),
-                  ],
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Descubre recetas\nde cada rincón",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
-                padding: EdgeInsets.only(left: 10),
-                margin: EdgeInsets.only(right: 20, bottom: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextField(
                   onChanged: (value) => initiateSearch(value),
                   decoration: InputDecoration(
                     hintText: "Buscar receta ...",
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                 ),
               ),
-
-              SizedBox(height: 20),
-
+              const SizedBox(height: 20),
               search
-                  ? ListView(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      children: tempSearchStore
-                          .map((e) => buildResultCard(e))
-                          .toList(),
-                    )
-                  : categoryList(),
-
-              SizedBox(height: 20),
-
-              search
-                  ? Container()
-                  : SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      child: allRecipe(),
+                  ? (tempSearchStore.isEmpty
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Text("Sin resultados"),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: tempSearchStore.length,
+                            itemBuilder: (context, index) =>
+                                buildResultCard(tempSearchStore[index]),
+                          ))
+                  : Column(
+                      children: [
+                        categoryList(),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: allRecipe(),
+                        ),
+                      ],
                     ),
             ],
           ),

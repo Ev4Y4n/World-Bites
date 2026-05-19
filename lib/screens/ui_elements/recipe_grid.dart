@@ -6,22 +6,19 @@ import 'favorite_button.dart';
 class RecipeGrid extends StatelessWidget {
   final List recipesDocs;
 
-  const RecipeGrid({
-    super.key,
-    required this.recipesDocs,
-  });
+  const RecipeGrid({super.key, required this.recipesDocs});
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.only(right: 20),
+      padding: EdgeInsets.symmetric(horizontal: 10),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.55,
       ),
       itemCount: recipesDocs.length,
       itemBuilder: (context, index) {
@@ -74,6 +71,25 @@ class RecipeGrid extends StatelessWidget {
                         height: 110,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 110,
+                            width: double.infinity,
+                            color: Colors.grey.shade200,
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 110,
+                            width: double.infinity,
+                            color: Colors.grey.shade300,
+                            child: const Icon(Icons.fastfood, size: 40),
+                          );
+                        },
                       ),
                       FavoriteButton(recipeId: doc.id),
                     ],
@@ -97,8 +113,7 @@ class RecipeGrid extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(136, 104, 92, 92),
                         borderRadius: BorderRadius.circular(20),
@@ -106,15 +121,13 @@ class RecipeGrid extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.schedule,
-                              color: Colors.yellow, size: 14),
+                          Icon(Icons.schedule, color: Colors.yellow, size: 14),
                           SizedBox(width: 4),
                           Text(
                             prepTime <= 60
                                 ? "$prepTime min"
                                 : "${(prepTime / 60).toStringAsFixed(1)} hr",
-                            style:
-                                TextStyle(color: Colors.black, fontSize: 10),
+                            style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
                         ],
                       ),

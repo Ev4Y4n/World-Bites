@@ -79,9 +79,11 @@ class _CountriesPageState extends State<CountriesPage> {
   }
 
   void commingSoon() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const CommingSoon()));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => const CommingSoon(),
+      ),
+    );
   }
 
   @override
@@ -101,7 +103,7 @@ class _CountriesPageState extends State<CountriesPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Color.fromARGB(136, 97, 87, 87),
                       shape: BoxShape.circle,
                     ),
@@ -109,7 +111,7 @@ class _CountriesPageState extends State<CountriesPage> {
                       onPressed: () {
                         commingSoon();
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.mark_chat_unread_outlined,
                         color: Colors.white,
                       ),
@@ -118,15 +120,13 @@ class _CountriesPageState extends State<CountriesPage> {
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "¿A qué país quieres\nviajar hoy?",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+
+            const SizedBox(height: 10),
+
+            const Text(
+              "¿A qué país quieres\nviajar hoy?",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
 
             const SizedBox(height: 20),
@@ -156,52 +156,90 @@ class _CountriesPageState extends State<CountriesPage> {
                 itemBuilder: (context, index) {
                   final country = filteredCountries[index];
 
+                  final isAvailable =
+                      country["name"] == "Italia" ||
+                      country["name"] == "México";
+
                   return GestureDetector(
-                    onTap: () {
-                      context.read<AppState>().selectCountry(
-                        country["categoryID"]!,
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black12, blurRadius: 5),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: FutureBuilder<String>(
-                              future: getImageUrl(country["plate"]!),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                return Image.network(
-                                  snapshot.data!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
+                    onTap: isAvailable
+                        ? () {
+                            context.read<AppState>().selectCountry(
+                                  country["categoryID"]!,
                                 );
-                              },
+                          }
+                        : null,
+                    child: Stack(
+                      children: [
+                        Opacity(
+                          opacity: isAvailable ? 1 : 0.5,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 5,
+                                ),
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            child: Column(
                               children: [
-                                Text(country["flag"]!),
-                                const SizedBox(width: 6),
-                                Text(country["name"]!),
+                                Expanded(
+                                  child: FutureBuilder<String>(
+                                    future: getImageUrl(country["plate"]!),
+                                    builder: (context, snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      return Image.network(
+                                        snapshot.data!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(country["flag"]!),
+                                      const SizedBox(width: 6),
+                                      Text(country["name"]!),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+
+                        // 🔒 OVERLAY PRÓXIMAMENTE
+                        if (!isAvailable)
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.4),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "PRÓXIMAMENTE",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   );
                 },

@@ -1,19 +1,19 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/profile/change_password.dart';
 import 'package:flutter_application_1/screens/profile/delete_account.dart';
 import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
-import 'package:flutter_application_1/screens/saved_recipes.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/database.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -25,11 +25,52 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   File? selectedImage;
   String? imageUrl;
+  String username = "Cargando...";
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  /// Carga inicial del nombre e imagen desde Firestore
+  Future<void> loadUserData() async {
+    try {
+      var userDoc = await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (!mounted || !userDoc.exists) return;
+
+      setState(() {
+        imageUrl = userDoc.data()?["profileImage"];
+        username = userDoc.data()?["userName"] ?? "Usuario";
+      });
+    } catch (e) {
+      print("Error cargando datos: $e");
+    }
+  }
+
+  /// Actualiza el nombre de usuario en Firebase
+  Future<void> updateUsernameInFirebase(String newName) async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance.collection("Users").doc(uid).update({
+        "username": newName,
+      });
+      setState(() {
+        username = newName;
+      });
+      Fluttertoast.showToast(msg: "Nombre actualizado");
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error al actualizar nombre");
+    }
+  }
 
   Future getProfileImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
-
     if (!mounted || image == null) return;
 
     setState(() {
@@ -45,13 +86,16 @@ class _ProfileState extends State<Profile> {
           .child("${FirebaseAuth.instance.currentUser!.uid}.jpg");
 
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
-
       var downloadurl = await (await task).ref.getDownloadURL();
 
       await DatabaseService().addProfilePicture(
         FirebaseAuth.instance.currentUser!.uid,
         downloadurl,
       );
+
+      setState(() {
+        imageUrl = downloadurl;
+      });
     } else {
       Fluttertoast.showToast(
         msg: "Error al subir la imagen",
@@ -61,56 +105,46 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  void exitApp() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => const Register()));
-  }
+  // Navegación y Auth
+  void exitApp() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => const Register()));
+  void reset() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => const ResetPassword()));
+  void delete() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => const DeleteAccount()));
 
-  void reset() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (context) => const ResetPassword()),
+  void logout(BuildContext context) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Cerrar sesión"),
+          content: const Text("¿Estás seguro de que quieres cerrar sesión?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Sí, cerrar sesión"),
+            ),
+          ],
+        );
+      },
     );
-  }
 
-  void change() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (context) => ChangePassword()));
-  }
-
-  void delete() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (context) => const DeleteAccount()),
-    );
-  }
-
-  void logout() async {
-    try {
-      await authService.value.signOut();
-      exitApp();
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
+    if (confirm == true) {
+      try {
+        await authService.value.signOut();
+        exitApp();
+      } on FirebaseAuthException catch (e) {
+        print(e.message);
+      }
     }
-  }
-
-  @override //overide se utiliza para cargar la imagen de perfil al iniciar la pantalla de perfil, si el usuario ya tiene una imagen de perfil guardada en la base de datos, se carga esa imagen en lugar del icono por defecto
-  void initState() {
-    super.initState();
-    loadProfileImage();
-  }
-
-  Future loadProfileImage() async {
-    var userDoc = await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
-    if (!userDoc.exists) return;
-
-    setState(() {
-      imageUrl = userDoc.data()?["profileImage"];
-    });
   }
 
   @override
@@ -119,7 +153,7 @@ class _ProfileState extends State<Profile> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Fondo
+          // Fondo decorativo superior
           Positioned(
             top: -30,
             left: 0,
@@ -131,7 +165,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
 
-          // Avatar
+          // Foto de Perfil
           Positioned(
             top: 80,
             left: 0,
@@ -141,7 +175,6 @@ class _ProfileState extends State<Profile> {
                 selectedImage: selectedImage,
                 imageUrl: imageUrl,
                 onPressed: () async {
-                  print("CLICK EN CÁMARA");
                   await getProfileImage();
                   uploadProfileImage();
                 },
@@ -149,15 +182,20 @@ class _ProfileState extends State<Profile> {
             ),
           ),
 
-          // Nombre
+          // Nombre de Usuario Editable
           Positioned(
             top: 200,
             left: 0,
             right: 0,
-            child: const Center(child: UserName()),
+            child: Center(
+              child: UserNameWidget(
+                currentName: username,
+                onSave: (newName) => updateUsernameInFirebase(newName),
+              ),
+            ),
           ),
 
-          // Info
+          // Seguidores / Siguiendo / Recetas
           Positioned(
             top: 260,
             left: 0,
@@ -165,6 +203,7 @@ class _ProfileState extends State<Profile> {
             child: const Center(child: UserInfo()),
           ),
 
+          // Menú de opciones inferior
           Positioned.fill(
             top: 330,
             child: SingleChildScrollView(
@@ -172,62 +211,31 @@ class _ProfileState extends State<Profile> {
                 children: [
                   ProfileMenu(
                     text: "Mis recetas",
-                    textStyle: GoogleFonts.barlow(
-                      fontSize: 15,
-                      color: const Color.fromARGB(255, 100, 100, 100),
-                    ),
                     icon: Icons.local_dining,
                     press: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const SavedRecipes(initialTab: 1),
-                        ),
-                      );
+                      context.read<AppState>().setSavedRecipesTab(1);
+                      context.read<AppState>().setNavIndex(1);
                     },
                   ),
                   ProfileMenu(
                     text: "Cambiar Contraseña",
-                    textStyle: GoogleFonts.barlow(
-                      fontSize: 15,
-                      color: const Color.fromARGB(255, 100, 100, 100),
-                    ),
                     icon: Icons.change_circle_outlined,
-                    press: () {
-                      reset();
-                    },
+                    press: reset,
                   ),
                   ProfileMenu(
                     text: "Ayuda",
-                    textStyle: GoogleFonts.barlow(
-                      fontSize: 15,
-                      color: const Color.fromARGB(255, 100, 100, 100),
-                    ),
                     icon: Icons.help_outline,
                     press: () {},
                   ),
                   ProfileMenu(
                     text: "Cerrar Sesión",
-                    textStyle: GoogleFonts.barlow(
-                      fontSize: 15,
-                      color: const Color.fromARGB(255, 100, 100, 100),
-                    ),
                     icon: Icons.logout_outlined,
-                    press: () {
-                      logout();
-                    },
+                    press: () => logout(context),
                   ),
                   ProfileMenu(
                     text: "Eliminar Cuenta",
-                    textStyle: GoogleFonts.barlow(
-                      fontSize: 15,
-                      color: const Color.fromARGB(255, 100, 100, 100),
-                    ),
                     icon: Icons.delete_outline,
-                    press: () {
-                      delete();
-                    },
+                    press: delete,
                   ),
                 ],
               ),
@@ -238,6 +246,8 @@ class _ProfileState extends State<Profile> {
     );
   }
 }
+
+// --- SUB-WIDGETS ---
 
 class ProfilePic extends StatelessWidget {
   final VoidCallback onPressed;
@@ -274,27 +284,20 @@ class ProfilePic extends StatelessWidget {
           Positioned(
             right: -16,
             bottom: 0,
-            child: Material(
-              color: Colors.transparent,
-              child: InkResponse(
-                radius: 28,
-                onTap: () {
-                  print("CLICK CÁMARA");
-                  onPressed();
-                },
-                child: Container(
-                  height: 46,
-                  width: 46,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 42, 79, 114),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white),
-                  ),
-                  child: const Icon(
-                    Icons.add_a_photo_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+            child: GestureDetector(
+              onTap: onPressed,
+              child: Container(
+                height: 46,
+                width: 46,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 42, 79, 114),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: const Icon(
+                  Icons.add_a_photo_outlined,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
             ),
@@ -305,28 +308,84 @@ class ProfilePic extends StatelessWidget {
   }
 }
 
-class UserName extends StatelessWidget {
-  const UserName({Key? key}) : super(key: key);
+class UserNameWidget extends StatefulWidget {
+  final String currentName;
+  final Function(String) onSave;
+
+  const UserNameWidget({
+    Key? key,
+    required this.currentName,
+    required this.onSave,
+  }) : super(key: key);
+
+  @override
+  State<UserNameWidget> createState() => _UserNameWidgetState();
+}
+
+class _UserNameWidgetState extends State<UserNameWidget> {
+  bool isEditing = false;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentName);
+  }
+
+  @override
+  void didUpdateWidget(covariant UserNameWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Si el nombre cambia en el padre (Firebase), lo reflejamos aquí
+    if (oldWidget.currentName != widget.currentName && !isEditing) {
+      _controller.text = widget.currentName;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          'Nombre Usuario',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 42, 79, 114),
-          ),
-          textAlign: TextAlign.center,
-        ),
+        isEditing
+            ? SizedBox(
+                width: 180,
+                child: TextField(
+                  controller: _controller,
+                  textAlign: TextAlign.center,
+                  autofocus: true,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : Text(
+                widget.currentName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 42, 79, 114),
+                ),
+              ),
         IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.edit),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
+          icon: Icon(isEditing ? Icons.check : Icons.edit),
+          color: const Color.fromARGB(255, 42, 79, 114),
+          onPressed: () {
+            if (isEditing) {
+              if (_controller.text.trim().isNotEmpty) {
+                widget.onSave(_controller.text.trim());
+              }
+              setState(() => isEditing = false);
+            } else {
+              setState(() => isEditing = true);
+            }
+          },
         ),
       ],
     );
@@ -336,115 +395,64 @@ class UserName extends StatelessWidget {
 class UserInfo extends StatelessWidget {
   const UserInfo({Key? key}) : super(key: key);
 
+  Widget _buildStatColumn(IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(
+              icon,
+              color: const Color.fromARGB(255, 100, 100, 100),
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 100, 100, 100),
+              ),
+            ),
+          ],
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color.fromARGB(255, 100, 100, 100),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Column(
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.person_add_outlined,
-                  color: Color.fromARGB(255, 100, 100, 100),
-                ),
-                const SizedBox(width: 15),
-                const Text(
-                  '+ 100',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 100, 100, 100),
-                  ),
-                ),
-              ],
-            ),
-            const Text(
-              'seguidores',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 100, 100, 100),
-              ),
-            ),
-          ],
-        ),
+        _buildStatColumn(Icons.person_add_outlined, '+ 100', 'seguidores'),
         const SizedBox(width: 25),
-        Column(
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.person_add_outlined,
-                  color: Color.fromARGB(255, 100, 100, 100),
-                ),
-                const SizedBox(width: 15),
-                const Text(
-                  '+ 150',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 100, 100, 100),
-                  ),
-                ),
-              ],
-            ),
-            const Text(
-              'siguiendo',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 100, 100, 100),
-              ),
-            ),
-          ],
-        ),
+        _buildStatColumn(Icons.person_add_outlined, '+ 150', 'siguiendo'),
         const SizedBox(width: 25),
-        Column(
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.local_dining,
-                  color: Color.fromARGB(255, 100, 100, 100),
-                ),
-                const SizedBox(width: 15),
-                const Text(
-                  '+ 15',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 100, 100, 100),
-                  ),
-                ),
-              ],
-            ),
-            const Text(
-              'recetas',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 100, 100, 100),
-              ),
-            ),
-          ],
-        ),
+        _buildStatColumn(Icons.local_dining, '+ 15', 'recetas'),
       ],
     );
   }
 }
 
 class ProfileMenu extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  final VoidCallback? press;
+
   const ProfileMenu({
     Key? key,
     required this.text,
-    this.textStyle,
     required this.icon,
     this.press,
   }) : super(key: key);
-
-  final String text;
-  final TextStyle? textStyle;
-  final IconData icon;
-  final VoidCallback? press;
 
   @override
   Widget build(BuildContext context) {
@@ -474,13 +482,16 @@ class ProfileMenu extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: textStyle ?? const TextStyle(color: Color(0xFF757575)),
+                style: GoogleFonts.barlow(
+                  fontSize: 15,
+                  color: const Color.fromARGB(255, 100, 100, 100),
+                ),
               ),
             ),
             const Icon(
               Icons.arrow_forward_ios,
               color: Color(0xFF757575),
-              size: 20,
+              size: 18,
             ),
           ],
         ),
