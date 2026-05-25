@@ -1,6 +1,13 @@
+import 'dart:async'; // Necesario para el Timer (Debounce)
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/comming_soon.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
+import 'package:flutter_application_1/screens/ui_elements/category_item.dart';
+import 'package:flutter_application_1/screens/ui_elements/chatbot_button.dart';
+import 'package:flutter_application_1/screens/ui_elements/recipe_card.dart';
+import 'package:flutter_application_1/screens/ui_elements/recipe_grid.dart';
 import 'package:flutter_application_1/widget/support_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/app_state.dart';
@@ -17,161 +24,156 @@ class _MainScreen extends State<MainScreen> {
   Stream? recipeStream;
   bool search = false;
   String? selectedSubCategory;
+  List<String> favouriteRecipes = [];
 
-  var queryResultSet = [];
-  var tempSearchStore = [];
+  // Variables para la lógica de búsqueda fluida
+  List<Map<String, dynamic>> allRecipesForSearch = [];
+  List<Map<String, dynamic>> tempSearchStore = [];
+  Timer? _debounce; // Controla el retraso al escribir
 
   @override
   void initState() {
-    getOnTheLoad();
     super.initState();
+    getOnTheLoad();
+    createUserIfNotExists();
+    _preloadSearchData();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel(); // Limpiamos el timer para evitar errores de memoria
+    super.dispose();
   }
 
   Future<void> getOnTheLoad() async {
-    recipeStream = FirebaseFirestore.instance
-        .collection("categories_italy")
-        .snapshots();
-    setState(() {});
+  // Coge el primer documento de la colección del país
+  final snapshot = await FirebaseFirestore.instance
+      .collection(widget.categoryID)
+      .orderBy('index') // si tienes campo index, si no quítalo
+      .limit(1)
+      .get();
+
+  if (snapshot.docs.isNotEmpty) {
+    selectedSubCategory = snapshot.docs.first.id;
   }
 
-  void initiateSearch(String value) {
-    if (value.isEmpty) {
-      setState(() {
-        search = false;
-        queryResultSet = [];
-        tempSearchStore = [];
+  setState(() {});
+}
+
+  Future<void> createUserIfNotExists() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final userRef = FirebaseFirestore.instance.collection('Users').doc(uid);
+    final doc = await userRef.get();
+
+    if (!doc.exists) {
+      await userRef.set({
+        'favouriteRecipes': [],
+        'createdAt': FieldValue.serverTimestamp(),
       });
-      return;
     }
+  }
 
-    setState(() {
-      search = true;
-    });
+  // Pre-carga los datos en segundo plano
+  Future<void> _preloadSearchData() async {
+    try {
+      var categoryDocs = await FirebaseFirestore.instance
+          .collection(widget.categoryID)
+          .get();
+      List<Map<String, dynamic>> tempList = [];
 
-    var capitalizedValue =
-        value[0].toUpperCase() + value.substring(1);
-
-    if (queryResultSet.isEmpty && value.length == 1) {
-      FirebaseFirestore.instance.collection("categories_italy").get().then((
-        QuerySnapshot docs,
-      ) {
-        for (var doc in docs.docs) {
-          var data = doc.data()! as Map<String, dynamic>;
-
-          data.forEach((subCatName, subCatData) {
-            if (subCatData is Map<String, dynamic> &&
-                subCatData.containsKey('recipes')) {
-              var recipesMap = subCatData['recipes'] as Map<String, dynamic>;
-
-              recipesMap.forEach((recipeName, recipeData) {
-                queryResultSet.add({
-                  'name': recipeData['name'] ?? recipeName,
-                  'difficulty': recipeData['difficulty'] ?? 'Desconocida',
-                  'favorite': recipeData['favorite'] ?? false,
-                  'image': recipeData['image'] ?? 'https://via.placeholder.com/150',
-                  'ingredients': recipeData['ingredients'] ?? [],
-                  'kcal': recipeData['kcal'] ?? 0,
-                  'steps': recipeData['steps'] ?? [],
-                  'prepTime': recipeData['prepTime'] ?? 0,
-                  'servings': recipeData['servings'] ?? 0,
-                  'tags': recipeData['tags'] ?? [],
-                });
-              });
-            }
+      for (var doc in categoryDocs.docs) {
+        var recipeDocs = await doc.reference.collection('recipes').get();
+        for (var recipe in recipeDocs.docs) {
+          var data = recipe.data();
+          tempList.add({
+            'name': data['name'] ?? 'Sin nombre',
+            'difficulty': data['difficulty'] ?? 'Desconocida',
+            'image': data['image'] ?? '',
+            'ingredients': data['ingredients'] ?? [],
+            'kcal': data['kcal'] ?? 0,
+            'steps': data['steps'] ?? [],
+            'prepTime': data['prepTime'] ?? 0,
+            'servings': data['servings'] ?? 0,
+            'tags': data['tags'] ?? [],
           });
         }
-
-        filterSearch(capitalizedValue);
-      });
-    } else {
-      filterSearch(capitalizedValue);
+      }
+      if (mounted) {
+        setState(() {
+          allRecipesForSearch = tempList;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error precargando búsqueda: $e");
     }
   }
 
-  void filterSearch(String capitalizedValue) {
-    tempSearchStore = [];
+  // Lógica de búsqueda con Debounce para evitar el "pete" (Jank)
+  void initiateSearch(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    for (var element in queryResultSet) {
-      if ((element["name"] as String).startsWith(capitalizedValue)) {
-        tempSearchStore.add(element);
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (value.isEmpty) {
+        setState(() {
+          search = false;
+          tempSearchStore = [];
+        });
+        return;
       }
-    }
 
-    setState(() {});
+      setState(() {
+        search = true;
+        tempSearchStore = allRecipesForSearch.where((recipe) {
+          final name = recipe['name'].toString().toLowerCase();
+          return name.contains(value.toLowerCase());
+        }).toList();
+      });
+    });
   }
 
   Widget categoryList() {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection("categories_italy")
-          .snapshots(),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
-          return SizedBox(
-            height: 180,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20), // 👈 SOLO ESTO
+      child: SizedBox(
+        height: 180,
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection(widget.categoryID)
+              .orderBy('index') 
+              .snapshots(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        var docs = snapshot.data.docs;
+            var docs = snapshot.data.docs;
 
-        if (selectedSubCategory == null && docs.isNotEmpty) {
-          selectedSubCategory = docs[0].id;
-        }
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: docs.length,
+              itemBuilder: (context, index) {
+                var ds = docs[index];
 
-        return SizedBox(
-          height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              var ds = docs[index];
-
-              String name = ds['name'];
-              String icon = ds['icon'];
-
-              bool isSelected = selectedSubCategory == ds.id;
-
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedSubCategory = ds.id;
-                  });
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 20),
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          icon,
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            height: 120,
-                            width: 120,
-                            color: Colors.grey,
-                            child: Icon(Icons.image),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        name,
-                        style: AppWidget.lightfeildtextstyle()?.copyWith(
-                          color: isSelected ? Colors.blue : Colors.black,
-                        ),
-                      ),
-                    ],
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    right: 12,
+                  ), // 👈 separación entre cards
+                  child: CategoryItem(
+                    name: ds['name'],
+                    icon: ds['icon'],
+                    isSelected: selectedSubCategory == ds.id,
+                    onTap: () {
+                      setState(() {
+                        selectedSubCategory = ds.id;
+                      });
+                    },
                   ),
-                ),
-              );
-            },
-          ),
-        );
-      },
+                );
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -180,206 +182,21 @@ class _MainScreen extends State<MainScreen> {
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('categories_italy')
+          .collection(widget.categoryID)
           .doc(selectedSubCategory)
           .collection('recipes')
           .snapshots(),
       builder: (context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         var recipesDocs = snapshot.data.docs;
-
         if (recipesDocs.isEmpty) {
-          return Center(child: Text("No hay recetas"));
+          return const Center(child: Text("No hay recetas"));
         }
 
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.only(right: 20),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 0.75,
-          ),
-          itemCount: recipesDocs.length,
-          itemBuilder: (context, index) {
-            var doc = recipesDocs[index];
-            var recipe = doc.data() as Map<String, dynamic>;
-
-            var prepTime = recipe['prepTime'];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Recipe(
-                      foodname: recipe['name'] ?? '',
-                      difficulty: recipe['difficulty'] ?? 'Desconocida',
-                      isFavorite: recipe['favorite'] ?? false,
-                      image: recipe['image'] ?? 'https://via.placeholder.com/150',
-                      ingredients: recipe['ingredients'] ?? [],
-                      steps: recipe['steps'],
-                      kcal: recipe['kcal'] ?? 0,
-                      prepTime: recipe['prepTime'] ?? 0,
-                      servings: recipe['servings'] ?? 0,
-                      tags: recipe['tags'] ?? [],
-                      doc: doc,
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 5,
-                      color: Colors.black12,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        children: [
-                          Image.network(
-                            recipe['image'] ?? 'https://via.placeholder.com/150',
-                            height: 110,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: GestureDetector(
-                              onTap: () async {
-                                await doc.reference.update({
-                                  'favorite': !(recipe['favorite'] ?? false),
-                                });
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      "Actualizado favorito: ${recipe['name'] ?? 'Receta'}",
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 24,
-                                height: 24,
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(137, 255, 255, 255),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.favorite,
-                                    size: 16,
-                                    color: (recipe['favorite'] == true)
-                                        ? Color.fromARGB(255, 178, 0, 0)
-                                        : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
-                            child: Text(
-                              recipe['name'] ?? '',
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(136, 104, 92, 92),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                color: Colors.yellow,
-                                size: 14,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                prepTime <= 60
-                                    ? "$prepTime min"
-                                    : "${(prepTime / 60).toStringAsFixed(1)} hr",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 5),
-                      width: 100,
-                      child: Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: (recipe['tags'] as List<dynamic>).map((tag) {
-                          return Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(222, 146, 176, 172),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              tag.toString(),
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        return RecipeGrid(recipesDocs: recipesDocs);
       },
     );
   }
@@ -396,7 +213,6 @@ class _MainScreen extends State<MainScreen> {
               ingredients: data['ingredients'],
               steps: data['steps'],
               difficulty: data['difficulty'],
-              isFavorite: data['favorite'],
               kcal: data['kcal'],
               prepTime: data['prepTime'],
               servings: data['servings'],
@@ -407,12 +223,12 @@ class _MainScreen extends State<MainScreen> {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         child: Material(
           elevation: 5,
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            padding: EdgeInsets.all(18),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -421,15 +237,25 @@ class _MainScreen extends State<MainScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(60),
-                  child: Image.network(
-                    data['image'] ?? 'https://via.placeholder.com/70',
-                    height: 70,
-                    width: 70,
-                    fit: BoxFit.cover,
+                  child: data['image'] != ''
+                      ? Image.network(
+                          data['image'],
+                          height: 70,
+                          width: 70,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stack) =>
+                              const Icon(Icons.fastfood, size: 40),
+                        )
+                      : const Icon(Icons.fastfood, size: 70),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Text(
+                    data['name'] ?? '',
+                    style: AppWidget.boldfieldtextstyle(),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(width: 20),
-                Text(data['name'] ?? '', style: AppWidget.boldfieldtextstyle()),
               ],
             ),
           ),
@@ -443,92 +269,79 @@ class _MainScreen extends State<MainScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: 60, left: 20),
+          margin: const EdgeInsets.only(top: 60),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(136, 97, 87, 87),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      context.read<AppState>().selectCountry(null);
-                    },
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 20),
-
               Padding(
-                padding: const EdgeInsets.only(right: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Descubre recetas\nde cada rincón",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(136, 97, 87, 87),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          context.read<AppState>().selectCountry(null);
+                        },
                       ),
                     ),
-                    Spacer(),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.asset(
-                        "assets/images/receta1.jpg",
-                        height: 60,
-                        width: 60,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    const ChatbotButton(),
                   ],
                 ),
               ),
-
-              SizedBox(height: 20),
-
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Descubre recetas\nde cada rincón",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 20),
               Container(
-                padding: EdgeInsets.only(left: 10),
-                margin: EdgeInsets.only(right: 20, bottom: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextField(
                   onChanged: (value) => initiateSearch(value),
                   decoration: InputDecoration(
                     hintText: "Buscar receta ...",
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                 ),
               ),
-
-              SizedBox(height: 20),
-
+              const SizedBox(height: 20),
               search
-                  ? ListView(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      children: tempSearchStore
-                          .map((e) => buildResultCard(e))
-                          .toList(),
-                    )
-                  : categoryList(),
-
-              SizedBox(height: 20),
-
-              search
-                  ? Container()
-                  : SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      child: allRecipe(),
+                  ? (tempSearchStore.isEmpty
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Text("Sin resultados"),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: tempSearchStore.length,
+                            itemBuilder: (context, index) =>
+                                buildResultCard(tempSearchStore[index]),
+                          ))
+                  : Column(
+                      children: [
+                        categoryList(),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: allRecipe(),
+                        ),
+                      ],
                     ),
             ],
           ),

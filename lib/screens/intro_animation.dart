@@ -5,66 +5,61 @@ class IntroAnimation extends StatefulWidget {
   const IntroAnimation({super.key});
 
   @override
-  State<IntroAnimation> createState() => _IntroAnimation();
+  State<IntroAnimation> createState() => _IntroAnimationState();
 }
 
-class _IntroAnimation extends State<IntroAnimation>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
+class _IntroAnimationState extends State<IntroAnimation> {
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController( // Controlador de animación para el efecto de fade-in
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
+    Future.delayed(const Duration(seconds: 4), () {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 900),
+          pageBuilder: (_, animation, __) => const Register(),
+          transitionsBuilder: (_, animation, __, child) {
+            final fadeAnimation = Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOut,
+              ),
+            );
 
-    _controller.forward();
+            final slideAnimation = Tween<Offset>(
+              begin: const Offset(0, 0.05), 
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ),
+            );
 
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {// Cuando la animación de fade-in termine, espera un momento y luego navega a la pantalla de registro
-        Future.delayed(const Duration(milliseconds: 400), () {
-          Navigator.pushReplacement(// Reemplaza la pantalla actual para que el usuario no pueda volver a ella
-            context,
-            PageRouteBuilder(
-              transitionDuration: const Duration(milliseconds: 600),
-              pageBuilder: (_, animation, _) => const Register(),
-              transitionsBuilder: (_, animation, _, child) {
-                return FadeTransition( // Aplica un efecto de fade-out a la transición
-                  opacity: animation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        });
-      }
+            return FadeTransition(
+              opacity: fadeAnimation,
+              child: SlideTransition(
+                position: slideAnimation,
+                child: child,
+              ),
+            );
+          },
+        ),
+      );
     });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: FadeTransition(
-          opacity: _controller,
-          child: const Text(
-            'World Bites',
-            style: TextStyle(
-              fontSize: 42,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
-            ),
-          ),
+      body: SizedBox.expand(
+        child: Image.asset(
+          'assets/animations/intro_animacion_world_bites.gif',
+          fit: BoxFit.cover,
         ),
       ),
     );

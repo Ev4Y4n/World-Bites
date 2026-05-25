@@ -1,63 +1,124 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
-class DatabaseMethods {
+class DatabaseService {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  //Agrega una nueva receta a la colección "Recipe" en Firebase
   Future addRecipe(Map<String, dynamic> addrecipe) async {
-    return await FirebaseFirestore.instance.collection("Recipe").add(addrecipe);
+    return await _db.collection("Recipe").add(addrecipe);
   }
 
-  //Obtiene un stream de datos en tiempo real de todas las recetas
-  Stream<QuerySnapshot> getAllRecipes() {
-    return FirebaseFirestore.instance
-        .collection("categories_italy")
+  Stream<QuerySnapshot<Map<String, dynamic>>> getAllRecipes() {
+    //return _db.collection("categories_italy").snapshots();
+    return _db.collectionGroup('recipes').snapshots();
+  }
+
+  Stream<QuerySnapshot> getUserById(String userID) {
+    return _db.collection("Users").where("id", isEqualTo: userID).snapshots();
+  }
+
+  Future<List<String>> getFavorites(String userID) async {
+    final doc = await _db.collection('Users').doc(userID).get();
+    return List<String>.from(doc.data()?['favoriteRecipes'] ?? []);
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserRecipes(String userID) {
+    return _db
+        .collection('Recipe')
+        .where('userId', isEqualTo: userID)
         .snapshots();
   }
 
-  //Obtiene un stream de datos en tiempo real de un usuario específico por su ID
-  Stream<QuerySnapshot> getUserById(String uid) {
-    return FirebaseFirestore.instance
-        .collection("Users")
-        .where("id", isEqualTo: uid)
+  Future<void> deleteUserRecipe(String recipeId, {String? imageUrl}) async {
+    // borrar imagen si existe
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+    }
+    // borrar receta
+    await _db.collection('Recipe').doc(recipeId).delete();
+  }
+
+  // Agrega o quita una receta de favoritos del usuario
+  Future<void> toggleFavorite(String userID, String recipeId) async {
+    final ref = _db.collection('Users').doc(userID);
+
+    final doc = await ref.get();
+    final data = doc.data() ?? {};
+
+    final List favs = List.from(data['favoriteRecipes'] ?? []);
+
+    if (favs.contains(recipeId)) {
+      await ref.update({
+        'favoriteRecipes': FieldValue.arrayRemove([recipeId]),
+      });
+    } else {
+      await ref.update({
+        'favoriteRecipes': FieldValue.arrayUnion([recipeId]),
+      });
+    }
+  }
+
+  Future<List<Map<String, String>>> getCountries() async {
+    final snapshot = await _db.collection('countries').get();
+
+    return snapshot.docs.map((doc) {
+      return {"id": doc.id, "name": doc.data()['name'] as String};
+    }).toList();
+  }
+
+  //accede a la categoría específica dentro de la colección dinámica (categories_italy, categories_mexico...)
+  Stream<QuerySnapshot<Map<String, dynamic>>> getRecipeCategory(
+    String country,
+    String categoryID,
+  ) {
+    return _db
+        .collection(country) // categories_italy
+        .doc(categoryID) // desserts
+        .collection("recipes") // Subcolección de recetas
         .snapshots();
   }
 
-  //Agrega un nuevo usuario a la colección "Users" en Firebase
-  Future addUser(String uid, Map<String, dynamic> user) async {
-    return await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(uid)
-        .set(user);
+  //obtiene todas las categorias de cada pais
+  Future<List<Map<String, String>>> getCategoriesByCountry(
+    String countryDocId,
+  ) async {
+    // Busca el país seleccionado
+    final countryDoc = await _db
+        .collection('countries')
+        .doc(countryDocId)
+        .get();
+
+    // Saca categoryID
+    final String categoryId = countryDoc.data()?['categoryID'] ?? '';
+    if (categoryId.isEmpty) return [];
+    // Busca la colección dinámica
+    final snapshot = await _db.collection(categoryId).orderBy('index').get();
+    // Devuelve IDs de documentos como lista
+    return snapshot.docs.map((doc) {
+      return {"id": doc.id, "name": doc.data()['name'] as String};
+    }).toList();
   }
 
-  //Actualiza el nombre de usuario de un usuario específico en la colección "Users" en Firebase
-  Future updateUserName(String uid,  String newUserName) async {
-    return await FirebaseFirestore.instance.collection("Users").doc(uid).update(
-      {"userName": newUserName},
-    );
-  }
-
-  //Actualiza la foto de perfil de un usuario específico en la colección "Users" en Firebase
-  Future updateUserProfilePicture(String uid, String newProfilePicture) async {
-    return await FirebaseFirestore.instance.collection("Users").doc(uid).update(
-      {"profilePicture": newProfilePicture},
-    );
-  }
-
-  //Obtiene un stream de datos en tiempo real de las recetas filtradas por categoría
-  Stream<QuerySnapshot> getRecipeCategory(String category) {
-    return FirebaseFirestore.instance
-        .collection("categories_italy")
-        .doc(category)
-        .collection("recipes")
-        .snapshots();
-  }
-
-  //Obtiene un stream de datos en tiempo real de las recetas filtradas por nombre (búsqueda)
   Future<QuerySnapshot> search(String name) async {
-    return await FirebaseFirestore.instance
+    return await _db
         .collection("Recipe")
         .where("Key", isEqualTo: name.substring(0, 1).toUpperCase())
         .get();
+  }
+
+  Future addUser(String userID, Map<String, dynamic> user) async {
+    return await _db.collection("Users").doc(userID).set(user);
+  }
+
+  Future updateUserName(String userID, String newUserName) async {
+    return await _db.collection("Users").doc(userID).update({
+      "userName": newUserName,
+    });
+  }
+
+  Future addProfilePicture(String userID, String downloadurl) async {
+    return await _db.collection("Users").doc(userID).update({
+      "profileImage": downloadurl,
+    });
   }
 }

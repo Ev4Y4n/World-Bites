@@ -40,7 +40,7 @@ class AuthService {
 
     String uid = userCredentials.user!.uid; 
 
-    await DatabaseMethods().addUser(uid, {
+    await DatabaseService().addUser(uid, {
       "userName": userName,
       "email": email,
       "profilePicture": "",

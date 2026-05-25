@@ -5,6 +5,7 @@ import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
 import 'package:flutter_application_1/screens/transition.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/firebase_error_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void login() => runApp(const LogIn());
@@ -34,7 +35,10 @@ class LogIn extends StatelessWidget {
                 ),
                 TextSpan(
                   text: 'Bites',
-                  style: GoogleFonts.barlow(fontSize: 30, color: Colors.white),
+                  style: GoogleFonts.barlow(
+                    fontSize: 30,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -61,13 +65,11 @@ class LogIn extends StatelessWidget {
             ),
           ),
 
-          // Imagen tenedor pollo
           Positioned(
             top: 50,
             left: 230,
             right: 0,
             child: SafeArea(
-              //se usa para evitar que el contenido se superponga con elementos del sistema, como la barra de estado o la barra de navegación en dispositivos móviles.
               top: false,
               child: Image.asset(
                 'assets/images/tenedor_1.png',
@@ -78,7 +80,6 @@ class LogIn extends StatelessWidget {
           ),
 
           Padding(
-            //Se usa para agregar espacio alrededor del widget MyCustomForm, en este caso, se agrega un espacio de 180 píxeles desde la parte superior.
             padding: const EdgeInsets.only(top: 180),
             child: const MyCustomForm(),
           ),
@@ -111,22 +112,16 @@ class MyCustomFormState extends State<MyCustomForm> {
     super.dispose();
   }
 
-  void enterApp() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const NavBar()));
-  }
-
   void registerScreen() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const Register()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const Register()),
+    );
   }
 
   void resetPassword() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const ResetPassword()));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const ResetPassword()),
+    );
   }
 
   void loadTransition() {
@@ -153,7 +148,7 @@ class MyCustomFormState extends State<MyCustomForm> {
       loadTransition();
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message ?? "Error al iniciar sesión";
+        errorMessage = FirebaseErrorHandler.getMessage(e);
       });
     } catch (e) {
       setState(() {
@@ -184,16 +179,15 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 const SizedBox(height: 20),
 
-                Align(
+                const Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
+                  child: Text(
                     'Iniciar Sesión',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: Color.fromARGB(255, 42, 79, 114),
                     ),
-                    textAlign: TextAlign.left,
                   ),
                 ),
 
@@ -235,13 +229,16 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 const SizedBox(height: 10),
 
-                Text(errorMessage, style: const TextStyle(color: Colors.red)),
+                Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
 
                 const SizedBox(height: 10),
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 42, 79, 114),
+                    backgroundColor: const Color.fromARGB(255, 42, 79, 114),
                     foregroundColor: Colors.white,
                   ),
                   onPressed: isLoading
@@ -251,8 +248,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                             loginUser();
                           }
                         },
-                  child:
-                      isLoading //Se usa para mostrar un indicador de carga mientras se espera la respuesta de Firebase
+                  child: isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text('INICIAR SESIÓN'),
                 ),
@@ -262,21 +258,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '¿Aún no tienes cuenta?',
-                      style: TextStyle(fontSize: 15),
-                    ),
+                    const Text('¿Aún no tienes cuenta?'),
                     TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Color.fromARGB(255, 42, 79, 114),
-                        textStyle: GoogleFonts.barlow(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        registerScreen();
-                      },
+                      onPressed: registerScreen,
                       child: const Text('REGISTRAR'),
                     ),
                   ],
@@ -284,22 +268,12 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      '¿Has olvidado tu contraseña?',
-                      style: TextStyle(fontSize: 15),
-                    ),
+                  children: const [
+                    Text('¿Has olvidado tu contraseña?'),
                   ],
                 ),
 
                 TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Color.fromARGB(255, 42, 79, 114),
-                    textStyle: GoogleFonts.barlow(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   onPressed: resetPassword,
                   child: const Text('CAMBIAR CONTRASEÑA'),
                 ),

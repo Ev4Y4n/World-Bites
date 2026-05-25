@@ -1,43 +1,150 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/app_state.dart';
 import 'package:flutter_application_1/screens/profile/change_password.dart';
 import 'package:flutter_application_1/screens/profile/delete_account.dart';
 import 'package:flutter_application_1/screens/profile/register.dart';
 import 'package:flutter_application_1/screens/profile/reset_password.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_application_1/services/database.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    
-    void exitApp() {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const Register()));
-    }
+  State<Profile> createState() => _ProfileState();
+}
 
-    void reset(){
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const ResetPassword()));
-    }
+class _ProfileState extends State<Profile> {
+  File? selectedImage;
+  String? imageUrl;
+  String username = "Cargando...";
+  int followersCount = 0;
+  int followingCount = 0;
+  int recipesCount = 0;
+  final ImagePicker _picker = ImagePicker();
 
-    void change(){
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => ChangePassword()));
-    }
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
 
-    void delete(){
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute<void>(builder: (context) => const DeleteAccount()));
-    }
+  /// Carga inicial del nombre e imagen desde Firestore
+  Future<void> loadUserData() async {
+    try {
+      var userDoc = await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
 
-    void logout() async {
+      if (!mounted || !userDoc.exists) return;
+
+      setState(() {
+        imageUrl = userDoc.data()?["profileImage"];
+        username = userDoc.data()?["userName"] ?? "Usuario";
+
+        followersCount = userDoc.data()?["followersCount"] ?? 0;
+        followingCount = userDoc.data()?["followingCount"] ?? 0;
+        recipesCount = userDoc.data()?["recipesCount"] ?? 0;
+      });
+    } catch (e) {
+      print("Error cargando datos: $e");
+    }
+  }
+
+  /// Actualiza el nombre de usuario en Firebase
+  Future<void> updateUsernameInFirebase(String newName) async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance.collection("Users").doc(uid).update({
+        "username": newName,
+      });
+      setState(() {
+        username = newName;
+      });
+      Fluttertoast.showToast(msg: "Nombre actualizado");
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error al actualizar nombre");
+    }
+  }
+
+  Future getProfileImage() async {
+    var image = await _picker.pickImage(source: ImageSource.gallery);
+    if (!mounted || image == null) return;
+
+    setState(() {
+      selectedImage = File(image.path);
+    });
+  }
+
+  Future<void> uploadProfileImage() async {
+    if (selectedImage != null) {
+      Reference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child("UserProfileImages")
+          .child("${FirebaseAuth.instance.currentUser!.uid}.jpg");
+
+      final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
+      var downloadurl = await (await task).ref.getDownloadURL();
+
+      await DatabaseService().addProfilePicture(
+        FirebaseAuth.instance.currentUser!.uid,
+        downloadurl,
+      );
+
+      setState(() {
+        imageUrl = downloadurl;
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: "Error al subir la imagen",
+        backgroundColor: Colors.orange,
+        textColor: Colors.white,
+      );
+    }
+  }
+
+  // Navegación y Auth
+  void exitApp() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => const Register()));
+  void reset() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => const ResetPassword()));
+  void delete() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => const DeleteAccount()));
+
+  void logout(BuildContext context) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Cerrar sesión"),
+          content: const Text("¿Estás seguro de que quieres cerrar sesión?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Sí, cerrar sesión"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
       try {
         await authService.value.signOut();
         exitApp();
@@ -45,72 +152,127 @@ class Profile extends StatelessWidget {
         print(e.message);
       }
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text("Profile"),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          children: [
-            const ProfilePic(),
-            const SizedBox(height: 20),
+      body: Stack(
+        children: [
+          // Fondo decorativo superior
+          Positioned(
+            top: -30,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/fondo_titulo_v3.png',
+              height: 250,
+              fit: BoxFit.cover,
+            ),
+          ),
 
-            ProfileMenu(
-              text: "My Account",
-              icon: Icons.person_outline,
-              press: () {},
+          // Foto de Perfil
+          Positioned(
+            top: 80,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ProfilePic(
+                selectedImage: selectedImage,
+                imageUrl: imageUrl,
+                onPressed: () async {
+                  await getProfileImage();
+                  uploadProfileImage();
+                },
+              ),
             ),
-            ProfileMenu(
-              text: "Change Password",
-              icon: Icons.change_circle_outlined,
-              press: () {
-                change();
-              },
+          ),
+
+          // Nombre de Usuario Editable
+          Positioned(
+            top: 200,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: UserNameWidget(
+                currentName: username,
+                onSave: (newName) => updateUsernameInFirebase(newName),
+              ),
             ),
-            ProfileMenu(
-              text: "Settings",
-              icon: Icons.settings_outlined,
-              press: () {},
+          ),
+
+          // Seguidores / Siguiendo / Recetas
+          Positioned(
+            top: 260,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: UserInfo(
+                followersCount: followersCount,
+                followingCount: followingCount,
+                recipesCount: recipesCount,
+              ),
             ),
-            ProfileMenu(
-              text: "Help Center",
-              icon: Icons.help_outline,
-              press: () {},
+          ),
+
+          // Menú de opciones inferior
+          Positioned.fill(
+            top: 330,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ProfileMenu(
+                    text: "Mis recetas",
+                    icon: Icons.local_dining,
+                    press: () {
+                      context.read<AppState>().setSavedRecipesTab(1);
+                      context.read<AppState>().setNavIndex(1);
+                    },
+                  ),
+                  ProfileMenu(
+                    text: "Cambiar Contraseña",
+                    icon: Icons.change_circle_outlined,
+                    press: reset,
+                  ),
+                  ProfileMenu(
+                    text: "Ayuda",
+                    icon: Icons.help_outline,
+                    press: () {},
+                  ),
+                  ProfileMenu(
+                    text: "Cerrar Sesión",
+                    icon: Icons.logout_outlined,
+                    press: () => logout(context),
+                  ),
+                  ProfileMenu(
+                    text: "Eliminar Cuenta",
+                    icon: Icons.delete_outline,
+                    press: delete,
+                  ),
+                ],
+              ),
             ),
-            ProfileMenu(
-              text: "Reset Password",
-              icon: Icons.lock_reset,
-              press: () {
-                reset();
-              },
-            ),
-            ProfileMenu(
-              text: "Log Out",
-              icon: Icons.logout_outlined,
-              press: () {
-                logout();
-              },
-            ),ProfileMenu(
-              text: "Eliminar Cuenta",
-              icon: Icons.delete_outline,
-              press: () {
-                delete();
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
+// --- SUB-WIDGETS ---
+
 class ProfilePic extends StatelessWidget {
-  const ProfilePic({Key? key}) : super(key: key);
+  final VoidCallback onPressed;
+  final File? selectedImage;
+  final String? imageUrl;
+
+  const ProfilePic({
+    Key? key,
+    required this.onPressed,
+    this.selectedImage,
+    this.imageUrl,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -121,28 +283,35 @@ class ProfilePic extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: [
-          const CircleAvatar(
-            backgroundImage: NetworkImage(
-              "https://i.postimg.cc/0jqKB6mS/Profile-Image.png",
-            ),
+          CircleAvatar(
+            radius: 55,
+            backgroundColor: Colors.grey[200],
+            backgroundImage: selectedImage != null
+                ? FileImage(selectedImage!)
+                : (imageUrl != null ? NetworkImage(imageUrl!) : null)
+                      as ImageProvider?,
+            child: (selectedImage == null && imageUrl == null)
+                ? const Icon(Icons.person, size: 60, color: Colors.grey)
+                : null,
           ),
           Positioned(
             right: -16,
             bottom: 0,
-            child: SizedBox(
-              height: 46,
-              width: 46,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    side: const BorderSide(color: Colors.white),
-                  ),
-                  backgroundColor: const Color(0xFFF5F6F9),
+            child: GestureDetector(
+              onTap: onPressed,
+              child: Container(
+                height: 46,
+                width: 46,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 42, 79, 114),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
                 ),
-                onPressed: () {},
-                child: SvgPicture.string(cameraIcon),
+                child: const Icon(
+                  Icons.add_a_photo_outlined,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -152,7 +321,166 @@ class ProfilePic extends StatelessWidget {
   }
 }
 
+class UserNameWidget extends StatefulWidget {
+  final String currentName;
+  final Function(String) onSave;
+
+  const UserNameWidget({
+    Key? key,
+    required this.currentName,
+    required this.onSave,
+  }) : super(key: key);
+
+  @override
+  State<UserNameWidget> createState() => _UserNameWidgetState();
+}
+
+class _UserNameWidgetState extends State<UserNameWidget> {
+  bool isEditing = false;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentName);
+  }
+
+  @override
+  void didUpdateWidget(covariant UserNameWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Si el nombre cambia en el padre (Firebase), lo reflejamos aquí
+    if (oldWidget.currentName != widget.currentName && !isEditing) {
+      _controller.text = widget.currentName;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        isEditing
+            ? SizedBox(
+                width: 180,
+                child: TextField(
+                  controller: _controller,
+                  textAlign: TextAlign.center,
+                  autofocus: true,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : Text(
+                widget.currentName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 42, 79, 114),
+                ),
+              ),
+        IconButton(
+          icon: Icon(isEditing ? Icons.check : Icons.edit),
+          color: const Color.fromARGB(255, 42, 79, 114),
+          onPressed: () {
+            if (isEditing) {
+              if (_controller.text.trim().isNotEmpty) {
+                widget.onSave(_controller.text.trim());
+              }
+              setState(() => isEditing = false);
+            } else {
+              setState(() => isEditing = true);
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class UserInfo extends StatelessWidget {
+  final int followersCount;
+  final int followingCount;
+  final int recipesCount;
+
+  const UserInfo({
+    Key? key,
+    required this.followersCount,
+    required this.followingCount,
+    required this.recipesCount,
+  }) : super(key: key);
+
+  Widget _buildStatColumn(IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(
+              icon,
+              color: const Color.fromARGB(255, 100, 100, 100),
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 100, 100, 100),
+              ),
+            ),
+          ],
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color.fromARGB(255, 100, 100, 100),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildStatColumn(
+          Icons.person_add_outlined,
+          followersCount.toString(),
+          'seguidores',
+        ),
+        const SizedBox(width: 25),
+        _buildStatColumn(
+  Icons.person_add_outlined,
+  followingCount.toString(),
+  'siguiendo',
+),
+        const SizedBox(width: 25),
+        _buildStatColumn(
+  Icons.local_dining,
+  recipesCount.toString(),
+  'recetas',
+),
+      ],
+    );
+  }
+}
+
 class ProfileMenu extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  final VoidCallback? press;
+
   const ProfileMenu({
     Key? key,
     required this.text,
@@ -160,17 +488,13 @@ class ProfileMenu extends StatelessWidget {
     this.press,
   }) : super(key: key);
 
-  final String text;
-  final IconData icon;
-  final VoidCallback? press;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: TextButton(
         style: TextButton.styleFrom(
-          foregroundColor: const Color(0xFFFF7643),
+          foregroundColor: const Color.fromARGB(255, 42, 79, 114),
           padding: const EdgeInsets.all(20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -180,18 +504,28 @@ class ProfileMenu extends StatelessWidget {
         onPressed: press,
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFFFF7643), size: 22),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 42, 79, 114),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.white, size: 20),
+            ),
             const SizedBox(width: 20),
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(color: Color(0xFF757575)),
+                style: GoogleFonts.barlow(
+                  fontSize: 15,
+                  color: const Color.fromARGB(255, 100, 100, 100),
+                ),
               ),
             ),
             const Icon(
               Icons.arrow_forward_ios,
               color: Color(0xFF757575),
-              size: 16,
+              size: 18,
             ),
           ],
         ),
@@ -199,9 +533,3 @@ class ProfileMenu extends StatelessWidget {
     );
   }
 }
-
-const cameraIcon =
-    '''<svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M10 12.0152C8.49151 12.0152 7.26415 10.8137 7.26415 9.33902C7.26415 7.86342 8.49151 6.6619 10 6.6619C11.5085 6.6619 12.7358 7.86342 12.7358 9.33902C12.7358 10.8137 11.5085 12.0152 10 12.0152ZM10 5.55543C7.86698 5.55543 6.13208 7.25251 6.13208 9.33902C6.13208 11.4246 7.86698 13.1217 10 13.1217C12.133 13.1217 13.8679 11.4246 13.8679 9.33902C13.8679 7.25251 12.133 5.55543 10 5.55543ZM18.8679 13.3967C18.8679 14.2226 18.1811 14.8935 17.3368 14.8935H2.66321C1.81887 14.8935 1.13208 14.2226 1.13208 13.3967V5.42346C1.13208 4.59845 1.81887 3.92664 2.66321 3.92664H4.75C5.42453 3.92664 6.03396 3.50952 6.26604 2.88753L6.81321 1.41746C6.88113 1.23198 7.06415 1.10739 7.26604 1.10739H12.734C12.9358 1.10739 13.1189 1.23198 13.1877 1.41839L13.734 2.88845C13.966 3.50952 14.5755 3.92664 15.25 3.92664H17.3368C18.1811 3.92664 18.8679 4.59845 18.8679 5.42346V13.3967ZM17.3368 2.82016H15.25C15.0491 2.82016 14.867 2.69466 14.7972 2.50917L14.2519 1.04003C14.0217 0.418041 13.4113 0 12.734 0H7.26604C6.58868 0 5.9783 0.418041 5.74906 1.0391L5.20283 2.50825C5.13302 2.69466 4.95094 2.82016 4.75 2.82016H2.66321C1.19434 2.82016 0 3.98846 0 5.42346V13.3967C0 14.8326 1.19434 16 2.66321 16H17.3368C18.8057 16 20 14.8326 20 13.3967V5.42346C20 3.98846 18.8057 2.82016 17.3368 2.82016Z" fill="#757575"/>
-</svg>
-''';

@@ -12,13 +12,13 @@ class AuthLayout extends StatefulWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: authService,
+      valueListenable: authService, // hace referencia a la instancia de AuthService
       builder: (context, authService, child) {
         return StreamBuilder(
-          stream: authService.authStateChanges,
+          stream: authService.authStateChanges, // escucha los cambios en el estado de autenticación
           builder: (context, snapshot) {
             Widget widget;
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting) { // mientras se espera la conexión, muestra una pantalla de carga
               widget = const AppLoadingPage();
             } else if (snapshot.hasData) {
               widget = const MainScreen(categoryID: 'categories_default');
