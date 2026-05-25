@@ -33,7 +33,19 @@ class _RecipeState extends State<Recipe> {
   @override
   void initState() {
     super.initState();
-    checkedIngredients = List.generate(widget.ingredients.length, (_) => false);
+    checkedIngredients =
+        List.generate(widget.ingredients.length, (_) => false);
+  }
+
+  bool get isBaseRecipe {
+    if (widget.doc == null) return false;
+
+    try {
+      final path = widget.doc.reference.path.toString();
+      return path.contains('categories'); // recetas base
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -58,6 +70,7 @@ class _RecipeState extends State<Recipe> {
               child: const Icon(Icons.image_not_supported, size: 50),
             ),
           ),
+
           Positioned(
             top: 40,
             left: 20,
@@ -67,21 +80,21 @@ class _RecipeState extends State<Recipe> {
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: 30,
-                ),
+                icon: const Icon(Icons.arrow_back,
+                    color: Colors.white, size: 30),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
           ),
+
           Positioned(top: 110, left: 20, child: ChatbotButton()),
+
           Positioned(
             top: 40,
             right: 20,
             child: FavoriteButton(recipeId: widget.doc.id, size: 35),
           ),
+
           Container(
             padding: const EdgeInsets.only(left: 20, right: 20, top: 40),
             margin: EdgeInsets.only(
@@ -122,7 +135,9 @@ class _RecipeState extends State<Recipe> {
                         ),
                     ],
                   ),
+
                   const Divider(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -152,12 +167,12 @@ class _RecipeState extends State<Recipe> {
                         ),
                     ],
                   ),
+
                   const SizedBox(height: 10),
+
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 6, 
-                      vertical: 2,
-                    ),
+                        horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(222, 146, 176, 172),
                       borderRadius: BorderRadius.circular(20),
@@ -171,9 +186,8 @@ class _RecipeState extends State<Recipe> {
                         ),
                         Text(
                           "Ingredientes",
-                          style: AppWidget.lightfeildtextstyle().copyWith(
-                            fontSize: 15,
-                          ),
+                          style: AppWidget.lightfeildtextstyle()
+                              .copyWith(fontSize: 15),
                         ),
                       ],
                     ),
@@ -190,7 +204,6 @@ class _RecipeState extends State<Recipe> {
                     final image = ing['image'] ?? '';
 
                     return CheckboxListTile(
-                      // añade CheckboxListTile para mostrar cada ingrediente con un checkbox
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
                       value: checkedIngredients[index],
@@ -229,7 +242,8 @@ class _RecipeState extends State<Recipe> {
                           ),
                           Text(
                             quantity,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -240,9 +254,7 @@ class _RecipeState extends State<Recipe> {
 
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
+                        horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(222, 146, 176, 172),
                       borderRadius: BorderRadius.circular(20),
@@ -256,9 +268,8 @@ class _RecipeState extends State<Recipe> {
                         ),
                         Text(
                           "Instrucciones",
-                          style: AppWidget.lightfeildtextstyle().copyWith(
-                            fontSize: 15,
-                          ),
+                          style: AppWidget.lightfeildtextstyle()
+                              .copyWith(fontSize: 15),
                         ),
                       ],
                     ),
@@ -266,25 +277,32 @@ class _RecipeState extends State<Recipe> {
 
                   const SizedBox(height: 10),
 
-                  ...steps.map((stepGroup) {
-                    final stepsList = stepGroup['steps'] ?? [];
+                  if (isBaseRecipe) ...[
+                    ...steps.map((stepGroup) {
+                      final stepsList = stepGroup['steps'] ?? [];
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ...stepsList.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final step = entry.value ?? '';
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 15),
-                            child: Text("${index + 1}. $step"),
-                          );
-                        }),
-                        const SizedBox(height: 10),
-                      ],
-                    );
-                  }),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...stepsList.asMap().entries.map((e) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: Text("${e.key + 1}. ${e.value}"),
+                            );
+                          }),
+                          const SizedBox(height: 10),
+                        ],
+                      );
+                    }),
+                  ] else ...[
+                    ...steps.asMap().entries.map((entry) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child:
+                            Text("${entry.key + 1}. ${entry.value}"),
+                      );
+                    }),
+                  ],
                 ],
               ),
             ),
