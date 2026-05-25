@@ -392,8 +392,56 @@ class _UserNameWidgetState extends State<UserNameWidget> {
   }
 }
 
-class UserInfo extends StatelessWidget {
+class UserInfo extends StatefulWidget {
   const UserInfo({Key? key}) : super(key: key);
+
+  @override
+  State<UserInfo> createState() => _UserInfoState();
+}
+
+class _UserInfoState extends State<UserInfo> {
+  int followersCount = 0;
+  int followingCount = 0;
+  int recipesCount = 0;
+
+  final String uid = FirebaseAuth.instance.currentUser!.uid;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      // Datos del usuario (followers y following)
+      final userDoc = await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(uid)
+          .get();
+
+      // Conteo de recetas
+      final recipesSnap = await FirebaseFirestore.instance
+          .collection("Recipe")
+          .where("userId", isEqualTo: uid)
+          .count()
+          .get();
+
+      if (!mounted) return;
+
+      final data = userDoc.data() ?? {};
+      final List followers = data["followers"] ?? [];
+      final List following = data["following"] ?? [];
+
+      setState(() {
+        followersCount = followers.length;
+        followingCount = following.length;
+        recipesCount = recipesSnap.count ?? 0;
+      });
+    } catch (e) {
+      debugPrint("Error cargando estadísticas: $e");
+    }
+  }
 
   Widget _buildStatColumn(IconData icon, String value, String label) {
     return Column(
@@ -432,11 +480,23 @@ class UserInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildStatColumn(Icons.person_add_outlined, '+ 100', 'seguidores'),
+        _buildStatColumn(
+          Icons.person_add_outlined,
+          followersCount.toString(),
+          'seguidores',
+        ),
         const SizedBox(width: 25),
-        _buildStatColumn(Icons.person_add_outlined, '+ 150', 'siguiendo'),
+        _buildStatColumn(
+          Icons.person_add_outlined,
+          followingCount.toString(),
+          'siguiendo',
+        ),
         const SizedBox(width: 25),
-        _buildStatColumn(Icons.local_dining, '+ 15', 'recetas'),
+        _buildStatColumn(
+          Icons.local_dining,
+          recipesCount.toString(),
+          'recetas',
+        ),
       ],
     );
   }

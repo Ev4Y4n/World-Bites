@@ -22,6 +22,10 @@ class DatabaseService {
     return List<String>.from(doc.data()?['favoriteRecipes'] ?? []);
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> getAllUserRecipes() {
+    return _db.collection('Recipe').snapshots();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserRecipes(String userID) {
     return _db
         .collection('Recipe')
@@ -78,7 +82,6 @@ class DatabaseService {
         .snapshots();
   }
 
-  //obtiene todas las categorias de cada pais
   Future<List<Map<String, String>>> getCategoriesByCountry(
     String countryDocId,
   ) async {
@@ -88,14 +91,22 @@ class DatabaseService {
         .doc(countryDocId)
         .get();
 
-    // Saca categoryID
-    final String categoryId = countryDoc.data()?['categoryID'] ?? '';
+    final data = countryDoc.data();
+
+    if (data == null) return [];
+
+    // Saca categoryID de forma segura
+    final String categoryId = (data['categoryID'] ?? '').toString().trim();
+
     if (categoryId.isEmpty) return [];
+
     // Busca la colección dinámica
-    final snapshot = await _db.collection(categoryId).orderBy('index').get();
-    // Devuelve IDs de documentos como lista
+    final snapshot = await _db.collection(categoryId).get();
+
     return snapshot.docs.map((doc) {
-      return {"id": doc.id, "name": doc.data()['name'] as String};
+      final docData = doc.data() as Map<String, dynamic>;
+
+      return {"id": doc.id, "name": (docData['name'] ?? '').toString()};
     }).toList();
   }
 

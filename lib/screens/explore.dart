@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/profile/public_profile.dart';
 import 'package:flutter_application_1/screens/recipe.dart';
 import 'package:flutter_application_1/screens/ui_elements/chatbot_button.dart';
 import 'package:flutter_application_1/screens/ui_elements/favorite_button.dart';
@@ -43,7 +44,7 @@ class _ExploreState extends State<Explore> {
               const SizedBox(height: 20),
               Expanded(
                 child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: db.getUserRecipes(userID),
+                  stream: db.getAllUserRecipes(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
@@ -234,17 +235,13 @@ class _ExploreState extends State<Explore> {
 
                       GestureDetector(
                         onTap: () {
-                          // Navegar al perfil público del usuario
-                          /*
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => UserProfileScreen(
-                                userId: data['userId'],
-                              ),
+                              builder: (_) =>
+                                  PublicProfile(userId: data['userId']),
                             ),
                           );
-                          */
                         },
                         child: Row(
                           children: [
