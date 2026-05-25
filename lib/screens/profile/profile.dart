@@ -26,6 +26,9 @@ class _ProfileState extends State<Profile> {
   File? selectedImage;
   String? imageUrl;
   String username = "Cargando...";
+  int followersCount = 0;
+  int followingCount = 0;
+  int recipesCount = 0;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -47,6 +50,10 @@ class _ProfileState extends State<Profile> {
       setState(() {
         imageUrl = userDoc.data()?["profileImage"];
         username = userDoc.data()?["userName"] ?? "Usuario";
+
+        followersCount = userDoc.data()?["followersCount"] ?? 0;
+        followingCount = userDoc.data()?["followingCount"] ?? 0;
+        recipesCount = userDoc.data()?["recipesCount"] ?? 0;
       });
     } catch (e) {
       print("Error cargando datos: $e");
@@ -200,7 +207,13 @@ class _ProfileState extends State<Profile> {
             top: 260,
             left: 0,
             right: 0,
-            child: const Center(child: UserInfo()),
+            child: Center(
+              child: UserInfo(
+                followersCount: followersCount,
+                followingCount: followingCount,
+                recipesCount: recipesCount,
+              ),
+            ),
           ),
 
           // Menú de opciones inferior
@@ -480,6 +493,11 @@ class _UserInfoState extends State<UserInfo> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        _buildStatColumn(
+          Icons.person_add_outlined,
+          followersCount.toString(),
+          'seguidores',
+        ),
         _buildStatColumn(
           Icons.person_add_outlined,
           followersCount.toString(),
