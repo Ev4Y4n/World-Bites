@@ -10,7 +10,7 @@ https://github.com/user-attachments/assets/457cca37-bbdc-495b-bfbb-2a94a1ec487e
 
 ## Funcionalidades
 
-- **Recetas por país y categoría:** elige un país (Italia y México con recetas; Japón e India marcados como "próximamente") y navega por sus categorías.
+- **Recetas por país y categoría:** 20 países en el selector, con recetas completas de **Italia** y **México**. El resto de países (Japón, India, Tailandia, España, Argentina, Armenia, Brasil, China, Francia, Alemania, Grecia, Indonesia, Marruecos, Perú, Corea del Sur, Suiza, Turquía y Estados Unidos) aparecen como "próximamente".
 - **Explorar y buscar** recetas.
 - **Favoritos:** guarda y quita recetas de tu lista.
 - **Crear recetas propias**, con imagen subida a Firebase Storage, y borrarlas.
@@ -76,7 +76,7 @@ assets/
 Esta es una **versión beta** entregada como TFG, con margen para seguir mejorándola en el futuro. Líneas de trabajo pendientes:
 
 - Asistente de chat (el botón existe en la interfaz y lleva a una pantalla de "próximamente")
-- Recetas de Japón e India
+- Recetas del resto de países (ya incluidos en el selector, pendientes de contenido)
 - Sección de seguidos en el perfil
 - Tests y reglas de seguridad de Firestore por usuario
 
